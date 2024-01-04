@@ -17,4 +17,6 @@ public interface AuctionMapper {
     int updateByPrimaryKey(Auction record);
 
     List<Auction> listAuctionByAreaId(Integer areaId);
+
+    Auction selectAuctionBySn(String sn);
 }
