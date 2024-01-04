@@ -11,13 +11,15 @@ public enum StatusEnum {
      */
     SUCCESS(200, "成功"),
     FAILED(201, "失败"), // 通用失败
-    ERROR(202, "错误"); //  通用错误
+    ERROR(202, "错误"), //  通用错误
 
 
     /**
      * 系统相关异常 (1000 - 1999）
      */
-
+    AUCTION_FINISH_ERROR(1001,"拍品已结束"),
+    PARAM_ERROR(1002,"参数缺失")
+    ;
 
     private Integer code;
 
