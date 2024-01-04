@@ -7,10 +7,5 @@ import com.zj.auction.common.dto.Ret;
  * @author yangbing
  */
 public interface SeckillService {
-    /**
-     * 秒杀接口
-     * @param auctionId 拍品id
-     * @return fail or 锁定库存id
-     */
     Ret<Object> seckill(Long auctionId);
 }

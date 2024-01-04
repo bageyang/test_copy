@@ -44,21 +44,4 @@
     select id, auction_id, stock_number, stock_id, create_time, update_time, is_deleted
     from zj_auction_stock_relation
   </select>
-  <select id="listStockByAuctionIds" resultMap="BaseResultMap">
-    select id, auction_id, stock_number, stock_id, create_time, update_time, is_deleted
-    from zj_auction_stock_relation
-    where
-      auction_id in
-        <foreach collection="auctionIds" item="auctionId" open="(" close=")" separator=",">
-          #{auctionId}
-        </foreach>
-    and is_deleted = 0
-  </select>
-
-  <select id="selectAuctionIdBySn" resultType="java.lang.Long">
-    select auction_id
-    from zj_auction_stock_relation
-    where stock_number = #{sn}
-    and is_deleted = 0
-  </select>
 </mapper>
