@@ -1,8 +1,11 @@
 package com.zj.auction.common.mapper;
 
 import com.zj.auction.common.model.Order;
-import java.util.List;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+@Mapper
 public interface OrderMapper {
     int deleteByPrimaryKey(Long id);
 
