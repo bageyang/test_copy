@@ -16,6 +16,7 @@ import netscape.javascript.JSObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.redisson.Redisson;
+import org.redisson.api.RLock;
 import org.redisson.api.RScript;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,9 @@ public class RedisTest {
 //        }
 //        redissonClient.getLock("auction:test_lock").tryLock(60, TimeUnit.SECONDS);
         RScript script = redissonClient.getScript();
+        RLock lock = redissonClient.getLock();
+        lock.tryLock();
+        lock.lock(1);
         List<Object> keys = new ArrayList<>();
         keys.add("auction:volume");
         keys.add("auction:stock");

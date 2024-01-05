@@ -1,19 +1,18 @@
 //package com.zj.auction.general.pc.service.impl;
 //import com.alibaba.fastjson.JSON;
 //import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-//import com.baomidou.mybatisplus.core.metadata.IPage;
+//import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+//import com.baomidou.mybatisplus.core.enums.SqlLike;
+//import com.fasterxml.jackson.databind.util.BeanUtil;
 //import com.github.pagehelper.PageHelper;
 //import com.github.pagehelper.PageInfo;
+//import com.zj.auction.common.base.BaseService;
 //import com.zj.auction.common.base.BaseServiceImpl;
 //import com.zj.auction.common.constant.RedisConstant;
-//import com.zj.auction.common.constant.SystemConfig;
-//import com.zj.auction.common.constant.SystemConstant;
-//import com.zj.auction.common.date.CalculateTypeEnum;
-//import com.zj.auction.common.date.DateUtil;
-//import com.zj.auction.common.date.TimeTypeEnum;
 //import com.zj.auction.common.dto.UserDTO;
 //import com.zj.auction.common.exception.ServiceException;
 //import com.zj.auction.common.mapper.UserMapper;
+//import com.zj.auction.common.mapper.UserRoleMapper;
 //import com.zj.auction.common.model.*;
 //import com.zj.auction.common.shiro.SecurityUtils;
 //import com.zj.auction.common.util.*;
@@ -26,9 +25,10 @@
 //import com.zj.auction.general.vo.PageAction;
 //import lombok.RequiredArgsConstructor;
 //import lombok.extern.log4j.Log4j2;
-//import org.apache.commons.lang3.ObjectUtils;
+//import org.apache.commons.beanutils.BeanUtils;
 //import org.apache.commons.lang3.StringUtils;
 //import org.apache.shiro.authc.UsernamePasswordToken;
+//import org.bouncycastle.util.Integers;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.data.domain.Page;
 //import org.springframework.data.domain.Pageable;
@@ -39,7 +39,6 @@
 //import javax.servlet.http.HttpServletResponse;
 //import java.lang.reflect.Method;
 //import java.math.BigDecimal;
-//import java.rmi.ServerException;
 //import java.time.Duration;
 //import java.time.LocalDate;
 //import java.time.LocalDateTime;
@@ -245,9 +244,7 @@
 //		newUser.setUserName(userCfg.getUserName());
 //		newUser.setNickName(userCfg.getRealName());
 //		newUser.setRealName(userCfg.getRealName());
-//		if(!StringUtils.isEmpty(userCfg.getUserImg())) {
-//            newUser.setUserImg(userCfg.getUserImg());
-//        }
+//		if(!StringUtils.isEmpty(userCfg.getUserImg())) newUser.setUserImg(userCfg.getUserImg());
 //		String[] md5pwd = MD5Utils.encryption(userCfg.getPassWord());//md5加密
 //		newUser.setPassWord(md5pwd[0]);
 //		newUser.setSalt(md5pwd[1]);
@@ -274,6 +271,9 @@
 //		}
 //		Function<User, User> deal = param->{
 //			User u = Optional.ofNullable(userService.selectById(param.getUserId())).orElseThrow(()-> throwException("未查询到管理员信息"));
+////			if (u==null){
+////				throwException("未查询到管理员信息");
+////			}
 //			u.setSalt("");
 //			u.setPassWord("******");
 //			return u;
@@ -297,30 +297,20 @@
 //			}
 ////			User oldUser = pcUserRepository.findById(param.getUserId()).orElseThrow(()-> throwException("未查询到管理员信息"));
 //			User oldUser = Optional.ofNullable(userService.selectById(param.getUserId())).orElseThrow(()-> throwException("未查询到管理员信息"));
-//			if(!StringUtils.isEmpty(param.getUserName())) {
-//                oldUser.setUserName(param.getUserName());
-//            }
-//			if(!StringUtils.isEmpty(param.getRealName())) {
-//                oldUser.setRealName(param.getRealName());
-//            }
+//			if(!StringUtils.isEmpty(param.getUserName())) oldUser.setUserName(param.getUserName());
+//			if(!StringUtils.isEmpty(param.getRealName())) oldUser.setRealName(param.getRealName());
 //			//if(!StringUtils.isEmpty(param.getRealName())) oldUser.setNickName(param.getRealName());
-//			if(!StringUtils.isEmpty(param.getUserImg())) {
-//                oldUser.setUserImg(param.getUserImg());
-//            }
+//			if(!StringUtils.isEmpty(param.getUserImg())) oldUser.setUserImg(param.getUserImg());
 //			if(param.getPassWord()!=null) {//x要修改密码
 //				String[] md5pwd = MD5Utils.encryption(param.getPassWord());//md5加密
 //				oldUser.setPassWord(md5pwd[0]);
 //				oldUser.setSalt(md5pwd[1]);
 //			}
 //			oldUser.setRoleShopId(userCfg.getRoleShopId()==null?0L:userCfg.getRoleShopId());
-//			if(!StringUtils.isEmpty(param.getTel())) {
-//                oldUser.setTel(param.getTel());
-//            }
+//			if(!StringUtils.isEmpty(param.getTel())) oldUser.setTel(param.getTel());
 //			UserConfig userConfig = new UserConfig();
 //
-//			if(!StringUtils.isEmpty(param.getAddress())) {
-//                userConfig.setAddr(param.getAddress());
-//            }
+//			if(!StringUtils.isEmpty(param.getAddress())) userConfig.setAddr(param.getAddress());
 //			oldUser.setUpdateTime(LocalDateTime.now());
 //			oldUser.setUpdateUserId(user.getUserId());
 //			userConfig.setUserId(oldUser.getUserId());
@@ -340,21 +330,19 @@
 //    //删除管理员
 //	@Override
 //	@Transactional
-//	public Boolean deleteUser(User userCfg) {
-//        User user =SecurityUtils.getPrincipal();
+//	public Boolean deleteUser(UserInfoTbl userCfg) {
+//		UserInfoTbl user =SecurityUtils.getPrincipal();
 //		if(super.baseCheck(userCfg.getUserId(), Objects::isNull)) {
 //			throw new RuntimeException("未获取到管理员ID");
 //		}
-//		Function<User, Boolean> deal = param->{
-//			Optional<User> userOpt = Optional.ofNullable(userService.selectById(userCfg.getUserId()));
-//            User oldUser = userOpt.orElseThrow(()-> throwException("未查询到管理员信息"));
+//		Function<UserInfoTbl, Boolean> deal = param->{
+//			Optional<UserInfoTbl> userOpt = pcUserRepository.findById(param.getUserId());
+//			UserInfoTbl oldUser = userOpt.orElseThrow(()-> throwException("未查询到管理员信息"));
 //			if(oldUser.getUserType()==1){//店主
 //				ShopInfoTbl shop = pcShopRepository.findByShopIdAndDeleteFlagFalseAndStatus(oldUser.getRoleShopId(), 0);
-//				if(Objects.nonNull(shop)) {
-//                    throw new ServiceException(408,"该用户关联的店铺未下架,删除失败!");
-//                }
+//				if(Objects.nonNull(shop)) throw new BaseException("该用户关联的店铺未下架,删除失败!");
 //			}
-//			oldUser.setDeleteFlag(1);
+//			oldUser.setDeleteFlag(true);
 //			oldUser.setUpdateTime(LocalDateTime.now());
 //			oldUser.setUpdateUserId(user.getUserId());
 //			pcUserRepository.saveAndFlush(oldUser);
@@ -368,25 +356,25 @@
 //	//修改管理员状态
 //	@Override
 //	@Transactional
-//	public Boolean updateManagerStatus(User userCfg) {
-//		User user =SecurityUtils.getPrincipal();
-//		Function<User, Boolean> deal = param->{
-//			Optional<User> userOpt = Optional.ofNullable(userService.selectById(param.getUserId()));
-//			User oldUser = userOpt.orElseThrow(()-> throwException("未查询到管理员信息"));
+//	public Boolean updateManagerStatus(UserInfoTbl userCfg) {
+//		UserInfoTbl user =SecurityUtils.getPrincipal();
+//		Function<UserInfoTbl, Boolean> deal = param->{
+//			Optional<UserInfoTbl> userOpt = pcUserRepository.findById(param.getUserId());
+//			UserInfoTbl oldUser = userOpt.orElseThrow(()-> throwException("未查询到管理员信息"));
 //			if(param.getStatus()==1) {//禁用
 //				oldUser.setStatus(1);
 //				oldUser.setFrozenExplain(param.getFrozenExplain());
-////				//冻结用户转拍并未抢拍的产品
-////				pcGoodsRepository.updAuctionGoods(-1,param.getUserId(),user.getUserId());
+//				//冻结用户转拍并未抢拍的产品
+//				pcGoodsRepository.updAuctionGoods(-1,param.getUserId(),user.getUserId());
 //			}else {
 //				oldUser.setStatus(0);
 //				oldUser.setFrozenExplain(null);
-////				//解冻用户转拍并未抢拍的产品
-////				pcGoodsRepository.updAuctionGoods(0,param.getUserId(),user.getUserId());
+//				//解冻用户转拍并未抢拍的产品
+//				pcGoodsRepository.updAuctionGoods(0,param.getUserId(),user.getUserId());
 //			}
 //			oldUser.setUpdateTime(LocalDateTime.now());
 //			oldUser.setUpdateUserId(user.getUserId());
-//			userService.updateById(oldUser);
+//			pcUserRepository.saveAndFlush(oldUser);
 //			return true;
 //		};
 //		return super.base(userCfg, deal);
@@ -399,35 +387,56 @@
 //
 //
 //	//查询平台管理员
-//
 //	@Override
-//	public PageInfo<User> getUserPage(PageAction pageAction, Integer userType, List<Long> userIds) {
+//	public Page<UserInfoTbl> getUserPage(PageAction pageAction,Integer userType,List<Long> userIds) {
 //		LocalDateTime sTime =null;
 //		LocalDateTime eTime =null;
-//		PageHelper.startPage(pageAction.getCurrentPage(),pageAction.getPageSize());
 //		if(!StringUtils.isEmpty(pageAction.getStartTime()) && !StringUtils.isEmpty(pageAction.getEndTime())){
 //			sTime = DateTimeUtils.parse(pageAction.getStartTime());
 //			eTime = DateTimeUtils.parse(pageAction.getEndTime());
 //		}
-//		User user =SecurityUtils.getPrincipal();
-//		LambdaQueryWrapper<User> wrapper =  new LambdaQueryWrapper<>(User.class);
-//		wrapper.eq(User::getDeleteFlag,0)
-//				.ge(User::getUserType,0)
-//				.eq(User::getUserType,userType)
-//				.in(User::getUserId,userIds)
-//				.between(Objects.nonNull(sTime) && Objects.nonNull(eTime),User::getAddTime,sTime,eTime)
-//				.or()
-//				.eq(StringUtils.isNumeric(pageAction.getKeyword()), User::getUserId, com.zj.auction.common.util.StringUtils.toLong(pageAction.getKeyword()))
-//				.like(User::getNickName, pageAction.getKeyword())
-//				.like(User::getRealName, pageAction.getKeyword())
-//				.like(User::getUserName, pageAction.getKeyword());
-//		List<User> userList = userService.selectList(wrapper);
-////		if (userList.size()>0){
-////			userList.forEach(e->{
-////
-////			});
-////		}
-//		return new PageInfo<>(userList);
+//		UserInfoTbl user =SecurityUtils.getPrincipal();
+//		Pageable pageable = PageUtil.getPageable(pageAction.getCurrentPage(), pageAction.getPageSize(), Sort.Direction.DESC, "userId");
+//		Specification<UserInfoTbl> spec = Specifications.<UserInfoTbl>and()
+//				.eq("deleteFlag",0)
+//				.ge(StringUtils.isEmpty(userType),"userType",0)
+//				.eq(!StringUtils.isEmpty(userType),"userType",userType)
+//				.in(Objects.nonNull(userIds) && userIds.size()>0,"userId",userIds)
+//				.between(Objects.nonNull(sTime) && Objects.nonNull(eTime),"addTime",sTime,eTime)
+//				.predicate(!StringUtils.isEmpty(pageAction.getKeyword()), Specifications.or()
+//						.eq(StringUtils.isNumeric(pageAction.getKeyword()), "userId", StringUtils.toLong(pageAction.getKeyword()))
+//						.like("nickName", "%"+pageAction.getKeyword()+"%")
+//						.like("realName", "%"+pageAction.getKeyword()+"%")
+//						.like("userName", "%"+pageAction.getKeyword()+"%")
+//						.build())
+//				.build();
+//		Page<UserInfoTbl> page = pcUserRepository.findAll(spec, pageable);
+//		if(page.getContent().size()>0){
+//			page.getContent().forEach(e->{
+//				//用户银币余额
+//				e.setSilverBalance(BigDecimal.ZERO);
+//				//e.setSilverBalance(iAppMoneyInfoTblService.findUserIdTotal(e.getUserId(), 2).get("totalMoney"));
+//				//用户金币余额
+//				e.setGoldBalance(BigDecimal.ZERO);
+//				//e.setGoldBalance(iAppMoneyInfoTblService.findUserIdTotal(e.getUserId(), 1).get("totalMoney"));
+//				//用户佳士得钱包余额
+//				e.setWallet(iAppMoneyInfoTblService.findUserIdTotal(e.getUserId(), 4).get("totalMoney"));
+//				//用户佳士得绩效余额
+//				e.setPerformance(iAppMoneyInfoTblService.findUserIdTotal(e.getUserId(), 5).get("totalMoney"));
+//				//用户佳士得钻石余额
+//				e.setDiamond(iAppMoneyInfoTblService.findUserIdTotal(e.getUserId(), 6).get("totalMoney"));
+//				//用户佳士得积分余额
+//				e.setIntegral(iAppMoneyInfoTblService.findUserIdTotal(e.getUserId(), 7).get("totalMoney"));
+//				List<BankInfoTbl> banks = pcBankCarRepository.findAllByUserIdAndDeleteFlagFalse(e.getUserId());
+//				e.setBank(banks.size()==0?null:banks.get(0));
+//				if(e.getUserType()==1){
+//					//店主营业额
+//					e.setBalance(iAppMoneyInfoTblService.findUserIdTotal(e.getUserId(), 0).get("totalMoney"));
+//				}
+//			});
+//		}
+//
+//		return page;
 //	}
 //
 //
@@ -437,9 +446,9 @@
 //		PubFun.check(pid);
 //		LocalDateTime sTime = DateTimeUtils.parse(pageAction.getStartTime());
 //		LocalDateTime eTime = DateTimeUtils.parse(pageAction.getEndTime());
-//		User user =SecurityUtils.getPrincipal();
+//		UserInfoTbl user =SecurityUtils.getPrincipal();
 //		Pageable pageable = PageUtil.getPageable(pageAction.getCurrentPage(), pageAction.getPageSize(), Sort.Direction.DESC, "userId");
-//		Specification<User> spec = Specifications.<UserInfoTbl>and()
+//		Specification<UserInfoTbl> spec = Specifications.<UserInfoTbl>and()
 //				.eq("deleteFlag",0)
 //				.eq("pid",pid)
 //				.ge("userType",0)
@@ -450,11 +459,11 @@
 //						.like("userName", "%"+pageAction.getKeyword()+"%")
 //						.build())
 //				.build();
-//		Page<User> page = pcUserRepository.findAll(spec, pageable);
+//		Page<UserInfoTbl> page = pcUserRepository.findAll(spec, pageable);
 //		if(page.getContent().size()>0){
 //			page.getContent().forEach(e->{
 //				//查询直推统计
-//				Specification<User> spec1 = Specifications.<User>and()
+//				Specification<UserInfoTbl> spec1 = Specifications.<UserInfoTbl>and()
 //						.eq("deleteFlag",0)
 //						.eq("pid",e.getUserId())
 //						.build();
@@ -472,8 +481,8 @@
 //	@Override
 //	@Transactional
 //	public Boolean updateUserStatus(Long userId, Integer status,String frozenExplain) {
-//		User user =SecurityUtils.getPrincipal();
-//		User oldUser = pcUserRepository.findById(userId).orElseThrow(()-> throwException("未查询到用户信息"));
+//		UserInfoTbl user =SecurityUtils.getPrincipal();
+//		UserInfoTbl oldUser = pcUserRepository.findById(userId).orElseThrow(()-> throwException("未查询到用户信息"));
 //		oldUser.setStatus(status);
 //		if(status==1){
 //			oldUser.setFrozenExplain(frozenExplain);
@@ -536,7 +545,58 @@
 //		return super.base(pageAction, deal);
 //	}
 //
-//
+//	/**
+//	 * @title: findMemberAudit
+//	 * @description: 查询待审核实名
+//	 * @author: Mao Qi
+//	 * @date: 2020年4月3日下午5:51:14
+//	 * @param pageAction
+//	 * @param maps
+//	 * @return
+//	 */
+//	@Override
+//	public GeneralResult findMemberAudit(PageAction pageAction, HashMap<String, Object> maps) {
+//		GeneralResult generalResult =new GeneralResult();
+//		Function<PageAction, GeneralResult> deal = parm -> {
+//			StringBuffer totalSql = new StringBuffer();
+//			HashMap<String, Object> map = new HashMap<>();
+//			String wheres = "";
+//			if(super.baseCheck(pageAction, param -> StringUtils.hasText(param.getKeyword()))){
+//				wheres+=" and CONCAT(IFNULL(user_id,''),IFNULL(user_name,''),IFNULL(real_name,''),IFNULL(nick_name,''),IFNULL(tel,''),IFNULL(addr,'')"
+//						+ ",IFNULL(pid,''),IFNULL(p_user_name,'')) like CONCAT('%',:keyword,'%') ";
+//				map.put("keyword", parm.getKeyword());
+//			}
+//			//根据开始时间
+//			if(super.baseCheck(maps, paramMaps -> StringUtils.hasText(PubFun.ObjectStrongToString(paramMaps.get("startDate"))))) {
+//				wheres+=" and add_time>=:startDate ";
+//				map.put("startDate", PubFun.ObjectStrongToString(maps.get("startDate")));
+//			}
+//			//结束开始时间
+//			if(super.baseCheck(maps, paramMaps -> StringUtils.hasText(PubFun.ObjectStrongToString(paramMaps.get("endDate"))))) {
+//				wheres+=" and add_time<=:endDate ";
+//				map.put("endDate", PubFun.ObjectStrongToString(maps.get("endDate")));
+//			}
+//			totalSql.append("select user_id from user_info_tbl where  audit>0 and role_type = 0 "+wheres+" and delete_flag = 0");
+//			Integer allPage = shCommonDaoImpl.getSQLRecordNumber(totalSql.toString(), map);
+//			if(allPage>0) {
+//				StringBuffer sql = new StringBuffer();
+//				sql.append(" select * from user_info_tbl where  audit>0 and role_type = 0 "+wheres+" and delete_flag = 0 order by add_time desc LIMIT :currentSize , :pageSize ");
+//				Integer currentSize = (parm.getCurrentPage()-1)*parm.getPageSize();
+//				map.put("currentSize", currentSize);//页数
+//				map.put("pageSize", parm.getPageSize());//每页行数
+//				List<Map<String, Object>> userList = shCommonDaoImpl.getSqlList(sql.toString(), map);
+//				PageAction page = parm;
+//				page.setTotalCount(allPage);
+//				page.validateSite();
+//				PubFun.isNull(userList, SystemConstant.NO_MORE_DATA_CODE);
+//				generalResult.setPageAction(page);
+//				generalResult.setResult(userList);
+//				return generalResult;
+//			}
+//			throw new BaseException(SystemConstant.NO_MORE_DATA_CODE);
+//		};
+//		return super.base(pageAction, deal);
+//	}
 //
 //	// 添加用户
 //	@Override
@@ -747,7 +807,7 @@
 //	public Integer updateAuditRejection(Long userId, String auditExplain) {
 //		SecurityUtils.getPrincipal();
 //		if (super.baseCheck(userId, Objects::isNull)) {
-//			throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE,"数据非法");
+//			throw new BaseException(SystemConstant.DATA_ILLEGALITY_CODE);
 //		}
 //		Function<Long, Integer> deal = parm -> {
 //			StringBuffer sql = new StringBuffer();
@@ -852,14 +912,14 @@
 //	//后台操作卡劵
 //	@Override
 //	public Integer changeCardVolume(Long userId,Integer type,BigDecimal cardVolumeTotal,String remark){
-//		User sessUser =  SecurityUtils.getPrincipal();
+//		UserInfoTbl sessUser =  SecurityUtils.getPrincipal();
 //		if(super.baseCheck(userId, Objects::isNull)) {
 //			throw new RuntimeException("用户ID为空");
 //		}
 //		if(super.baseCheck(cardVolumeTotal,money-> !PubFun.isNumber(""+money))) {
 //			throw new RuntimeException("数量有误");
 //		}
-//		User user =pcUserRepository.findById(userId).orElseThrow(()-> PubFun.throwException("该用户不存在"));
+//		UserInfoTbl user =pcUserRepository.findById(userId).orElseThrow(()-> PubFun.throwException("该用户不存在"));
 //		if(type==1) {//增加
 //			String transactionId = UidGenerator.createOrderXid();
 //			//添加余额
@@ -883,30 +943,69 @@
 //
 //
 //
-//
+//	/**
+//	 * @Title: saveMoney
+//	 * @Description: 创建财务对象
+//	 * @author：Mao Qi
+//	 * @date： 2019年7月12日下午4:13:06
+//	 * @param userId 用户人id
+//	 * @param addType 1:添加, -1:减少
+//	 * @param optType 操作类型
+//	 * @param moneyNum 金额
+//	 * @param status 状态
+//	 * @param useType 使用类型
+//	 * @param userType 用户类型
+//	 * @param type 类型
+//	 * @param remarks 备注
+//	 * @param payType 支付类型
+//	 * @param oppositeUserId 创收人
+//	 * @param moneyType 金额类型
+//	 * @param memo 说明
+//	 * @param transactionId 事务id
+//	 * @param tradeNo 交易号
+//	 * @return：MoneyInfoTbl
+//	 */
+//	private static MoneyInfoTbl saveMoney(Long userId, Integer addType, Integer optType, BigDecimal moneyNum
+//			,Integer status, Integer useType, Integer userType, Integer type, String remarks, Integer payType
+//			,Long oppositeUserId, Integer moneyType, String memo,String transactionId, String tradeNo, String memo1) {
+//		MoneyInfoTbl money = new MoneyInfoTbl();
+//		money.setUserId(userId);
+//		money.setAddType(addType);
+//		money.setOptType(optType);
+//		money.setMoneyNum(moneyNum);
+//		money.setStatus(status);
+//		money.setUseType(useType);
+//		money.setUserType(userType);
+//		money.setType(type);
+//		money.setRemarks(remarks);
+//		money.setPayType(payType);
+//		money.setOppositeUserId(oppositeUserId);
+//		money.setMoneyType(moneyType);
+//		money.setMemo(memo);
+//		money.setTransactionId(transactionId);
+//		money.setTradeNo(tradeNo);
+//		money.setMemo1(memo1);
+//		money.setResourceId(-1L);
+//		return money;
+//	}
 //
 //
 //	//条件查询APP用户(APP用户管理)
 //	@Override
-//	public Page<User> findAPPUser(String keyword, Pageable pageable) {
+//	public Page<UserInfoTbl> findAPPUser(String keyword, Pageable pageable) {
 //		if("".equals(keyword)) {
 //			return pcUserRepository.findByDeleteFlagFalseAndRoleType(pageable,0);
 //		}else{
 //			String c = "%"+keyword+"%";
-//			Page<User> data = pcUserRepository.findByUserLike(c,pageable);
+//			Page<UserInfoTbl> data = pcUserRepository.findByUserLike(c,pageable);
 //			return data;
 //		}
 //	}
 //
 //	//根据用户名查找用户
-//
 //	@Override
-//	public List<User> findUserByName(String userName) {
-//		LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper(User.class);
-//		wrapper.eq(User::getDeleteFlag,0)
-//				.eq(User::getUserType,0)
-//				.eq(User::getUserName,userName);
-//		return userService.selectList(wrapper);
+//	public UserInfoTbl findByDeleteFlagFalseAndUserName(String userName) {
+//		return pcUserRepository.findByDeleteFlagFalseAndUserNameAndRoleType(userName,1);
 //	}
 //
 //	//导出用户
@@ -916,7 +1015,15 @@
 //		if(!StringUtils.isEmpty(userIds)){
 //			userList = JSON.parseArray(userIds, Long.class);
 //		}
-//		PageInfo<User> userPage = getUserPage(pageAction, userType, userList);
+//		/*StringBuffer sql = new StringBuffer();
+//		Map<String, Object> map = new HashMap<>();
+//		UserInfoTbl user = SecurityUtils.getPrincipal();
+//		StringBuffer auth = new StringBuffer();
+//		// 查询指定条件的用户
+//		selUserSql(pageAction, sql, map,auth);
+//		sql.append(" order by t1.add_time desc ");
+//		List<Map<String, Object>> sqlList = shCommonDaoImpl.getSqlList(sql.toString(), map);*/
+//		Page<UserInfoTbl> userPage = getUserPage(pageAction, userType, userList);
 //
 //		List<List<String>> excelData = new ArrayList<>();
 //		List<String> head = new ArrayList<>();
@@ -925,22 +1032,22 @@
 //		head.add("昵称");
 //		head.add("电话");
 //		head.add("用户类型");
-////		head.add("金币余额");
-////		head.add("银币余额");
-////		head.add("店铺收入");
+//		head.add("金币余额");
+//		head.add("银币余额");
+//		head.add("店铺收入");
 //		head.add("注册时间");
 //		// 添加头部
 //		excelData.add(head);
-//		for(User user : userPage.getList()){
+//		for(UserInfoTbl user : userPage.getContent()){
 //			List<String> data1 = new ArrayList<>();
 //			data1.add(user.getUserId().toString());  //ID
 //			data1.add(user.getUserName());  //账号
 //			data1.add(Objects.toString(user.getNickName(), ""));  //昵称
 //			data1.add(Objects.toString(user.getTel(), ""));  //手机号
 //			data1.add(user.getUserType()==1?"店主":"用户");   //用户类型
-////			data1.add(Objects.toString(user.getGoldBalance(), "0"));   //金币余额
-////			data1.add(Objects.toString(user.getSilverBalance(), "0"));   //银币余额
-////			data1.add(Objects.toString(user.getBalance(), "0"));   //店铺收入
+//			data1.add(Objects.toString(user.getGoldBalance(), "0"));   //金币余额
+//			data1.add(Objects.toString(user.getSilverBalance(), "0"));   //银币余额
+//			data1.add(Objects.toString(user.getBalance(), "0"));   //店铺收入
 //			data1.add(Objects.toString(DateTimeUtils.toString(user.getAddTime(),"yyyy-MM-dd HH:mm:ss"),""));
 //			excelData.add(data1);
 //		}
@@ -964,44 +1071,43 @@
 //	 * @return	java.util.List<com.duoqio.boot.business.entity.UserInfoTbl>
 //	 */
 //	@Override
-//	public List<User> listParentUser(Long userId, Integer upLevel) {
+//	public List<UserInfoTbl> listParentUser(Long userId, Integer upLevel) {
 //		if(super.baseCheck(userId, Objects::isNull)) {
 //			throw new RuntimeException("用户ID为空");
 //		}
 //		if(super.baseCheck(upLevel, Objects::isNull)) {
 //			throw new RuntimeException("等级为空");
 //		}
-//		List<User> userList = new ArrayList<>();
-//		User user = userService.selectById(userId);
+//		List<UserInfoTbl> userList = new ArrayList<>();
+//		UserInfoTbl user = pcUserRepository.findById(userId).orElseThrow(()-> PubFun.throwException("未查询到用户信息"));
 //		String pidStr = user.getPidStr();
 //		if(pidStr!=null && !"".equals(pidStr)) {
 //			pidStr = pidStr.substring(1, pidStr.length()-1).replace(",,", ",");
 //			List<Long> collect = null;
 //			if(upLevel==-1){//查询所有上级
-////				collect = Arrays.asList(pidStr.split(",")).stream().map(m->Long.parseLong(m.trim())).sorted(Comparator.reverseOrder()).collect(Collectors.toList());
-//				collect = Arrays.stream(pidStr.split(",")).map(m->Long.parseLong(m.trim())).sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+//				collect = Arrays.asList(pidStr.split(",")).stream().map(m->Long.parseLong(m.trim())).sorted(Comparator.reverseOrder()).collect(Collectors.toList());
 //			}else{//查询限制级别的所有上级
-////				collect = Arrays.asList(pidStr.split(",")).stream().map(m->Long.parseLong(m.trim())).sorted(Comparator.reverseOrder()).limit(upLevel).collect(Collectors.toList());
-//				collect = Arrays.stream(pidStr.split(",")).map(m->Long.parseLong(m.trim())).sorted(Comparator.reverseOrder()).limit(upLevel).collect(Collectors.toList());
+//				collect = Arrays.asList(pidStr.split(",")).stream().map(m->Long.parseLong(m.trim())).sorted(Comparator.reverseOrder()).limit(upLevel).collect(Collectors.toList());
 //			}
 //			if(!collect.isEmpty()) {
-//				LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
-//				wrapper.in(User::getUserId,collect);
-//				wrapper.orderByDesc(User::getLevelNum);
-////				userList = pcUserRepository.findAllByUserIdInOrderByLevelNumDesc(collect);
-//				userList = userService.selectList(wrapper);
+//				userList = pcUserRepository.findAllByUserIdInOrderByLevelNumDesc(collect);
 //			}
 //		}
 //		return userList;
 //	}
 //
+//	//根据用户id查询用户信息
+//	@Override
+//	public UserInfoTbl findUserById(Long userId) {
+//		return pcUserRepository.findById(userId).orElseThrow(()->new BaseException("用户不存在!"));
+//	}
 //
 //
 //	//注册统计
 //	@Override
 //	public GeneralResult statistics(){
 //		//获取当前用户信息
-//		User user = SecurityUtils.getPrincipal();
+//		UserInfoTbl user = SecurityUtils.getPrincipal();
 //		Map<String, Object> map = new HashMap<>();
 //		//今年
 //		Integer year = LocalDateTime.now().getYear();
@@ -1010,8 +1116,10 @@
 //		LocalDateTime lastMonth = now.minusMonths(1);
 //		//昨天
 //		LocalDateTime recentDay = DateUtil.calculatingTime(new Date(), CalculateTypeEnum.SUBTRACT, 1, TimeTypeEnum.DAY);
-//
-//		List<User> list = userService.selectList(null);
+//		Specification<UserInfoTbl> spec = Specifications.<UserInfoTbl>and()
+//				.ge("userType",0)
+//				.build();
+//		List<UserInfoTbl> list = pcUserRepository.findAll(spec);
 //		//今年注册
 //		double incomeYear = list.stream().filter(e -> e.getAddTime().getYear()==year).count();
 //		//最近一个月注册
@@ -1025,7 +1133,7 @@
 //		//LocalDateTime time = DateUtil.stringToDate("2021-11-27 00:00:00", "yyyy-MM-dd HH:mm:ss");
 //		//double income = list.stream().filter(e -> e.getAddTime().isAfter(time)).count();
 //		//总实名用户
-//		double realNameAuth = list.stream().filter(e -> ObjectUtils.isNotEmpty(e.getCardNumber())).count();
+//		double realNameAuth = list.stream().filter(e -> ObjectUtil.isNotEmpty(e.getCardNumber())).count();
 //		Integer newUserDay = SystemConfig.getNewUserDay() == null ? 30 : Integer.valueOf(SystemConfig.getNewUserDay());
 //		//新用户
 //		double newUser = list.stream().filter(e -> Duration.between(e.getAddTime(),now).toDays()>0 && Duration.between(e.getAddTime(),now).toDays()<=newUserDay).count();
@@ -1040,27 +1148,49 @@
 //		return GeneralResult.success(map);
 //	}
 //
-//
+//	//注册K线统计
+//	@Override
+//	public GeneralResult registerKLine(){
+//		//获取当前用户信息
+//		UserInfoTbl user = SecurityUtils.getPrincipal();
+//		List<Long> resList = new ArrayList<>(7);
+//		//获取今天周几
+//		Integer dayOfWeek = LocalDateTime.now().getDayOfWeek().getValue();
+//		LocalDate startTime = LocalDate.now().minusDays(dayOfWeek - 1);
+//		Specification<UserInfoTbl> spec = Specifications.<UserInfoTbl>and()
+//				.ge("userType",0)
+//				.ge("addTime",LocalDateTime.of(startTime, LocalTime.MIN))
+//				.build();
+//		List<UserInfoTbl> list = pcUserRepository.findAll(spec);
+//		resList.add(list.stream().filter(u -> u.getAddTime().getDayOfWeek().getValue() == 0).count());
+//		resList.add(list.stream().filter(u -> u.getAddTime().getDayOfWeek().getValue() == 1).count());
+//		resList.add(list.stream().filter(u -> u.getAddTime().getDayOfWeek().getValue() == 2).count());
+//		resList.add(list.stream().filter(u -> u.getAddTime().getDayOfWeek().getValue() == 3).count());
+//		resList.add(list.stream().filter(u -> u.getAddTime().getDayOfWeek().getValue() == 4).count());
+//		resList.add(list.stream().filter(u -> u.getAddTime().getDayOfWeek().getValue() == 5).count());
+//		resList.add(list.stream().filter(u -> u.getAddTime().getDayOfWeek().getValue() == 6).count());
+//		return  GeneralResult.success(resList);
+//	}
 //
 //	//PC修改个人头像和密码
 //	@Override
 //	@Transactional
 //	public GeneralResult updatePassOrImg(String userImg, String oldPass, String newPass) {
 //		PubFun.check(userImg,oldPass,newPass);
-//		User user = SecurityUtils.getPrincipal();
-//		User pcUser = Optional.ofNullable(userService.selectById(user.getUserId())).orElseThrow(() -> new ServiceException(407,"该用户已经不存在"));
+//		UserInfoTbl user = SecurityUtils.getPrincipal();
+//		UserInfoTbl pcUser = pcUserRepository.findById(user.getUserId()).orElseThrow(() -> new BaseException("该用户已经不存在"));
 //		//校验旧密码
-//		String md5 = MD5Utils.isEncryption(oldPass,pcUser.getSalt());
-//		if(!pcUser.getPassWord().equals(md5)) {
-//			throw new ServiceException(408,"您输入的旧密码错误,请重新输入");
+//		String md5 = MD5Utils.isEncryption(oldPass,pcUser.getPcSalt());
+//		if(!pcUser.getPcPassword().equals(md5)) {
+//			throw new BaseException("您输入的旧密码错误,请重新输入");
 //		}
 //		String[] encryption = MD5Utils.encryption(newPass);
-//		pcUser.setPassWord(encryption[0]);
-//		pcUser.setSalt(encryption[1]);
+//		pcUser.setPcPassword(encryption[0]);
+//		pcUser.setPcSalt(encryption[1]);
 //		pcUser.setUpdateUserId(pcUser.getUserId());
 //		pcUser.setUpdateTime(LocalDateTime.now());
 //		pcUser.setUserImg(userImg);
-//		userService.updateById(pcUser);
+//		pcUserRepository.saveAndFlush(pcUser);
 //		return GeneralResult.success();
 //	}
 //
@@ -1068,39 +1198,29 @@
 //	@Transactional
 //	@Override
 //	public GeneralResult updRobOrderLimit(Long userId, Integer remarks) {
-//		updateUserById(userId,remarks,1);
-//		return GeneralResult.success();
-//	}
-//
-//	@Transactional
-//	public void updateUserById(Long userId, Object remarks,Integer type) {
 //		PubFun.check(userId, remarks);
-//		User pUser = SecurityUtils.getPrincipal();
-//		if(((Integer) remarks)<=0) {
-//			throw new ServiceException(621,"请输入大于零的数");
-//		}
-//		User user = userService.selectById(userId);
-//		switch (type){
-//			case 1:
-//				user.setRobOrderLimit((Integer) remarks);
-//				break;
-//			case 2:
-//				user.setDiamondOrderLimit((Integer) remarks);
-//				break;
-//			case 3:
-//				user.setWithdrawalLimit(BigDecimal.valueOf((Double) remarks));
-//				break;
-//		}
+//		UserInfoTbl pUser = SecurityUtils.getPrincipal();
+//		if(remarks<=0) throw new BaseException("请输入大于零的数");
+//		UserInfoTbl user = pcUserRepository.findByDeleteFlagFalseAndUserId(userId);
+//		user.setRobOrderLimit(remarks);
 //		user.setUpdateTime(LocalDateTime.now());
 //		user.setUpdateUserId(pUser.getUserId());
-//		userService.updateById(user);
+//		pcUserRepository.saveAndFlush(user);
+//		return GeneralResult.success();
 //	}
 //
 //	//修改用户钻石每场竞拍次数
 //	@Transactional
 //	@Override
 //	public GeneralResult updDiamondOrderLimit(Long userId, Integer remarks) {
-//		updateUserById(userId,remarks,2);
+//		PubFun.check(userId, remarks);
+//		UserInfoTbl pUser = SecurityUtils.getPrincipal();
+//		if(remarks<=0) throw new BaseException("请输入大于零的数");
+//		UserInfoTbl user = pcUserRepository.findByDeleteFlagFalseAndUserId(userId);
+//		user.setDiamondOrderLimit(remarks);
+//		user.setUpdateTime(LocalDateTime.now());
+//		user.setUpdateUserId(pUser.getUserId());
+//		pcUserRepository.saveAndFlush(user);
 //		return GeneralResult.success();
 //	}
 //
@@ -1108,7 +1228,48 @@
 //	@Transactional
 //	@Override
 //	public GeneralResult updWithdrawalLimit(Long userId, BigDecimal remarks) {
-//		updateUserById(userId,remarks,3);
+//		PubFun.check(userId, remarks);
+//		UserInfoTbl pUser = SecurityUtils.getPrincipal();
+//		if(remarks.compareTo(BigDecimal.ZERO)<=0) throw new BaseException("请输入大于零的数");
+//		UserInfoTbl user = pcUserRepository.findByDeleteFlagFalseAndUserId(userId);
+//		user.setWithdrawalLimit(remarks);
+//		user.setUpdateTime(LocalDateTime.now());
+//		user.setUpdateUserId(pUser.getUserId());
+//		pcUserRepository.saveAndFlush(user);
+//		return GeneralResult.success();
+//	}
+//
+//	//修改用户VIP类型
+//	@Transactional
+//	@Override
+//	public GeneralResult updVipType(Long userId, Integer vipType, Long tagId) {
+//		PubFun.check(userId, vipType);
+//		UserInfoTbl pUser = SecurityUtils.getPrincipal();
+//		UserInfoTbl user = pcUserRepository.findByDeleteFlagFalseAndUserId(userId);
+//		if((user.getVipType()==0 || user.getVipType()==1) && vipType.compareTo(2)==0){//设置团长必须设置分馆馆长
+//			PubFun.check(userId, tagId);
+//			if(tagId<=0) throw new BaseException("请选择分馆");
+//			if(user.getTagId().compareTo(tagId)==0) throw new BaseException("该用户已经属于该馆成员了");
+//			if(user.getTagId().compareTo(tagId)!=0 && user.getTagId()>0) throw new BaseException("该用户已经属于其他馆成员了");
+//			//判断这个馆是否已经有馆长了
+//			Long count = pcUserRepository.countAllByDeleteFlagFalseAndTagIdAndVipType(tagId, 2);
+//			if(count>0) throw new BaseException("该分馆已经有馆长了");
+//			user.setTagId(tagId);
+//			//所有下级团队都可以进入
+//			pcUserRepository.updUserChildByPidStr(tagId,user.getUserId(),pUser.getUserId());
+//			//附带的产品同时进入相应的分馆
+//			pcGoodsRepository.updGoodsTagIdByPidStr(tagId,user.getUserId(),pUser.getUserId());
+//		}else if(user.getVipType()==2 && ( vipType.compareTo(0)==0|| vipType.compareTo(1)==0)){//取消馆长
+//			user.setTagId(0L);
+//			//取消用户分馆归属
+//			pcUserRepository.updUserChildByPidStr(0L,user.getUserId(),pUser.getUserId());
+//			//附带的产品同时进入相应的分馆
+//			pcGoodsRepository.updGoodsTagIdByPidStr(0L,user.getUserId(),pUser.getUserId());
+//		}
+//		user.setVipType(vipType);
+//		user.setUpdateTime(LocalDateTime.now());
+//		user.setUpdateUserId(pUser.getUserId());
+//		pcUserRepository.saveAndFlush(user);
 //		return GeneralResult.success();
 //	}
 //}

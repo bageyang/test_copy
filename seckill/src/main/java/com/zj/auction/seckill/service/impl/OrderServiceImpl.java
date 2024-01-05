@@ -9,6 +9,8 @@ import com.zj.auction.common.model.Auction;
 import com.zj.auction.common.model.Order;
 import com.zj.auction.common.model.Stock;
 import com.zj.auction.seckill.service.OrderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import java.util.Objects;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+    private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
     private final OrderMapper orderMapper;
     private final AuctionMapper auctionMapper;
     private final StockMapper stockMapper;
@@ -36,6 +39,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void generatorOrder(BaseOrderDto orderInfo) {
+        logger.info("生成用户订单:{}",orderInfo);
         Long sn = orderInfo.getSn();
         Long auctionId = orderInfo.getAuctionId();
         Auction auction = auctionMapper.selectByPrimaryKey(auctionId);

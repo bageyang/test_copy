@@ -341,7 +341,7 @@ public interface UserService extends BaseMapper<User> {
      * @param userName
      * @return	com.duoqio.entity.pojo.UserInfoTbl
      */
-    List<User> findUserByName(String userName);
+    User findByDeleteFlagFalseAndUserName(String userName);
 
     /**
      * @param pageAction

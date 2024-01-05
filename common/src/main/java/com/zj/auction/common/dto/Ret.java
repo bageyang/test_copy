@@ -28,7 +28,6 @@ public class Ret<T> {
         this.msg = StatusEnum.SUCCESS.getMessage();
     }
 
-
     //失败，及提示信息
     public Ret(StatusEnum resultStatus) {
         this.code = resultStatus.getCode();

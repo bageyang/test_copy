@@ -3,11 +3,7 @@ package com.zj.auction.common.dto;
 import java.time.LocalDateTime;
 
 /**
- *
  * 基础订单信息
- *
- * @author 胖胖不胖
- * @date 2022/06/01
  */
 public class BaseOrderDto {
     private LocalDateTime createTime;
@@ -57,5 +53,16 @@ public class BaseOrderDto {
 
     public void setAuctionId(Long auctionId) {
         this.auctionId = auctionId;
+    }
+
+    @Override
+    public String toString() {
+        return "BaseOrderDto{" +
+                "createTime=" + createTime +
+                ", orderSn=" + orderSn +
+                ", auctionId=" + auctionId +
+                ", userId=" + userId +
+                ", sn=" + sn +
+                '}';
     }
 }
