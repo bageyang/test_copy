@@ -11,34 +11,22 @@ import com.zj.auction.common.constant.SystemConstant;
 import com.zj.auction.common.date.CalculateTypeEnum;
 import com.zj.auction.common.date.DateUtil;
 import com.zj.auction.common.date.TimeTypeEnum;
-import com.zj.auction.common.dto.BalanceChangeDto;
 import com.zj.auction.common.dto.UserDTO;
-import com.zj.auction.common.enums.StatusEnum;
-import com.zj.auction.common.exception.CustomException;
 import com.zj.auction.common.exception.ServiceException;
 import com.zj.auction.common.mapper.*;
 import com.zj.auction.common.model.*;
 import com.zj.auction.common.util.*;
-import com.zj.auction.general.app.service.WalletService;
 import com.zj.auction.general.auth.AppTokenUtils;
 import com.zj.auction.general.auth.AuthToken;
 import com.zj.auction.general.pc.service.UserService;
 import com.zj.auction.common.vo.GeneralResult;
 import com.zj.auction.common.vo.LoginResp;
 import com.zj.auction.common.vo.PageAction;
-import com.zj.auction.general.shiro.JwtToken;
-import com.zj.auction.general.shiro.JwtUtil;
-import com.zj.auction.general.shiro.PwdTool;
-import com.zj.auction.general.shiro.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.authc.ExpiredCredentialsException;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.crypto.hash.Md5Hash;
-import org.apache.shiro.subject.Subject;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -66,7 +54,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UserServiceImpl extends BaseServiceImpl implements UserService {
-    private static final long TMP_TOKEN_EXPIRE_TIME = 5 * 60 * 1000L; //5分钟
     private final UserMapper userMapper;
     private final UserRoleMapper userRoleMapper;
     private final RoleMapper roleMapper;
@@ -74,10 +61,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     private final PermisMapper permisMapper;
     private final UserConfigMapper userConfigMapper;
     private final AreaMapper areaMapper;
-    private final WalletService walletService;
+    private final WalletMapper walletMapper;
     private final GoodsMapper goodsMapper;
     @Resource
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate<String,Object> redisTemplate;
+
 
 
     /**
@@ -90,7 +78,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
      */
     @Override
     public LoginResp getPcLogin(String userName, String password) {
-        LoginResp data = new LoginResp();
         // 数据校验
         PubFun.check(userName, password);
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
@@ -99,66 +86,17 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
         if (user == null) {
             throw new ServiceException(610, "账号或密码错误,请重新输入");
-        }else {
+        }
         //校验密码
-        String salt = user.getSalt();
-        Md5Hash md5Hash = new Md5Hash(password, salt, 1024);
-
-        System.out.println("md5Hash---->" + md5Hash);
-        String userId = String.valueOf(user.getUserId());
-        long expressTime = System.currentTimeMillis() + TMP_TOKEN_EXPIRE_TIME;
-        String md5 = MD5Utils.isEncryption(userId, String.valueOf(expressTime));
-        String accessToken = JwtUtil.getTmpJwtToken(userId, md5, expressTime);
-        //生成token字符串
-        String token = JwtUtil.getJwtToken(userName, md5Hash.toHex());   //toHex转换成16进制，32为字符
-        //toHex转换成16进制，32为字符
-        JwtToken jwtToken = new JwtToken(token);
-        data.setToken(token);
-        data.setUserId(user.getUserId());
-        data.setUserInfo(user);
-        data.setAccessToken(accessToken);
-        data.setMsg("成功!");
-        //拿到Subject对象
-        Subject subject = SecurityUtils.getSubject();
-        //进行认证
-        try {
-            subject.login(jwtToken);
-            // return new ResultTemplate().Ok("200","成功","");
-            System.out.println("成功");
-        } catch (UnknownAccountException e) {
-            // return new ResultTemplate().Ok("500","无效用户，用户不存在","");
-            System.out.println("无效用户，用户不存在");
-            e.printStackTrace();
-        } catch (IncorrectCredentialsException e) {
-            // return new ResultTemplate().Ok("500","密码错误","");
-            System.out.println("密码错误");
-            e.printStackTrace();
-        } catch (ExpiredCredentialsException e) {
-            //return new ResultTemplate().Ok("500","token过期","");
-            System.out.println("token过期");
-            e.printStackTrace();
-        }
-
-        if (!user.getPassWord().equals(md5Hash.toString())) {
-            throw new ServiceException(518, "您输入的密码错误,请重新输入!");
-        }
-        if (user.getStatus() == 1) {
-            throw new ServiceException(519, "用户已被冻结,请联系管理员!");
-        }
-        if (user.getAudit() == 1) {
-            throw new ServiceException(521, "该账号还在审核中!");
-        }
-        if (user.getAudit() == 3) {
-            throw new ServiceException(522, "该账号未通过审核," + user.getAuditExplain());
+        String md5 = MD5Utils.isEncryption(password, user.getSalt());
+        if (!user.getPassWord().equals(md5)) {
+            throw new ServiceException(612, "您输入的密码错误,请重新输入");
         }
         // 保存最近一次登入时间
         user.setLoginTime(LocalDateTime.now());
-        userMapper.updateByPrimaryKeySelective(user);
+        userMapper.insert(user);
+        return getPcLoginResp(user.getUserId(), user);
     }
-        System.out.println("==========================="+data);
-     return data;
-}
-
 
     //生成包括token的返回登录数据
     private LoginResp getPcLoginResp(Long userId, User userInfo) {
@@ -262,7 +200,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 //        pageAction.setTotalPage(pageInfo.getPageNum());
 //        return GeneralResult.success(pageInfo.getList(), pageAction);
 //    }
-    @Override
     public GeneralResult getManagerList(PageAction pageAction) {
 //        User user = SecurityUtils.getPrincipal();
         PageHelper.startPage(pageAction.getCurrentPage(), pageAction.getPageSize());
@@ -291,38 +228,37 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     //添加管理员
     @Override
     @Transactional
-    public int createManager(UserDTO dto) {
-        PubFun.check(dto.getUserName(), dto.getTel(), dto.getPassWord());
-        System.out.println(dto);
-//        User SystemUser = SecurityUtils.getPrincipal();
+    public Boolean createManager(User userCfg) {
+        PubFun.check(userCfg.getUserName(), userCfg.getTel(), userCfg.getPassWord());
+        User user = (User) SecurityUtils.getSubject();
         //	查询该用户名是否使用
-        Integer count = userMapper.countByName(dto.getUserName());
+        Integer count = userMapper.countByName(userCfg.getUserName());
         if (count > 0) {
             throw new ServiceException(404, "该账号已存在!");
         }
-        User user = new User();// 创建用户
-        String salt = PwdTool.getRandomSalt();
-        Md5Hash md5Hash = new Md5Hash(dto.getPassWord(), salt, 1024);
-        user.setPassWord(md5Hash.toString());
-        user.setSalt(salt);
-        user.setUserName(dto.getUserName());
-        user.setNickName(dto.getRealName());
-        user.setRealName(dto.getRealName());
-        if (!StringUtils.isEmpty(dto.getUserImg())) {
-            user.setUserImg(dto.getUserImg());
+//		if(userCfg.getUserName().length()<6) throw new ServiceException(407,"账号设置太短");
+        User newUser = new User();
+        newUser.setUserName(userCfg.getUserName());
+        newUser.setNickName(userCfg.getRealName());
+        newUser.setRealName(userCfg.getRealName());
+        if (!StringUtils.isEmpty(userCfg.getUserImg())) {
+            newUser.setUserImg(userCfg.getUserImg());
         }
-        user.setUserType(1);//后台管理员 用于区分APP登录
-        user.setTel(dto.getTel());
-        user.setStatus(0);
-        user.setDeleteFlag(0);
-//        user.setAddUserId(SystemUser.getUserId());
-        user.setUpdateTime(LocalDateTime.now());
+        String[] md5pwd = MD5Utils.encryption(userCfg.getPassWord());//md5加密
+        newUser.setPassWord(md5pwd[0]);
+        newUser.setSalt(md5pwd[1]);
+        newUser.setUserType(1);//后台管理员 用于区分APP登录
+        newUser.setTel(userCfg.getTel());
+        newUser.setStatus(0);
+        newUser.setDeleteFlag(0);
+        newUser.setAddUserId(user.getUserId());
+        newUser.setUpdateTime(LocalDateTime.now());
 		/*newUser.setRoleRange(authToken.getRoleRange());
 		if(!StringUtils.isEmpty(userCfg.getRoleShopId())) {
 			newUser.setRoleShopId(param.getRoleShopId());
 		}*/
 
-        return userMapper.insertSelective(user);
+        return userMapper.insert(newUser) > 0;
     }
 
     //根据id查询会员信息
@@ -344,7 +280,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Boolean updateManager(UserDTO userCfg) {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject();
         PubFun.check(userCfg, userCfg.getTel(), userCfg.getUserName(), userCfg.getRealName());
         if (super.baseCheck(userCfg.getUserId(), Objects::isNull)) {
             throw new RuntimeException("未获取到管理员ID");
@@ -400,7 +336,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     @Transactional
     public Boolean deleteUser(User userCfg) {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject();
         if (super.baseCheck(userCfg.getUserId(), Objects::isNull)) {
             throw new RuntimeException("未获取到管理员ID");
         }
@@ -421,7 +357,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     @Transactional
     public Boolean updateManagerStatus(User userCfg) {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject();
         Function<User, Boolean> deal = param -> {
             Optional<User> userOpt = Optional.ofNullable(userMapper.selectById(param.getUserId()));
             User oldUser = userOpt.orElseThrow(() -> throwException("未查询到管理员信息"));
@@ -451,7 +387,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
 
     //查询平台管理员
-    @Override
     public PageInfo<User> getUserPage(PageAction pageAction, List<Long> userIds) {
         LocalDateTime sTime = null;
         LocalDateTime eTime = null;
@@ -460,7 +395,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             sTime = DateTimeUtils.parse(pageAction.getStartTime());
             eTime = DateTimeUtils.parse(pageAction.getEndTime());
         }
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject();
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
         wrapper.eq(User::getDeleteFlag, 0)
                 .ge(User::getUserType, 0)
@@ -487,7 +422,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         PubFun.check(pid);
         LocalDateTime sTime = DateTimeUtils.parse(pageAction.getStartTime());
         LocalDateTime eTime = DateTimeUtils.parse(pageAction.getEndTime());
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject();
         PageHelper.startPage(pageAction.getCurrentPage(), pageAction.getPageSize());
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
         wrapper.eq(User::getDeleteFlag, 0)
@@ -518,7 +453,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     @Transactional
     public Boolean updateUserStatus(Long userId, Integer status, String frozenExplain) {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject();
         User oldUser = Optional.ofNullable(userMapper.selectById(userId)).orElseThrow(() -> throwException("未查询到用户信息"));
         oldUser.setStatus(status);
         if (status == 1) {
@@ -602,22 +537,15 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         User user = userMapper.selectByPrimaryKey(userId);
         if ((user.getVipType() == 0 || user.getVipType() == 1) && vipType.compareTo(2) == 0) {//设置团长必须设置分馆馆长
             PubFun.check(userId, tagId);
-            if (tagId <= 0) {
-                throw new ServiceException(410, "请选择分馆");
-            }
-            if (user.getTagId().compareTo(tagId) == 0) {
-                throw new ServiceException(411, "该用户已经属于该馆成员了");
-            }
-            if (user.getTagId().compareTo(tagId) != 0 && user.getTagId() > 0) {
+            if (tagId <= 0) throw new ServiceException(410, "请选择分馆");
+            if (user.getTagId().compareTo(tagId) == 0) throw new ServiceException(411, "该用户已经属于该馆成员了");
+            if (user.getTagId().compareTo(tagId) != 0 && user.getTagId() > 0)
                 throw new ServiceException(412, "该用户已经属于其他馆成员了");
-            }
             //判断这个馆是否已经有馆长了
             LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
             wrapper.eq(User::getDeleteFlag, 0).eq(User::getTagId, tagId).eq(User::getVipType, 2);
             Long count = userMapper.selectCount(wrapper);
-            if (count > 0) {
-                throw new ServiceException(413, "该分馆已经有馆长了");
-            }
+            if (count > 0) throw new ServiceException(413, "该分馆已经有馆长了");
             user.setTagId(tagId);
             //所有下级团队都可以进入
             userMapper.updUserChildByPidStr(tagId, user.getUserId(), pUser.getUserId());
@@ -651,7 +579,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     // 添加用户
     @Override
     public Boolean insertUser(User userCfg) {
-        User user = SecurityUtils.getPrincipal();
+        User principal = (User)SecurityUtils.getSubject();
         PubFun.check(userCfg, userCfg.getUserName(), userCfg.getNickName(), userCfg.getUserImg(), userCfg.getPassWord(),
                 userCfg.getUserType());
         //较验手机号
@@ -725,10 +653,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     }
 
 
-    @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean deleteMember(Long userId) {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject();
         if (super.baseCheck(userId, Objects::isNull)) {
             throw new RuntimeException("参数为空");
         }
@@ -774,7 +701,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
      * @author: Mao Qi
      * @date: 2020年4月3日下午7:22:33
      */
-    @Override
     @Transactional
     public Integer updateAuditRejection(Long userId, String auditExplain) {
         //SecurityUtils.getPrincipal();
@@ -785,7 +711,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     }
 
     //    实名通过审核
-    @Override
     @Transactional
     public Integer updateAuditApproval(Long userId) {
         //SecurityUtils.getPrincipal();
@@ -805,43 +730,61 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             throw new ServiceException(506, "变更数量输入有误!");
         }
         User user = Optional.ofNullable(userMapper.selectByPrimaryKey(userId)).orElseThrow(() -> PubFun.throwException("该用户不存在"));
-        String memo = getRemark(type,moneyType);
-        BigDecimal decimal = getChangeNum(type,integral);
-        BalanceChangeDto balanceChangeDto = new BalanceChangeDto();
-        balanceChangeDto.setUserId(userId);
-        balanceChangeDto.setRemark(memo.concat("-").concat(remark));
-        balanceChangeDto.setChangeNum(decimal);
-        walletService.changeUserBalance(balanceChangeDto);
-        return null;
-    }
-
-    private BigDecimal getChangeNum(Integer type, BigDecimal integral) {
-        if (Objects.equals(1, type)) {
-            return integral.abs();
-        } else if (Objects.equals(2, type)) {
-            return integral.compareTo(BigDecimal.ZERO) < 0 ? integral : integral.negate();
-        } else {
-            throw new CustomException(StatusEnum.PARAM_ERROR);
-        }
-    }
-
-    private String getRemark(Integer type, Integer moneyType) {
-        if(Objects.equals(1,type)){
+        Wallet wallet = walletMapper.selectAllByUserId(userId);
+        if (type == 1) {//增加
+            String transactionId = UidGenerator.createOrderXid();
+            String memo = "";
             if (moneyType == 0) {
-                return  "后台人工增加店铺收入";
+                memo = "后台人工增加店铺收入";
+            } else if (moneyType == 1) {
+                memo = "后台人工充值获得";
             } else {
-                return "后台人工充值获得";
+                memo = "后台人工充值获得";
             }
-        }else if (Objects.equals(2,type)){
+            //添加余额
+            walletMapper.insert(Wallet.builder()
+                    .userId(wallet.getUserId())
+                    .updateBalance(integral)
+                    .balanceBefore(wallet.getBalance())
+                    .balance(integral.add(wallet.getBalance()))
+                    .transactionType(1)
+                    .fundType(moneyType)
+                    .tradeNo(transactionId)
+                    .updateTime(LocalDateTime.now())
+                    .remark(memo + "-" + remark)
+                    .build());
+            // addTotalPlatform(1, integral, saveMoney);//给平台加明细
+        } else if (type == 2) {//减少
+            //查询该用户剩余余额数量
+            if (wallet.getBalance().compareTo(BigDecimal.ZERO) < 1 || wallet.getBalance().compareTo(integral) < 0) {
+                throw new ServiceException(508, "余额不足");
+            }
+            String transactionId = UidGenerator.createOrderXid();
+            String memo = "";
             if (moneyType == 0) {
-                return  "后台人工减少店铺收入";
-            }  else {
-                return "后台人工回收支出";
+                memo = "后台人工减少店铺收入";
+            } else if (moneyType == 1) {
+                memo = "后台人工回收支出";
+            } else {
+                memo = "后台人工回收支出";
             }
-        }else {
-            throw new CustomException(StatusEnum.PARAM_ERROR);
+            //扣除余额
+            walletMapper.insert(Wallet.builder()
+                    .userId(wallet.getUserId())
+                    .updateBalance(integral)
+                    .balanceBefore(wallet.getBalance())
+                    .balance(integral.add(wallet.getBalance()))
+                    .transactionType(0)
+                    .fundType(moneyType)
+                    .tradeNo(transactionId)
+                    .updateTime(LocalDateTime.now())
+                    .remark(memo + "-" + remark)
+                    .build());
+            //addTotalPlatform(-1, integral, saveMoney);//给平台加明细
+        } else {
+            throw new RuntimeException("变更余额类型有误");
         }
-
+        return null;
     }
 
 
@@ -878,6 +821,44 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         return userMapper.selectList(wrapper);
     }
 
+//    //导出用户
+//    @Override
+//    public void exportUser(PageAction pageAction, Integer userType, String userIds, HttpServletResponse httpServletResponse) {
+//        List<Long> userList = new ArrayList<>();
+//        if (!StringUtils.isEmpty(userIds)) {
+//            userList = JSON.parseArray(userIds, Long.class);
+//        }
+//        PageInfo<User> userPage = getUserPage(pageAction, userList);
+//
+//        List<List<String>> excelData = new ArrayList<>();
+//        List<String> head = new ArrayList<>();
+//        head.add("用户ID");
+//        head.add("账号");
+//        head.add("昵称");
+//        head.add("电话");
+//        head.add("用户类型");
+////		head.add("金币余额");
+////		head.add("银币余额");
+////		head.add("店铺收入");
+//        head.add("注册时间");
+//        // 添加头部
+//        excelData.add(head);
+//        for (User user : userPage.getList()) {
+//            List<String> data1 = new ArrayList<>();
+//            data1.add(user.getUserId().toString());  //ID
+//            data1.add(user.getUserName());  //账号
+//            data1.add(Objects.toString(user.getNickName(), ""));  //昵称
+//            data1.add(Objects.toString(user.getTel(), ""));  //手机号
+//            data1.add(user.getUserType() == 1 ? "店主" : "用户");   //用户类型
+////			data1.add(Objects.toString(user.getGoldBalance(), "0"));   //金币余额
+////			data1.add(Objects.toString(user.getSilverBalance(), "0"));   //银币余额
+////			data1.add(Objects.toString(user.getBalance(), "0"));   //店铺收入
+//            data1.add(Objects.toString(DateTimeUtils.toString(user.getAddTime(), "yyyy-MM-dd HH:mm:ss"), ""));
+//            excelData.add(data1);
+//        }
+//        ExcelUtil.exportExcel(httpServletResponse,
+//                excelData, "会员信息", "member.xls", 20);
+//    }
 
 
     /**

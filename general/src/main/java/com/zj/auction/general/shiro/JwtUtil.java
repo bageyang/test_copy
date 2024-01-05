@@ -7,7 +7,6 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 //jwt工具，用来生成、校验token以及提取token中的信息
@@ -15,8 +14,7 @@ import java.util.Date;
 public class JwtUtil {
 
     //指定一个token过期时间（毫秒）
-    private static long EXPIRE_TIME =  1 * 1 * 60 * 1000; //1天  24 * 60 * 60 * 1000
-
+    private static final long EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000; //7天
 
     /**
 
@@ -30,16 +28,6 @@ public class JwtUtil {
 // 附带username信息的token
         return JWT.create()
                 .withClaim("username", username)
-                .withExpiresAt(date) //过期时间
-                .sign(algorithm); //签名算法
-    }
-
-    public static String getTmpJwtToken(String value, String secret,long expressTime) {
-        Date date = new Date(expressTime);
-        Algorithm algorithm = Algorithm.HMAC256(secret); //使用密钥进行哈希
-// 附带username信息的token
-        return JWT.create()
-                .withClaim("userId", value)
                 .withExpiresAt(date) //过期时间
                 .sign(algorithm); //签名算法
     }
@@ -78,17 +66,8 @@ public class JwtUtil {
      判断是否过期
      */
     public static boolean isExpire(String token){
-        if (null!=token) {
-            DecodedJWT jwt = JWT.decode(token);
-//        if (jwt.getExpiresAt().getTime() > System.currentTimeMillis()){
-//            EXPIRE_TIME=EXPIRE_TIME+1 * 1 * 60 * 1000;
-//        }
-//            Date date = new Date(jwt.getExpiresAt().getTime());
-//            SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//            System.out.println(sd.format(date));
-            return jwt.getExpiresAt().getTime() < System.currentTimeMillis();
-        }
-        return false;
+        DecodedJWT jwt = JWT.decode(token);
+        return jwt.getExpiresAt().getTime() < System.currentTimeMillis() ;
     }
 
 }
