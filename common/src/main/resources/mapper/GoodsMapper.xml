@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zj.auction.common.mapper.GoodsMapper">
+  <resultMap id="BaseResultMap" type="com.zj.auction.common.model.Goods">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="post_id" jdbcType="INTEGER" property="postId" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="old_price" jdbcType="DECIMAL" property="oldPrice" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="discount_prices" jdbcType="DECIMAL" property="discountPrices" />
+    <result column="acquire_integral" jdbcType="INTEGER" property="acquireIntegral" />
+    <result column="rebate_transaction_id" jdbcType="VARCHAR" property="rebateTransactionId" />
+    <result column="hot_flag" jdbcType="INTEGER" property="hotFlag" />
+    <result column="discount_flag" jdbcType="INTEGER" property="discountFlag" />
+    <result column="new_flag" jdbcType="INTEGER" property="newFlag" />
+    <result column="goods_name" jdbcType="VARCHAR" property="goodsName" />
+    <result column="img_url" jdbcType="VARCHAR" property="imgUrl" />
+    <result column="video_url" jdbcType="VARCHAR" property="videoUrl" />
+    <result column="type_id" jdbcType="INTEGER" property="typeId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="transaction_id" jdbcType="VARCHAR" property="transactionId" />
+    <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="add_user_id" jdbcType="INTEGER" property="addUserId" />
+    <result column="weight" jdbcType="DOUBLE" property="weight" />
+    <result column="volume" jdbcType="DOUBLE" property="volume" />
+    <result column="rebate_ratio" jdbcType="VARCHAR" property="rebateRatio" />
+    <result column="service_tel" jdbcType="VARCHAR" property="serviceTel" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="update_user_id" jdbcType="BIGINT" property="updateUserId" />
+    <result column="sell_total" jdbcType="INTEGER" property="sellTotal" />
+    <result column="recommend" jdbcType="TINYINT" property="recommend" />
+    <result column="frozen_explain" jdbcType="VARCHAR" property="frozenExplain" />
+    <result column="ship_address" jdbcType="VARCHAR" property="shipAddress" />
+    <result column="buckle_point_ratio" jdbcType="DECIMAL" property="bucklePointRatio" />
+    <result column="specification" jdbcType="VARCHAR" property="specification" />
+    <result column="tag_id" jdbcType="BIGINT" property="tagId" />
+    <result column="auction_id" jdbcType="BIGINT" property="auctionId" />
+    <result column="auction_status" jdbcType="INTEGER" property="auctionStatus" />
+    <result column="hand_num" jdbcType="INTEGER" property="handNum" />
+    <result column="delivery_money" jdbcType="DECIMAL" property="deliveryMoney" />
+    <result column="sub_type" jdbcType="TINYINT" property="subType" />
+    <result column="cash_price" jdbcType="DECIMAL" property="cashPrice" />
+    <result column="is_deleted" jdbcType="TINYINT" property="isDeleted" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from zj_goods
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.zj.auction.common.model.Goods">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into zj_goods (post_id, user_id, old_price, 
+      price, discount_prices, acquire_integral, 
+      rebate_transaction_id, hot_flag, discount_flag, 
+      new_flag, goods_name, img_url, 
+      video_url, type_id, status, 
+      transaction_id, remarks, create_time, 
+      update_time, add_user_id, weight, 
+      volume, rebate_ratio, service_tel, 
+      sort, update_user_id, sell_total, 
+      recommend, frozen_explain, ship_address, 
+      buckle_point_ratio, specification, tag_id, 
+      auction_id, auction_status, hand_num, 
+      delivery_money, sub_type, cash_price, 
+      is_deleted, content)
+    values (#{postId,jdbcType=INTEGER}, #{userId,jdbcType=BIGINT}, #{oldPrice,jdbcType=DECIMAL}, 
+      #{price,jdbcType=DECIMAL}, #{discountPrices,jdbcType=DECIMAL}, #{acquireIntegral,jdbcType=INTEGER}, 
+      #{rebateTransactionId,jdbcType=VARCHAR}, #{hotFlag,jdbcType=INTEGER}, #{discountFlag,jdbcType=INTEGER}, 
+      #{newFlag,jdbcType=INTEGER}, #{goodsName,jdbcType=VARCHAR}, #{imgUrl,jdbcType=VARCHAR}, 
+      #{videoUrl,jdbcType=VARCHAR}, #{typeId,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, 
+      #{transactionId,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{addUserId,jdbcType=INTEGER}, #{weight,jdbcType=DOUBLE}, 
+      #{volume,jdbcType=DOUBLE}, #{rebateRatio,jdbcType=VARCHAR}, #{serviceTel,jdbcType=VARCHAR}, 
+      #{sort,jdbcType=INTEGER}, #{updateUserId,jdbcType=BIGINT}, #{sellTotal,jdbcType=INTEGER}, 
+      #{recommend,jdbcType=TINYINT}, #{frozenExplain,jdbcType=VARCHAR}, #{shipAddress,jdbcType=VARCHAR}, 
+      #{bucklePointRatio,jdbcType=DECIMAL}, #{specification,jdbcType=VARCHAR}, #{tagId,jdbcType=BIGINT}, 
+      #{auctionId,jdbcType=BIGINT}, #{auctionStatus,jdbcType=INTEGER}, #{handNum,jdbcType=INTEGER}, 
+      #{deliveryMoney,jdbcType=DECIMAL}, #{subType,jdbcType=TINYINT}, #{cashPrice,jdbcType=DECIMAL}, 
+      #{isDeleted,jdbcType=TINYINT}, #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zj.auction.common.model.Goods">
+    update zj_goods
+    set post_id = #{postId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=BIGINT},
+      old_price = #{oldPrice,jdbcType=DECIMAL},
+      price = #{price,jdbcType=DECIMAL},
+      discount_prices = #{discountPrices,jdbcType=DECIMAL},
+      acquire_integral = #{acquireIntegral,jdbcType=INTEGER},
+      rebate_transaction_id = #{rebateTransactionId,jdbcType=VARCHAR},
+      hot_flag = #{hotFlag,jdbcType=INTEGER},
+      discount_flag = #{discountFlag,jdbcType=INTEGER},
+      new_flag = #{newFlag,jdbcType=INTEGER},
+      goods_name = #{goodsName,jdbcType=VARCHAR},
+      img_url = #{imgUrl,jdbcType=VARCHAR},
+      video_url = #{videoUrl,jdbcType=VARCHAR},
+      type_id = #{typeId,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      transaction_id = #{transactionId,jdbcType=VARCHAR},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      add_user_id = #{addUserId,jdbcType=INTEGER},
+      weight = #{weight,jdbcType=DOUBLE},
+      volume = #{volume,jdbcType=DOUBLE},
+      rebate_ratio = #{rebateRatio,jdbcType=VARCHAR},
+      service_tel = #{serviceTel,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=INTEGER},
+      update_user_id = #{updateUserId,jdbcType=BIGINT},
+      sell_total = #{sellTotal,jdbcType=INTEGER},
+      recommend = #{recommend,jdbcType=TINYINT},
+      frozen_explain = #{frozenExplain,jdbcType=VARCHAR},
+      ship_address = #{shipAddress,jdbcType=VARCHAR},
+      buckle_point_ratio = #{bucklePointRatio,jdbcType=DECIMAL},
+      specification = #{specification,jdbcType=VARCHAR},
+      tag_id = #{tagId,jdbcType=BIGINT},
+      auction_id = #{auctionId,jdbcType=BIGINT},
+      auction_status = #{auctionStatus,jdbcType=INTEGER},
+      hand_num = #{handNum,jdbcType=INTEGER},
+      delivery_money = #{deliveryMoney,jdbcType=DECIMAL},
+      sub_type = #{subType,jdbcType=TINYINT},
+      cash_price = #{cashPrice,jdbcType=DECIMAL},
+      is_deleted = #{isDeleted,jdbcType=TINYINT},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, post_id, user_id, old_price, price, discount_prices, acquire_integral, 
+    rebate_transaction_id, hot_flag, discount_flag, new_flag, goods_name, img_url, video_url, 
+    type_id, status, transaction_id, remarks, create_time, update_time, add_user_id, 
+    weight, volume, rebate_ratio, service_tel, sort, update_user_id, sell_total, recommend, 
+    frozen_explain, ship_address, buckle_point_ratio, specification, tag_id, auction_id, 
+    auction_status, hand_num, delivery_money, sub_type, cash_price, is_deleted, content
+    from zj_goods
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, post_id, user_id, old_price, price, discount_prices, acquire_integral, 
+    rebate_transaction_id, hot_flag, discount_flag, new_flag, goods_name, img_url, video_url, 
+    type_id, status, transaction_id, remarks, create_time, update_time, add_user_id, 
+    weight, volume, rebate_ratio, service_tel, sort, update_user_id, sell_total, recommend, 
+    frozen_explain, ship_address, buckle_point_ratio, specification, tag_id, auction_id, 
+    auction_status, hand_num, delivery_money, sub_type, cash_price, is_deleted, content
+    from zj_goods
+  </select>
+</mapper>
