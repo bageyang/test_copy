@@ -1,8 +1,10 @@
 server:
   servlet:
     context-path: /general
-  port: 9090
+  port: 9091
 spring:
+  main:
+    allow-circular-references: true
   application:
     name: general-server
   cloud:
