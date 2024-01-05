@@ -87,6 +87,11 @@ public interface AppUserService {
      */
     LoginResp login(String userName, String password, String code);
 
+    /**
+     * 根据用户名查询用户信息
+     */
+    User getUserByName(String name);
+
 
     /**
      * 发送短信

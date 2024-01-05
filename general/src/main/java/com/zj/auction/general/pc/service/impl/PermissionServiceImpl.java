@@ -13,27 +13,16 @@ import com.zj.auction.common.mapper.RoleMapper;
 import com.zj.auction.common.model.Permis;
 import com.zj.auction.common.model.PermisRole;
 import com.zj.auction.common.model.Role;
-import com.zj.auction.common.model.User;
 import com.zj.auction.common.util.PubFun;
-import com.zj.auction.common.vo.PageAction;
-import com.zj.auction.common.vo.PageResult;
 import com.zj.auction.general.pc.service.PermissionService;
-import com.zj.auction.general.shiro.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.LongToIntFunction;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -66,7 +55,7 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
 
     @Override
     public Permis getMenu(Permis sysPermisTbl) {
-        SecurityUtils.getPrincipal();
+       // SecurityUtils.getPrincipal();
         if (!super.baseCheck(sysPermisTbl, param -> !Objects.isNull(param)||Objects.isNull(param.getPermisId()))) {
             throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE,SystemConstant.DATA_ILLEGALITY);
         }
