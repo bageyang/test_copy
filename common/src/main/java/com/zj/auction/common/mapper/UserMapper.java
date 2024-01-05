@@ -25,4 +25,7 @@ public interface UserMapper extends BaseMapper<User> {
     List<Map<String,Object>> getStatistics(@Param("userId") Long userId,@Param("ids") String ids);
 
     List<Map<String, Object>> listMemberIndirect(@Param("dto") UserDTO dto);
+
+    Integer updateAuditRejection(@Param("userId") Long userId,@Param("auditExplain") String auditExplain);
+    Integer updateAuditApproval(@Param("userId") Long userId);
 }

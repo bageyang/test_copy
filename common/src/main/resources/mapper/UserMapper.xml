@@ -1,289 +1,343 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zj.auction.common.mapper.UserMapper">
-  <resultMap id="BaseResultMap" type="com.zj.auction.common.model.User">
-    <id column="user_id" jdbcType="BIGINT" property="userId" />
-    <result column="role_id" jdbcType="INTEGER" property="roleId" />
-    <result column="user_name" jdbcType="VARCHAR" property="userName" />
-    <result column="pass_word" jdbcType="VARCHAR" property="passWord" />
-    <result column="real_name" jdbcType="VARCHAR" property="realName" />
-    <result column="salt" jdbcType="VARCHAR" property="salt" />
-    <result column="sex" jdbcType="INTEGER" property="sex" />
-    <result column="status" jdbcType="INTEGER" property="status" />
-    <result column="audit" jdbcType="INTEGER" property="audit" />
-    <result column="audit_explain" jdbcType="VARCHAR" property="auditExplain" />
-    <result column="pid" jdbcType="BIGINT" property="pid" />
-    <result column="p_user_name" jdbcType="VARCHAR" property="pUserName" />
-    <result column="pid_str" jdbcType="VARCHAR" property="pidStr" />
-    <result column="level_num" jdbcType="INTEGER" property="levelNum" />
-    <result column="tel" jdbcType="VARCHAR" property="tel" />
-    <result column="email" jdbcType="VARCHAR" property="email" />
-    <result column="login_ip" jdbcType="VARCHAR" property="loginIp" />
-    <result column="login_time" jdbcType="TIMESTAMP" property="loginTime" />
-    <result column="current_user_type" jdbcType="INTEGER" property="currentUserType" />
-    <result column="pay_password" jdbcType="VARCHAR" property="payPassword" />
-    <result column="department_id" jdbcType="INTEGER" property="departmentId" />
-    <result column="add_time" jdbcType="TIMESTAMP" property="addTime" />
-    <result column="add_user_id" jdbcType="BIGINT" property="addUserId" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="update_user_id" jdbcType="BIGINT" property="updateUserId" />
-    <result column="frozen_explain" jdbcType="VARCHAR" property="frozenExplain" />
-    <result column="delete_flag" jdbcType="INTEGER" property="deleteFlag" />
-    <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
-    <result column="share_img" jdbcType="VARCHAR" property="shareImg" />
-    <result column="user_img" jdbcType="VARCHAR" property="userImg" />
-    <result column="background_img" jdbcType="VARCHAR" property="backgroundImg" />
-    <result column="is_first_login" jdbcType="INTEGER" property="isFirstLogin" />
-    <result column="share_type" jdbcType="INTEGER" property="shareType" />
-    <result column="shop_id" jdbcType="BIGINT" property="shopId" />
-    <result column="wx_union_id" jdbcType="VARCHAR" property="wxUnionId" />
-    <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
-    <result column="transaction_id" jdbcType="VARCHAR" property="transactionId" />
-    <result column="birth_time" jdbcType="TIMESTAMP" property="birthTime" />
-    <result column="device_number" jdbcType="VARCHAR" property="deviceNumber" />
-    <result column="unique_num" jdbcType="VARCHAR" property="uniqueNum" />
-    <result column="role_shop_id" jdbcType="BIGINT" property="roleShopId" />
-    <result column="role_range" jdbcType="INTEGER" property="roleRange" />
-    <result column="line_status" jdbcType="INTEGER" property="lineStatus" />
-    <result column="consulting_fee" jdbcType="DECIMAL" property="consultingFee" />
-    <result column="comment_total" jdbcType="INTEGER" property="commentTotal" />
-    <result column="like_total" jdbcType="INTEGER" property="likeTotal" />
-    <result column="lucky_draw_num" jdbcType="INTEGER" property="luckyDrawNum" />
-    <result column="alipay_num" jdbcType="VARCHAR" property="alipayNum" />
-    <result column="wx_tel" jdbcType="VARCHAR" property="wxTel" />
-    <result column="wx_account" jdbcType="VARCHAR" property="wxAccount" />
-    <result column="ali_name" jdbcType="VARCHAR" property="aliName" />
-    <result column="ali_account" jdbcType="VARCHAR" property="aliAccount" />
-    <result column="seal_expiration_time" jdbcType="TIMESTAMP" property="sealExpirationTime" />
-    <result column="rob_order_limit" jdbcType="INTEGER" property="robOrderLimit" />
-    <result column="withdrawal_limit" jdbcType="DECIMAL" property="withdrawalLimit" />
-    <result column="finish_auction" jdbcType="INTEGER" property="finishAuction" />
-    <result column="come_up_num" jdbcType="INTEGER" property="comeUpNum" />
-    <result column="vip_type" jdbcType="INTEGER" property="vipType" />
-    <result column="tag_id" jdbcType="BIGINT" property="tagId" />
-    <result column="subordinate_level" jdbcType="INTEGER" property="subordinateLevel" />
-    <result column="subordinate_num" jdbcType="BIGINT" property="subordinateNum" />
-    <result column="seal_num" jdbcType="INTEGER" property="sealNum" />
-    <result column="diamond_order_limit" jdbcType="INTEGER" property="diamondOrderLimit" />
-    <result column="common_name" jdbcType="VARCHAR" property="commonName" />
-    <result column="common_tel" jdbcType="VARCHAR" property="commonTel" />
-    <result column="card_number" jdbcType="VARCHAR" property="cardNumber" />
-    <result column="memo" jdbcType="VARCHAR" property="memo" />
-    <result column="memo1" jdbcType="VARCHAR" property="memo1" />
-    <result column="memo2" jdbcType="VARCHAR" property="memo2" />
-    <result column="memo3" jdbcType="VARCHAR" property="memo3" />
-    <result column="user_type" jdbcType="INTEGER" property="userType" />
-  </resultMap>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from zj_user
-    where user_id = #{userId,jdbcType=BIGINT}
-  </delete>
-  <insert id="insert" parameterType="com.zj.auction.common.model.User">
-    insert into zj_user (user_id, role_id, user_name, 
-      pass_word, real_name, salt, 
-      sex, status, audit, 
-      audit_explain, pid, p_user_name, 
-      pid_str, level_num, tel, 
-      email, login_ip, login_time, 
-      current_user_type, pay_password, department_id, 
-      add_time, add_user_id, update_time, 
-      update_user_id, frozen_explain, delete_flag, 
-      nick_name, share_img, user_img, 
-      background_img, is_first_login, share_type, 
-      shop_id, wx_union_id, last_login_time, 
-      transaction_id, birth_time, device_number, 
-      unique_num, role_shop_id, role_range, 
-      line_status, consulting_fee, comment_total, 
-      like_total, lucky_draw_num, pc_salt, 
-      alipay_num, wx_tel, wx_account, 
-      ali_name, ali_account, seal_expiration_time, 
-      rob_order_limit, withdrawal_limit, finish_auction, 
-      come_up_num, vip_type, tag_id, 
-      subordinate_level, subordinate_num, seal_num, 
-      diamond_order_limit, common_name, common_tel, 
-      memo, user_type,card_number)
-    values (#{userId,jdbcType=BIGINT}, #{roleId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, 
-      #{passWord,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR}, #{salt,jdbcType=VARCHAR}, 
-      #{sex,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{audit,jdbcType=INTEGER}, 
-      #{auditExplain,jdbcType=VARCHAR}, #{pid,jdbcType=BIGINT}, #{pUserName,jdbcType=VARCHAR}, 
-      #{pidStr,jdbcType=VARCHAR}, #{levelNum,jdbcType=INTEGER}, #{tel,jdbcType=VARCHAR}, 
-      #{email,jdbcType=VARCHAR}, #{loginIp,jdbcType=VARCHAR}, #{loginTime,jdbcType=TIMESTAMP}, 
-      #{currentUserType,jdbcType=INTEGER}, #{payPassword,jdbcType=VARCHAR}, #{departmentId,jdbcType=INTEGER}, 
-      #{addTime,jdbcType=TIMESTAMP}, #{addUserId,jdbcType=BIGINT}, #{updateTime,jdbcType=TIMESTAMP}, 
-      #{updateUserId,jdbcType=BIGINT}, #{frozenExplain,jdbcType=VARCHAR}, #{deleteFlag,jdbcType=INTEGER}, 
-      #{nickName,jdbcType=VARCHAR}, #{shareImg,jdbcType=VARCHAR}, #{userImg,jdbcType=VARCHAR}, 
-      #{backgroundImg,jdbcType=VARCHAR}, #{isFirstLogin,jdbcType=INTEGER}, #{shareType,jdbcType=INTEGER}, 
-      #{shopId,jdbcType=BIGINT}, #{wxUnionId,jdbcType=VARCHAR}, #{lastLoginTime,jdbcType=TIMESTAMP}, 
-      #{transactionId,jdbcType=VARCHAR}, #{birthTime,jdbcType=TIMESTAMP}, #{deviceNumber,jdbcType=VARCHAR}, 
-      #{uniqueNum,jdbcType=VARCHAR}, #{roleShopId,jdbcType=BIGINT}, #{roleRange,jdbcType=INTEGER}, 
-      #{lineStatus,jdbcType=INTEGER}, #{consultingFee,jdbcType=DECIMAL}, #{commentTotal,jdbcType=INTEGER}, 
-      #{likeTotal,jdbcType=INTEGER}, #{luckyDrawNum,jdbcType=INTEGER}, #{pcSalt,jdbcType=VARCHAR}, 
-      #{alipayNum,jdbcType=VARCHAR}, #{wxTel,jdbcType=VARCHAR}, #{wxAccount,jdbcType=VARCHAR}, 
-      #{aliName,jdbcType=VARCHAR}, #{aliAccount,jdbcType=VARCHAR}, #{sealExpirationTime,jdbcType=TIMESTAMP}, 
-      #{robOrderLimit,jdbcType=INTEGER}, #{withdrawalLimit,jdbcType=DECIMAL}, #{finishAuction,jdbcType=INTEGER}, 
-      #{comeUpNum,jdbcType=INTEGER}, #{vipType,jdbcType=INTEGER}, #{tagId,jdbcType=BIGINT}, 
-      #{subordinateLevel,jdbcType=INTEGER}, #{subordinateNum,jdbcType=BIGINT}, #{sealNum,jdbcType=INTEGER}, 
-      #{diamondOrderLimit,jdbcType=INTEGER}, #{commonName,jdbcType=VARCHAR}, #{commonTel,jdbcType=VARCHAR}, 
-      #{memo,jdbcType=VARCHAR}, #{userType,jdbcType=INTEGER})
-  </insert>
-  <update id="updateByPrimaryKey" parameterType="com.zj.auction.common.model.User">
-    update zj_user
-    set role_id = #{roleId,jdbcType=INTEGER},
-      user_name = #{userName,jdbcType=VARCHAR},
-      pass_word = #{passWord,jdbcType=VARCHAR},
-      real_name = #{realName,jdbcType=VARCHAR},
-      salt = #{salt,jdbcType=VARCHAR},
-      sex = #{sex,jdbcType=INTEGER},
-      status = #{status,jdbcType=INTEGER},
-      audit = #{audit,jdbcType=INTEGER},
-      audit_explain = #{auditExplain,jdbcType=VARCHAR},
-      pid = #{pid,jdbcType=BIGINT},
-      p_user_name = #{pUserName,jdbcType=VARCHAR},
-      pid_str = #{pidStr,jdbcType=VARCHAR},
-      level_num = #{levelNum,jdbcType=INTEGER},
-      tel = #{tel,jdbcType=VARCHAR},
-      email = #{email,jdbcType=VARCHAR},
-      login_ip = #{loginIp,jdbcType=VARCHAR},
-      login_time = #{loginTime,jdbcType=TIMESTAMP},
-      current_user_type = #{currentUserType,jdbcType=INTEGER},
-      pay_password = #{payPassword,jdbcType=VARCHAR},
-      department_id = #{departmentId,jdbcType=INTEGER},
-      add_time = #{addTime,jdbcType=TIMESTAMP},
-      add_user_id = #{addUserId,jdbcType=BIGINT},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      update_user_id = #{updateUserId,jdbcType=BIGINT},
-      frozen_explain = #{frozenExplain,jdbcType=VARCHAR},
-      delete_flag = #{deleteFlag,jdbcType=INTEGER},
-      nick_name = #{nickName,jdbcType=VARCHAR},
-      share_img = #{shareImg,jdbcType=VARCHAR},
-      user_img = #{userImg,jdbcType=VARCHAR},
-      background_img = #{backgroundImg,jdbcType=VARCHAR},
-      is_first_login = #{isFirstLogin,jdbcType=INTEGER},
-      share_type = #{shareType,jdbcType=INTEGER},
-      shop_id = #{shopId,jdbcType=BIGINT},
-      wx_union_id = #{wxUnionId,jdbcType=VARCHAR},
-      last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},
-      transaction_id = #{transactionId,jdbcType=VARCHAR},
-      birth_time = #{birthTime,jdbcType=TIMESTAMP},
-      device_number = #{deviceNumber,jdbcType=VARCHAR},
-      unique_num = #{uniqueNum,jdbcType=VARCHAR},
-      role_shop_id = #{roleShopId,jdbcType=BIGINT},
-      role_range = #{roleRange,jdbcType=INTEGER},
-      line_status = #{lineStatus,jdbcType=INTEGER},
-      consulting_fee = #{consultingFee,jdbcType=DECIMAL},
-      comment_total = #{commentTotal,jdbcType=INTEGER},
-      like_total = #{likeTotal,jdbcType=INTEGER},
-      lucky_draw_num = #{luckyDrawNum,jdbcType=INTEGER},
-      pc_salt = #{pcSalt,jdbcType=VARCHAR},
-      alipay_num = #{alipayNum,jdbcType=VARCHAR},
-      wx_tel = #{wxTel,jdbcType=VARCHAR},
-      wx_account = #{wxAccount,jdbcType=VARCHAR},
-      ali_name = #{aliName,jdbcType=VARCHAR},
-      ali_account = #{aliAccount,jdbcType=VARCHAR},
-      seal_expiration_time = #{sealExpirationTime,jdbcType=TIMESTAMP},
-      rob_order_limit = #{robOrderLimit,jdbcType=INTEGER},
-      withdrawal_limit = #{withdrawalLimit,jdbcType=DECIMAL},
-      finish_auction = #{finishAuction,jdbcType=INTEGER},
-      come_up_num = #{comeUpNum,jdbcType=INTEGER},
-      vip_type = #{vipType,jdbcType=INTEGER},
-      tag_id = #{tagId,jdbcType=BIGINT},
-      subordinate_level = #{subordinateLevel,jdbcType=INTEGER},
-      subordinate_num = #{subordinateNum,jdbcType=BIGINT},
-      seal_num = #{sealNum,jdbcType=INTEGER},
-      diamond_order_limit = #{diamondOrderLimit,jdbcType=INTEGER},
-      common_name = #{commonName,jdbcType=VARCHAR},
-      common_tel = #{commonTel,jdbcType=VARCHAR},
-      memo = #{memo,jdbcType=VARCHAR},
-      user_type = #{userType,jdbcType=INTEGER}
-    where user_id = #{userId,jdbcType=BIGINT}
-  </update>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select user_id, role_id, user_name, pass_word, real_name, salt, sex, status, audit, 
-    audit_explain, pid, p_user_name, pid_str, level_num, tel, email, login_ip, login_time, 
-    current_user_type, pay_password, department_id, add_time, add_user_id, update_time, 
-    update_user_id, frozen_explain, delete_flag, nick_name, share_img, user_img, background_img, 
-    is_first_login, share_type, shop_id, wx_union_id, last_login_time, transaction_id, 
-    birth_time, device_number, unique_num, role_shop_id, role_range, line_status, consulting_fee, 
-    comment_total, like_total, lucky_draw_num, pc_salt, alipay_num, wx_tel, wx_account, 
-    ali_name, ali_account, seal_expiration_time, rob_order_limit, withdrawal_limit, finish_auction, 
-    come_up_num, vip_type, tag_id, subordinate_level, subordinate_num, seal_num, diamond_order_limit, 
-    common_name, common_tel, memo, user_type
-    from zj_user
-    where user_id = #{userId,jdbcType=BIGINT} and delete_flag=0
-  </select>
-  <select id="selectAll" resultMap="BaseResultMap">
-    select user_id, role_id, user_name, pass_word, real_name, salt, sex, status, audit, 
-    audit_explain, pid, p_user_name, pid_str, level_num, tel, email, login_ip, login_time, 
-    current_user_type, pay_password, department_id, add_time, add_user_id, update_time, 
-    update_user_id, frozen_explain, delete_flag, nick_name, share_img, user_img, background_img, 
-    is_first_login, share_type, shop_id, wx_union_id, last_login_time, transaction_id, 
-    birth_time, device_number, unique_num, role_shop_id, role_range, line_status, consulting_fee, 
-    comment_total, like_total, lucky_draw_num, pc_salt, alipay_num, wx_tel, wx_account, 
-    ali_name, ali_account, seal_expiration_time, rob_order_limit, withdrawal_limit, finish_auction, 
-    come_up_num, vip_type, tag_id, subordinate_level, subordinate_num, seal_num, diamond_order_limit, 
-    common_name, common_tel, memo, user_type
-    from zj_user
-  </select>
-  <select id="countByName" resultType="integer">
-    select count(*) from zj_user where user_name=#{userName} and user_type=1
-  </select>
+    <resultMap id="BaseResultMap" type="com.zj.auction.common.model.User">
+        <id column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="role_id" jdbcType="INTEGER" property="roleId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="pass_word" jdbcType="VARCHAR" property="passWord"/>
+        <result column="real_name" jdbcType="VARCHAR" property="realName"/>
+        <result column="salt" jdbcType="VARCHAR" property="salt"/>
+        <result column="sex" jdbcType="INTEGER" property="sex"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="audit" jdbcType="INTEGER" property="audit"/>
+        <result column="audit_explain" jdbcType="VARCHAR" property="auditExplain"/>
+        <result column="pid" jdbcType="BIGINT" property="pid"/>
+        <result column="p_user_name" jdbcType="VARCHAR" property="pUserName"/>
+        <result column="pid_str" jdbcType="VARCHAR" property="pidStr"/>
+        <result column="level_num" jdbcType="INTEGER" property="levelNum"/>
+        <result column="tel" jdbcType="VARCHAR" property="tel"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="login_ip" jdbcType="VARCHAR" property="loginIp"/>
+        <result column="login_time" jdbcType="TIMESTAMP" property="loginTime"/>
+        <result column="current_user_type" jdbcType="INTEGER" property="currentUserType"/>
+        <result column="pay_password" jdbcType="VARCHAR" property="payPassword"/>
+        <result column="department_id" jdbcType="INTEGER" property="departmentId"/>
+        <result column="add_time" jdbcType="TIMESTAMP" property="addTime"/>
+        <result column="add_user_id" jdbcType="BIGINT" property="addUserId"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="update_user_id" jdbcType="BIGINT" property="updateUserId"/>
+        <result column="frozen_explain" jdbcType="VARCHAR" property="frozenExplain"/>
+        <result column="delete_flag" jdbcType="INTEGER" property="deleteFlag"/>
+        <result column="nick_name" jdbcType="VARCHAR" property="nickName"/>
+        <result column="share_img" jdbcType="VARCHAR" property="shareImg"/>
+        <result column="user_img" jdbcType="VARCHAR" property="userImg"/>
+        <result column="background_img" jdbcType="VARCHAR" property="backgroundImg"/>
+        <result column="is_first_login" jdbcType="INTEGER" property="isFirstLogin"/>
+        <result column="share_type" jdbcType="INTEGER" property="shareType"/>
+        <result column="shop_id" jdbcType="BIGINT" property="shopId"/>
+        <result column="wx_union_id" jdbcType="VARCHAR" property="wxUnionId"/>
+        <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime"/>
+        <result column="transaction_id" jdbcType="VARCHAR" property="transactionId"/>
+        <result column="birth_time" jdbcType="TIMESTAMP" property="birthTime"/>
+        <result column="device_number" jdbcType="VARCHAR" property="deviceNumber"/>
+        <result column="unique_num" jdbcType="VARCHAR" property="uniqueNum"/>
+        <result column="role_shop_id" jdbcType="BIGINT" property="roleShopId"/>
+        <result column="role_range" jdbcType="INTEGER" property="roleRange"/>
+        <result column="line_status" jdbcType="INTEGER" property="lineStatus"/>
+        <result column="consulting_fee" jdbcType="DECIMAL" property="consultingFee"/>
+        <result column="comment_total" jdbcType="INTEGER" property="commentTotal"/>
+        <result column="like_total" jdbcType="INTEGER" property="likeTotal"/>
+        <result column="lucky_draw_num" jdbcType="INTEGER" property="luckyDrawNum"/>
+        <result column="alipay_num" jdbcType="VARCHAR" property="alipayNum"/>
+        <result column="wx_tel" jdbcType="VARCHAR" property="wxTel"/>
+        <result column="wx_account" jdbcType="VARCHAR" property="wxAccount"/>
+        <result column="ali_name" jdbcType="VARCHAR" property="aliName"/>
+        <result column="ali_account" jdbcType="VARCHAR" property="aliAccount"/>
+        <result column="seal_expiration_time" jdbcType="TIMESTAMP" property="sealExpirationTime"/>
+        <result column="rob_order_limit" jdbcType="INTEGER" property="robOrderLimit"/>
+        <result column="withdrawal_limit" jdbcType="DECIMAL" property="withdrawalLimit"/>
+        <result column="finish_auction" jdbcType="INTEGER" property="finishAuction"/>
+        <result column="come_up_num" jdbcType="INTEGER" property="comeUpNum"/>
+        <result column="vip_type" jdbcType="INTEGER" property="vipType"/>
+        <result column="tag_id" jdbcType="BIGINT" property="tagId"/>
+        <result column="subordinate_level" jdbcType="INTEGER" property="subordinateLevel"/>
+        <result column="subordinate_num" jdbcType="BIGINT" property="subordinateNum"/>
+        <result column="seal_num" jdbcType="INTEGER" property="sealNum"/>
+        <result column="diamond_order_limit" jdbcType="INTEGER" property="diamondOrderLimit"/>
+        <result column="common_name" jdbcType="VARCHAR" property="commonName"/>
+        <result column="common_tel" jdbcType="VARCHAR" property="commonTel"/>
+        <result column="card_number" jdbcType="VARCHAR" property="cardNumber"/>
+        <result column="memo" jdbcType="VARCHAR" property="memo"/>
+        <result column="memo1" jdbcType="VARCHAR" property="memo1"/>
+        <result column="memo2" jdbcType="VARCHAR" property="memo2"/>
+        <result column="memo3" jdbcType="VARCHAR" property="memo3"/>
+        <result column="user_type" jdbcType="INTEGER" property="userType"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
 
-  <select id="getStatistics" resultType="map">
-    SELECT
-	COUNT(*) AS stock,
-	ifnull( sum( CASE WHEN pid = #{userId} THEN 1 ELSE 0 END ), 0 ) AS num1,
-	ifnull( sum( CASE WHEN pid != #{userId} THEN 1 ELSE 0 END ), 0 ) AS num2
-FROM
-	zj_user
-WHERE
-	pid_str LIKE CONCAT(
-		#{ids}
-	)
-  </select>
-    <select id="listMemberIndirect" resultType="java.util.Map">
-      SELECT
-        a.*,
-       b.role_name
-      FROM
-        (
-          SELECT
-            *
-          FROM
-            zj_user
 
-            <where>
-              pid_str LIKE CONCAT( '%',#{dto.userIds}, '%' )
-            <if test="dto.userId!=null">
-              and user_id like CONCAT('%',#{dto.userId},'%')
-            </if>
-              <if test="dto.userName!=null">
-                and user_name like CONCAT('%',#{dto.userName},'%')
-              </if>
-              <if test="dto.realName!=null">
-                and real_name like CONCAT('%',#{dto.realName},'%')
-              </if>
-              <if test="dto.nickName!=null">
-                and nick_name like CONCAT('%',#{dto.nickName},'%')
-              </if>
-              <if test="dto.tel!=null">
-                and tel like CONCAT('%',#{dto.tel},'%')
-              </if>
-<!--              <if test="dto.startDate!=null">-->
-<!--                and add_time#{dto.startDate}-->
-<!--              </if>-->
-              <if test="dto.endDate!=null">
-                and endDate>=#{dto.endDate}
-              </if>
-              <if test="dto.userType!=null">
-                and userType =0
-              </if>
-              AND delete_flag = 0
-            </where>
 
-          ORDER BY
-            add_time DESC
-        ) a
-         LEFT JOIN zj_role b ON a.user_type = b.role_id
+                            delete from zj_user
+                            where user_id = #{userId,jdbcType=BIGINT}
+
+
+
+    </delete>
+    <insert id="insert" parameterType="com.zj.auction.common.model.User">
+
+
+
+                            insert into zj_user (user_id, role_id, user_name,
+                              pass_word, real_name, salt,
+                              sex, status, audit,
+                              audit_explain, pid, p_user_name,
+                              pid_str, level_num, tel,
+                              email, login_ip, login_time,
+                              current_user_type, pay_password, department_id,
+                              add_time, add_user_id, update_time,
+                              update_user_id, frozen_explain, delete_flag,
+                              nick_name, share_img, user_img,
+                              background_img, is_first_login, share_type,
+                              shop_id, wx_union_id, last_login_time,
+                              transaction_id, birth_time, device_number,
+                              unique_num, role_shop_id, role_range,
+                              line_status, consulting_fee, comment_total,
+                              like_total, lucky_draw_num, pc_salt,
+                              alipay_num, wx_tel, wx_account,
+                              ali_name, ali_account, seal_expiration_time,
+                              rob_order_limit, withdrawal_limit, finish_auction,
+                              come_up_num, vip_type, tag_id,
+                              subordinate_level, subordinate_num, seal_num,
+                              diamond_order_limit, common_name, common_tel,
+                              memo, user_type,card_number)
+                            values (#{userId,jdbcType=BIGINT}, #{roleId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR},
+                              #{passWord,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR}, #{salt,jdbcType=VARCHAR},
+                              #{sex,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{audit,jdbcType=INTEGER},
+                              #{auditExplain,jdbcType=VARCHAR}, #{pid,jdbcType=BIGINT}, #{pUserName,jdbcType=VARCHAR},
+                              #{pidStr,jdbcType=VARCHAR}, #{levelNum,jdbcType=INTEGER}, #{tel,jdbcType=VARCHAR},
+                              #{email,jdbcType=VARCHAR}, #{loginIp,jdbcType=VARCHAR}, #{loginTime,jdbcType=TIMESTAMP},
+                              #{currentUserType,jdbcType=INTEGER}, #{payPassword,jdbcType=VARCHAR}, #{departmentId,jdbcType=INTEGER},
+                              #{addTime,jdbcType=TIMESTAMP}, #{addUserId,jdbcType=BIGINT}, #{updateTime,jdbcType=TIMESTAMP},
+                              #{updateUserId,jdbcType=BIGINT}, #{frozenExplain,jdbcType=VARCHAR}, #{deleteFlag,jdbcType=INTEGER},
+                              #{nickName,jdbcType=VARCHAR}, #{shareImg,jdbcType=VARCHAR}, #{userImg,jdbcType=VARCHAR},
+                              #{backgroundImg,jdbcType=VARCHAR}, #{isFirstLogin,jdbcType=INTEGER}, #{shareType,jdbcType=INTEGER},
+                              #{shopId,jdbcType=BIGINT}, #{wxUnionId,jdbcType=VARCHAR}, #{lastLoginTime,jdbcType=TIMESTAMP},
+                              #{transactionId,jdbcType=VARCHAR}, #{birthTime,jdbcType=TIMESTAMP}, #{deviceNumber,jdbcType=VARCHAR},
+                              #{uniqueNum,jdbcType=VARCHAR}, #{roleShopId,jdbcType=BIGINT}, #{roleRange,jdbcType=INTEGER},
+                              #{lineStatus,jdbcType=INTEGER}, #{consultingFee,jdbcType=DECIMAL}, #{commentTotal,jdbcType=INTEGER},
+                              #{likeTotal,jdbcType=INTEGER}, #{luckyDrawNum,jdbcType=INTEGER}, #{pcSalt,jdbcType=VARCHAR},
+                              #{alipayNum,jdbcType=VARCHAR}, #{wxTel,jdbcType=VARCHAR}, #{wxAccount,jdbcType=VARCHAR},
+                              #{aliName,jdbcType=VARCHAR}, #{aliAccount,jdbcType=VARCHAR}, #{sealExpirationTime,jdbcType=TIMESTAMP},
+                              #{robOrderLimit,jdbcType=INTEGER}, #{withdrawalLimit,jdbcType=DECIMAL}, #{finishAuction,jdbcType=INTEGER},
+                              #{comeUpNum,jdbcType=INTEGER}, #{vipType,jdbcType=INTEGER}, #{tagId,jdbcType=BIGINT},
+                              #{subordinateLevel,jdbcType=INTEGER}, #{subordinateNum,jdbcType=BIGINT}, #{sealNum,jdbcType=INTEGER},
+                              #{diamondOrderLimit,jdbcType=INTEGER}, #{commonName,jdbcType=VARCHAR}, #{commonTel,jdbcType=VARCHAR},
+                              #{memo,jdbcType=VARCHAR}, #{userType,jdbcType=INTEGER})
+
+
+
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="com.zj.auction.common.model.User">
+
+
+
+                            update zj_user
+                            set role_id = #{roleId,jdbcType=INTEGER},
+                              user_name = #{userName,jdbcType=VARCHAR},
+                              pass_word = #{passWord,jdbcType=VARCHAR},
+                              real_name = #{realName,jdbcType=VARCHAR},
+                              salt = #{salt,jdbcType=VARCHAR},
+                              sex = #{sex,jdbcType=INTEGER},
+                              status = #{status,jdbcType=INTEGER},
+                              audit = #{audit,jdbcType=INTEGER},
+                              audit_explain = #{auditExplain,jdbcType=VARCHAR},
+                              pid = #{pid,jdbcType=BIGINT},
+                              p_user_name = #{pUserName,jdbcType=VARCHAR},
+                              pid_str = #{pidStr,jdbcType=VARCHAR},
+                              level_num = #{levelNum,jdbcType=INTEGER},
+                              tel = #{tel,jdbcType=VARCHAR},
+                              email = #{email,jdbcType=VARCHAR},
+                              login_ip = #{loginIp,jdbcType=VARCHAR},
+                              login_time = #{loginTime,jdbcType=TIMESTAMP},
+                              current_user_type = #{currentUserType,jdbcType=INTEGER},
+                              pay_password = #{payPassword,jdbcType=VARCHAR},
+                              department_id = #{departmentId,jdbcType=INTEGER},
+                              add_time = #{addTime,jdbcType=TIMESTAMP},
+                              add_user_id = #{addUserId,jdbcType=BIGINT},
+                              update_time = #{updateTime,jdbcType=TIMESTAMP},
+                              update_user_id = #{updateUserId,jdbcType=BIGINT},
+                              frozen_explain = #{frozenExplain,jdbcType=VARCHAR},
+                              delete_flag = #{deleteFlag,jdbcType=INTEGER},
+                              nick_name = #{nickName,jdbcType=VARCHAR},
+                              share_img = #{shareImg,jdbcType=VARCHAR},
+                              user_img = #{userImg,jdbcType=VARCHAR},
+                              background_img = #{backgroundImg,jdbcType=VARCHAR},
+                              is_first_login = #{isFirstLogin,jdbcType=INTEGER},
+                              share_type = #{shareType,jdbcType=INTEGER},
+                              shop_id = #{shopId,jdbcType=BIGINT},
+                              wx_union_id = #{wxUnionId,jdbcType=VARCHAR},
+                              last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},
+                              transaction_id = #{transactionId,jdbcType=VARCHAR},
+                              birth_time = #{birthTime,jdbcType=TIMESTAMP},
+                              device_number = #{deviceNumber,jdbcType=VARCHAR},
+                              unique_num = #{uniqueNum,jdbcType=VARCHAR},
+                              role_shop_id = #{roleShopId,jdbcType=BIGINT},
+                              role_range = #{roleRange,jdbcType=INTEGER},
+                              line_status = #{lineStatus,jdbcType=INTEGER},
+                              consulting_fee = #{consultingFee,jdbcType=DECIMAL},
+                              comment_total = #{commentTotal,jdbcType=INTEGER},
+                              like_total = #{likeTotal,jdbcType=INTEGER},
+                              lucky_draw_num = #{luckyDrawNum,jdbcType=INTEGER},
+                              pc_salt = #{pcSalt,jdbcType=VARCHAR},
+                              alipay_num = #{alipayNum,jdbcType=VARCHAR},
+                              wx_tel = #{wxTel,jdbcType=VARCHAR},
+                              wx_account = #{wxAccount,jdbcType=VARCHAR},
+                              ali_name = #{aliName,jdbcType=VARCHAR},
+                              ali_account = #{aliAccount,jdbcType=VARCHAR},
+                              seal_expiration_time = #{sealExpirationTime,jdbcType=TIMESTAMP},
+                              rob_order_limit = #{robOrderLimit,jdbcType=INTEGER},
+                              withdrawal_limit = #{withdrawalLimit,jdbcType=DECIMAL},
+                              finish_auction = #{finishAuction,jdbcType=INTEGER},
+                              come_up_num = #{comeUpNum,jdbcType=INTEGER},
+                              vip_type = #{vipType,jdbcType=INTEGER},
+                              tag_id = #{tagId,jdbcType=BIGINT},
+                              subordinate_level = #{subordinateLevel,jdbcType=INTEGER},
+                              subordinate_num = #{subordinateNum,jdbcType=BIGINT},
+                              seal_num = #{sealNum,jdbcType=INTEGER},
+                              diamond_order_limit = #{diamondOrderLimit,jdbcType=INTEGER},
+                              common_name = #{commonName,jdbcType=VARCHAR},
+                              common_tel = #{commonTel,jdbcType=VARCHAR},
+                              memo = #{memo,jdbcType=VARCHAR},
+                              user_type = #{userType,jdbcType=INTEGER}
+                            where user_id = #{userId,jdbcType=BIGINT}
+
+
+
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+
+
+
+                            select user_id, role_id, user_name, pass_word, real_name, salt, sex, status, audit,
+                            audit_explain, pid, p_user_name, pid_str, level_num, tel, email, login_ip, login_time,
+                            current_user_type, pay_password, department_id, add_time, add_user_id, update_time,
+                            update_user_id, frozen_explain, delete_flag, nick_name, share_img, user_img, background_img,
+                            is_first_login, share_type, shop_id, wx_union_id, last_login_time, transaction_id,
+                            birth_time, device_number, unique_num, role_shop_id, role_range, line_status, consulting_fee,
+                            comment_total, like_total, lucky_draw_num, pc_salt, alipay_num, wx_tel, wx_account,
+                            ali_name, ali_account, seal_expiration_time, rob_order_limit, withdrawal_limit, finish_auction,
+                            come_up_num, vip_type, tag_id, subordinate_level, subordinate_num, seal_num, diamond_order_limit,
+                            common_name, common_tel, memo, user_type
+                            from zj_user
+                            where user_id = #{userId,jdbcType=BIGINT} and delete_flag=0
+
+
 
     </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+
+
+
+                            select user_id, role_id, user_name, pass_word, real_name, salt, sex, status, audit,
+                            audit_explain, pid, p_user_name, pid_str, level_num, tel, email, login_ip, login_time,
+                            current_user_type, pay_password, department_id, add_time, add_user_id, update_time,
+                            update_user_id, frozen_explain, delete_flag, nick_name, share_img, user_img, background_img,
+                            is_first_login, share_type, shop_id, wx_union_id, last_login_time, transaction_id,
+                            birth_time, device_number, unique_num, role_shop_id, role_range, line_status, consulting_fee,
+                            comment_total, like_total, lucky_draw_num, pc_salt, alipay_num, wx_tel, wx_account,
+                            ali_name, ali_account, seal_expiration_time, rob_order_limit, withdrawal_limit, finish_auction,
+                            come_up_num, vip_type, tag_id, subordinate_level, subordinate_num, seal_num, diamond_order_limit,
+                            common_name, common_tel, memo, user_type
+                            from zj_user
+
+
+
+    </select>
+    <select id="countByName" resultType="integer">
+
+
+
+                            select count(*) from zj_user where user_name=#{userName} and user_type=1
+
+
+
+    </select>
+
+    <select id="getStatistics" resultType="map">
+
+
+
+                            SELECT
+                            COUNT(*) AS stock,
+                            ifnull( sum( CASE WHEN pid = #{userId} THEN 1 ELSE 0 END ), 0 ) AS num1,
+                            ifnull( sum( CASE WHEN pid != #{userId} THEN 1 ELSE 0 END ), 0 ) AS num2
+                        FROM
+                            zj_user
+                        WHERE
+                            pid_str LIKE CONCAT(
+                                #{ids}
+                            )
+
+
+
+    </select>
+    <select id="listMemberIndirect" resultType="java.util.Map">
+        SELECT
+        a.*,
+        b.role_name
+        FROM
+        (
+        SELECT
+        *
+        FROM
+        zj_user
+
+        <where>
+            pid_str LIKE CONCAT( '%',#{dto.userIds}, '%' )
+            <if test="dto.userId!=null">
+                and user_id like CONCAT('%',#{dto.userId},'%')
+            </if>
+            <if test="dto.userName!=null">
+                and user_name like CONCAT('%',#{dto.userName},'%')
+            </if>
+            <if test="dto.realName!=null">
+                and real_name like CONCAT('%',#{dto.realName},'%')
+            </if>
+            <if test="dto.nickName!=null">
+                and nick_name like CONCAT('%',#{dto.nickName},'%')
+            </if>
+            <if test="dto.tel!=null">
+                and tel like CONCAT('%',#{dto.tel},'%')
+            </if>
+            <if test="dto.startDate!=null and dto.endDate!=null">
+                and add_time BETWEEN #{dto.startDate} AND #{dto.endDate}
+            </if>
+            <if test="dto.userType!=null">
+                and userType =0
+            </if>
+            AND delete_flag = 0
+        </where>
+
+        ORDER BY
+        add_time DESC
+        ) a
+        LEFT JOIN zj_role b ON a.user_type = b.role_id
+    </select>
+
+    <update id="updateAuditRejection" parameterType="com.zj.auction.common.model.User">
+
+        UPDATE zj_user
+        SET audit = 3,
+        audit_explain = #{auditExplain}
+        WHERE
+            user_id = #{userId}
+
+    </update>
+
+    <update id="updateAuditApproval" parameterType="com.zj.auction.common.model.User">
+
+        update zj_user set audit = 2,audit_explain=null where user_id = #{userId}
+
+    </update>
 </mapper>

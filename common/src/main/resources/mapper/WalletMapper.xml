@@ -12,7 +12,6 @@
     <result column="transaction_type" jdbcType="INTEGER" property="transactionType" />
     <result column="balance_before" jdbcType="DECIMAL" property="balanceBefore" />
     <result column="update_balance" jdbcType="DECIMAL" property="updateBalance" />
-    <result column="balance_after" jdbcType="DECIMAL" property="balanceAfter" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="wallet_type" jdbcType="INTEGER" property="walletType" />
     <result column="trade_no" jdbcType="VARCHAR" property="tradeNo" />
@@ -77,7 +76,7 @@
   </sql>
   <sql id="Base_Column_List">
     id, user_id, fund_type, balance, freeze, create_time, update_time, transaction_type, 
-    balance_before, update_balance, balance_after, remark, wallet_type, trade_no
+    balance_before, update_balance,remark, wallet_type, trade_no
   </sql>
   <select id="selectByExample" parameterType="com.zj.auction.common.model.example.WalletExample" resultMap="BaseResultMap">
     select
@@ -116,12 +115,12 @@
     insert into zj_wallet (user_id, fund_type, balance, 
       freeze, create_time, update_time, 
       transaction_type, balance_before, update_balance, 
-      balance_after, remark, wallet_type, 
+      remark, wallet_type,
       trade_no)
     values (#{userId,jdbcType=BIGINT}, #{fundType,jdbcType=INTEGER}, #{balance,jdbcType=DECIMAL}, 
       #{freeze,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
       #{transactionType,jdbcType=INTEGER}, #{balanceBefore,jdbcType=DECIMAL}, #{updateBalance,jdbcType=DECIMAL}, 
-      #{balanceAfter,jdbcType=DECIMAL}, #{remark,jdbcType=VARCHAR}, #{walletType,jdbcType=INTEGER}, 
+      #{remark,jdbcType=VARCHAR}, #{walletType,jdbcType=INTEGER},
       #{tradeNo,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.zj.auction.common.model.Wallet">
@@ -156,9 +155,6 @@
       </if>
       <if test="updateBalance != null">
         update_balance,
-      </if>
-      <if test="balanceAfter != null">
-        balance_after,
       </if>
       <if test="remark != null">
         remark,
@@ -197,9 +193,6 @@
       </if>
       <if test="updateBalance != null">
         #{updateBalance,jdbcType=DECIMAL},
-      </if>
-      <if test="balanceAfter != null">
-        #{balanceAfter,jdbcType=DECIMAL},
       </if>
       <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
@@ -251,9 +244,6 @@
       <if test="record.updateBalance != null">
         update_balance = #{record.updateBalance,jdbcType=DECIMAL},
       </if>
-      <if test="record.balanceAfter != null">
-        balance_after = #{record.balanceAfter,jdbcType=DECIMAL},
-      </if>
       <if test="record.remark != null">
         remark = #{record.remark,jdbcType=VARCHAR},
       </if>
@@ -280,7 +270,6 @@
       transaction_type = #{record.transactionType,jdbcType=INTEGER},
       balance_before = #{record.balanceBefore,jdbcType=DECIMAL},
       update_balance = #{record.updateBalance,jdbcType=DECIMAL},
-      balance_after = #{record.balanceAfter,jdbcType=DECIMAL},
       remark = #{record.remark,jdbcType=VARCHAR},
       wallet_type = #{record.walletType,jdbcType=INTEGER},
       trade_no = #{record.tradeNo,jdbcType=VARCHAR}
@@ -318,9 +307,6 @@
       <if test="updateBalance != null">
         update_balance = #{updateBalance,jdbcType=DECIMAL},
       </if>
-      <if test="balanceAfter != null">
-        balance_after = #{balanceAfter,jdbcType=DECIMAL},
-      </if>
       <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},
       </if>
@@ -344,10 +330,12 @@
       transaction_type = #{transactionType,jdbcType=INTEGER},
       balance_before = #{balanceBefore,jdbcType=DECIMAL},
       update_balance = #{updateBalance,jdbcType=DECIMAL},
-      balance_after = #{balanceAfter,jdbcType=DECIMAL},
       remark = #{remark,jdbcType=VARCHAR},
       wallet_type = #{walletType,jdbcType=INTEGER},
       trade_no = #{tradeNo,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
+  <select id="selectAllByUserId" parameterType="long">
+    select * from  zj_wallet where user_id =#{userId}
+  </select>
 </mapper>

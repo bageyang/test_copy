@@ -1,45 +1,21 @@
 package com.zj.auction.general.pc.service;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.mapper.Mapper;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.pagehelper.PageInfo;
 import com.zj.auction.common.dto.UserDTO;
 import com.zj.auction.common.model.Permis;
-import com.zj.auction.common.model.SystemCnf;
 import com.zj.auction.common.model.User;
 import com.zj.auction.general.vo.GeneralResult;
 import com.zj.auction.general.vo.LoginResp;
 import com.zj.auction.general.vo.PageAction;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @Title PcUserService
- * @Package com.duoqio.boot.business.pc.service.userInfo
- * @Description 用户业务接口
- * @Author Mao Qi
- * @Date 2019/9/4 14:21
- * @Copyright 重庆多企源科技有限公司
- * @Website {http://www.duoqio.com/index.asp?source=code}
- */
+
 public interface UserService  {
 
-    /**
-     * @Description pc登录
-     * @Title getPcLogin
-     * @Author Mao Qi
-     * @Date 2021/1/15 11:09
-     * @param userName
-     * @param passWord
-     * @return	com.duoqio.common.vo.LoginResp
-     */
+
     LoginResp getPcLogin(String userName, String passWord);
 //
 //
@@ -144,7 +120,7 @@ public interface UserService  {
 //     * @param pageAction
 //     * @return	com.duoqio.common.vo.GeneralResult
 //     */
-    PageInfo<User> getUserPage(PageAction pageAction, Integer userType, List<Long> userIds);
+    PageInfo<User> getUserPage(PageAction pageAction, List<Long> userIds);
 //
 //
 //
@@ -169,7 +145,7 @@ public interface UserService  {
 //     *
 //     * @return	com.duoqio.boot.framework.result.GeneralResult
 //     */
-//    GeneralResult listMemberIndirect(PageAction pageAction, HashMap<String, Object> maps);
+    PageInfo<Map<String,Object>> listMemberIndirect( UserDTO dto);
 //
 //    /**
 //     * @title: findMemberAudit
@@ -219,54 +195,11 @@ public interface UserService  {
 //     */
 //    Boolean deleteMember(User userCfg);
 //
-//    /**
-//     * @Description 根据用户id查询统计数据
-//     * @Title getStatistics
-//     * @Author Mao Qi
-//     * @Date 2019/10/16 17:39
-//     * @param userCfg
-//     * @return	java.util.HashMap<java.lang.String,java.lang.Object>
-//     */
-//    HashMap<String, Object> getStatistics(User userCfg);
-//
-//    /**
-//     * @Description 分页查询系统配置
-//     * @Title findParameter
-//     * @Author Mao Qi
-//     * @Date 2021/2/3 16:14
-//     * @param pageAction
-//     * @return	com.duoqio.common.vo.GeneralResult
-//     */
-//    GeneralResult findParameter(PageAction pageAction);
-//
-//    /**
-//     * @Description 查看所有自定义参数配置
-//     * @Title getAllCfgs
-//     * @Author Mao Qi
-//     * @Date 2021/2/3 16:13
-//     * @param
-//     * @return	com.duoqio.common.vo.GeneralResult
-//     */
-//    GeneralResult getAllCfgs();
-//
-//    /**
-//     * @Description 修改自定义参数配置
-//     * @Title updateCfg
-//     * @Author Mao Qi
-//     * @Date 2021/2/3 16:14
-//     * @param systemCfg
-//     * @return	java.lang.Integer
-//     */
-//    Integer updateCfg(SystemCnf systemCfg) ;
-//
-//    /**
-//     * @Description 修改自定义参数配置2 负载均衡
-//     * @Title updateCfg
-//     * @Author Mao Qi
-//     * @Date 2021/2/3 16:14
-//     * @return	java.lang.Integer
-//     */
-//    Integer updateCfgTwo( String keyValue,  String keyId, String memo,String keyName) throws Exception;
+
+
+
+
+
 //
 //    /**
 //     * @title: listArea
@@ -286,7 +219,7 @@ public interface UserService  {
 //     * @param auditExplain
 //     * @return: Integer
 //     */
-//    Integer updateAuditRejection(Long userId, String auditExplain);
+    Integer updateAuditRejection(Long userId, String auditExplain);
 //
 //    /**
 //     * @Description 实名通过审核
@@ -296,20 +229,20 @@ public interface UserService  {
 //     * @param userId
 //     * @return	java.lang.Integer
 //     */
-//    Integer updateAuditApproval(Long userId);
+    Integer updateAuditApproval(Long userId);
 //
-//    /**
-//     * @Description 变更资金
-//     * @Title changeIntegral
-//     * @Author Mao Qi
-//     * @Date 2019/10/16 17:37
-//     * @param userId
-//     * @param type
-//     * @param integral
-//     * @param remark
-//     * @return	java.lang.Integer
-//     */
-//    Integer changeBalance(Long userId,Integer moneyType, Integer type, BigDecimal integral, String remark);
+
+    /**
+     * 改变资金
+     *
+     * @param userId    用户id
+     * @param moneyType 资金类型
+     * @param type      类型
+     * @param integral  积分
+     * @param remark    备注
+     * @return {@link Integer}
+     */
+    Integer changeBalance(Long userId,Integer moneyType, Integer type, BigDecimal integral, String remark);
 //
 //
 //    /**
@@ -444,7 +377,7 @@ public interface UserService  {
 //     */
     GeneralResult updWithdrawalLimit(Long userId, BigDecimal withdrawalLimit);
 
-    List<Map<String, Object>> listMemberIndirect( UserDTO dto);
+
 //
 //    /**
 //     * @Description 修改用户vip
