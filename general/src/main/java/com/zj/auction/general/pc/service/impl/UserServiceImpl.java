@@ -11,11 +11,15 @@ import com.zj.auction.common.constant.SystemConstant;
 import com.zj.auction.common.date.CalculateTypeEnum;
 import com.zj.auction.common.date.DateUtil;
 import com.zj.auction.common.date.TimeTypeEnum;
+import com.zj.auction.common.dto.BalanceChangeDto;
 import com.zj.auction.common.dto.UserDTO;
+import com.zj.auction.common.enums.StatusEnum;
+import com.zj.auction.common.exception.CustomException;
 import com.zj.auction.common.exception.ServiceException;
 import com.zj.auction.common.mapper.*;
 import com.zj.auction.common.model.*;
 import com.zj.auction.common.util.*;
+import com.zj.auction.general.app.service.WalletService;
 import com.zj.auction.general.auth.AppTokenUtils;
 import com.zj.auction.general.auth.AuthToken;
 import com.zj.auction.general.pc.service.UserService;
@@ -72,6 +76,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     private final AreaMapper areaMapper;
     private final WalletMapper walletMapper;
     private final GoodsMapper goodsMapper;
+    private final WalletService walletService;
+
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
@@ -96,64 +102,64 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         if (user == null) {
             throw new ServiceException(610, "账号或密码错误,请重新输入");
         }else {
-        //校验密码
-        String salt = user.getSalt();
-        Md5Hash md5Hash = new Md5Hash(password, salt, 1024);
+            //校验密码
+            String salt = user.getSalt();
+            Md5Hash md5Hash = new Md5Hash(password, salt, 1024);
 
-        System.out.println("md5Hash---->" + md5Hash);
-        String userId = String.valueOf(user.getUserId());
-        long expressTime = System.currentTimeMillis() + TMP_TOKEN_EXPIRE_TIME;
-        String md5 = MD5Utils.isEncryption(userId, String.valueOf(expressTime));
-        String accessToken = JwtUtil.getTmpJwtToken(userId, md5, expressTime);
-        //生成token字符串
-        String token = JwtUtil.getJwtToken(userName, md5Hash.toHex());   //toHex转换成16进制，32为字符
-        //toHex转换成16进制，32为字符
-        JwtToken jwtToken = new JwtToken(token);
-        data.setToken(token);
-        data.setUserId(user.getUserId());
-        data.setUserInfo(user);
-        data.setAccessToken(accessToken);
-        data.setMsg("成功!");
-        //拿到Subject对象
-        Subject subject = SecurityUtils.getSubject();
-        //进行认证
-        try {
-            subject.login(jwtToken);
-            // return new ResultTemplate().Ok("200","成功","");
-            System.out.println("成功");
-        } catch (UnknownAccountException e) {
-            // return new ResultTemplate().Ok("500","无效用户，用户不存在","");
-            System.out.println("无效用户，用户不存在");
-            e.printStackTrace();
-        } catch (IncorrectCredentialsException e) {
-            // return new ResultTemplate().Ok("500","密码错误","");
-            System.out.println("密码错误");
-            e.printStackTrace();
-        } catch (ExpiredCredentialsException e) {
-            //return new ResultTemplate().Ok("500","token过期","");
-            System.out.println("token过期");
-            e.printStackTrace();
-        }
+            System.out.println("md5Hash---->" + md5Hash);
+            String userId = String.valueOf(user.getUserId());
+            long expressTime = System.currentTimeMillis() + TMP_TOKEN_EXPIRE_TIME;
+            String md5 = MD5Utils.isEncryption(userId, String.valueOf(expressTime));
+            String accessToken = JwtUtil.getTmpJwtToken(userId, md5, expressTime);
+            //生成token字符串
+            String token = JwtUtil.getJwtToken(userName, md5Hash.toHex());   //toHex转换成16进制，32为字符
+            //toHex转换成16进制，32为字符
+            JwtToken jwtToken = new JwtToken(token);
+            data.setToken(token);
+            data.setUserId(user.getUserId());
+            data.setUserInfo(user);
+            data.setAccessToken(accessToken);
+            data.setMsg("成功!");
+            //拿到Subject对象
+            Subject subject = SecurityUtils.getSubject();
+            //进行认证
+            try {
+                subject.login(jwtToken);
+                // return new ResultTemplate().Ok("200","成功","");
+                System.out.println("成功");
+            } catch (UnknownAccountException e) {
+                // return new ResultTemplate().Ok("500","无效用户，用户不存在","");
+                System.out.println("无效用户，用户不存在");
+                e.printStackTrace();
+            } catch (IncorrectCredentialsException e) {
+                // return new ResultTemplate().Ok("500","密码错误","");
+                System.out.println("密码错误");
+                e.printStackTrace();
+            } catch (ExpiredCredentialsException e) {
+                //return new ResultTemplate().Ok("500","token过期","");
+                System.out.println("token过期");
+                e.printStackTrace();
+            }
 
-        if (!user.getPassWord().equals(md5Hash.toString())) {
-            throw new ServiceException(518, "您输入的密码错误,请重新输入!");
+            if (!user.getPassWord().equals(md5Hash.toString())) {
+                throw new ServiceException(518, "您输入的密码错误,请重新输入!");
+            }
+            if (user.getStatus() == 1) {
+                throw new ServiceException(519, "用户已被冻结,请联系管理员!");
+            }
+            if (user.getAudit() == 1) {
+                throw new ServiceException(521, "该账号还在审核中!");
+            }
+            if (user.getAudit() == 3) {
+                throw new ServiceException(522, "该账号未通过审核," + user.getAuditExplain());
+            }
+            // 保存最近一次登入时间
+            user.setLoginTime(LocalDateTime.now());
+            userMapper.updateByPrimaryKeySelective(user);
         }
-        if (user.getStatus() == 1) {
-            throw new ServiceException(519, "用户已被冻结,请联系管理员!");
-        }
-        if (user.getAudit() == 1) {
-            throw new ServiceException(521, "该账号还在审核中!");
-        }
-        if (user.getAudit() == 3) {
-            throw new ServiceException(522, "该账号未通过审核," + user.getAuditExplain());
-        }
-        // 保存最近一次登入时间
-        user.setLoginTime(LocalDateTime.now());
-        userMapper.updateByPrimaryKeySelective(user);
-    }
         System.out.println("==========================="+data);
-     return data;
-}
+        return data;
+    }
 
 
     //生成包括token的返回登录数据
@@ -795,67 +801,48 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     //后台操作变更资金
     @Override
     public Integer changeBalance(Long userId, Integer moneyType, Integer type, BigDecimal integral, String remark) {
-        //User pcUser = SecurityUtils.getPrincipal();
+        User pcUser = SecurityUtils.getPrincipal();
         PubFun.check(userId, moneyType, type);
         if (com.zj.auction.common.util.StringUtils.isEmpty(integral) || integral.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ServiceException(506, "变更数量输入有误!");
         }
         User user = Optional.ofNullable(userMapper.selectByPrimaryKey(userId)).orElseThrow(() -> PubFun.throwException("该用户不存在"));
-        Wallet wallet = walletMapper.selectAllByUserId(userId);
-        if (type == 1) {//增加
-            String transactionId = UidGenerator.createOrderXid();
-            String memo = "";
-            if (moneyType == 0) {
-                memo = "后台人工增加店铺收入";
-            } else if (moneyType == 1) {
-                memo = "后台人工充值获得";
-            } else {
-                memo = "后台人工充值获得";
-            }
-            //添加余额
-            walletMapper.insert(Wallet.builder()
-                    .userId(wallet.getUserId())
-                    .updateBalance(integral)
-                    .balanceBefore(wallet.getBalance())
-                    .balance(integral.add(wallet.getBalance()))
-                    .transactionType(1)
-                    .fundType(moneyType)
-                    .tradeNo(transactionId)
-                    .updateTime(LocalDateTime.now())
-                    .remark(memo + "-" + remark)
-                    .build());
-            // addTotalPlatform(1, integral, saveMoney);//给平台加明细
-        } else if (type == 2) {//减少
-            //查询该用户剩余余额数量
-            if (wallet.getBalance().compareTo(BigDecimal.ZERO) < 1 || wallet.getBalance().compareTo(integral) < 0) {
-                throw new ServiceException(508, "余额不足");
-            }
-            String transactionId = UidGenerator.createOrderXid();
-            String memo = "";
-            if (moneyType == 0) {
-                memo = "后台人工减少店铺收入";
-            } else if (moneyType == 1) {
-                memo = "后台人工回收支出";
-            } else {
-                memo = "后台人工回收支出";
-            }
-            //扣除余额
-            walletMapper.insert(Wallet.builder()
-                    .userId(wallet.getUserId())
-                    .updateBalance(integral)
-                    .balanceBefore(wallet.getBalance())
-                    .balance(integral.add(wallet.getBalance()))
-                    .transactionType(0)
-                    .fundType(moneyType)
-                    .tradeNo(transactionId)
-                    .updateTime(LocalDateTime.now())
-                    .remark(memo + "-" + remark)
-                    .build());
-            //addTotalPlatform(-1, integral, saveMoney);//给平台加明细
-        } else {
-            throw new RuntimeException("变更余额类型有误");
-        }
+        String memo = getRemark(type,moneyType);
+        BigDecimal decimal = getChangeNum(type,integral);
+        BalanceChangeDto balanceChangeDto = new BalanceChangeDto();
+        balanceChangeDto.setUserId(userId);
+        balanceChangeDto.setRemark(memo.concat("-").concat(remark));
+        balanceChangeDto.setChangeNum(decimal);
+        walletService.changeUserBalance(balanceChangeDto);
         return null;
+    }
+    private BigDecimal getChangeNum(Integer type, BigDecimal integral) {
+        if (Objects.equals(1, type)) {
+            return integral.abs();
+        } else if (Objects.equals(2, type)) {
+            return integral.compareTo(BigDecimal.ZERO) < 0 ? integral : integral.negate();
+        } else {
+            throw new CustomException(StatusEnum.PARAM_ERROR);
+        }
+    }
+
+    private String getRemark(Integer type, Integer moneyType) {
+        if(Objects.equals(1,type)){
+            if (moneyType == 0) {
+                return  "后台人工增加店铺收入";
+            } else {
+                return "后台人工充值获得";
+            }
+        }else if (Objects.equals(2,type)){
+            if (moneyType == 0) {
+                return  "后台人工减少店铺收入";
+            }  else {
+                return "后台人工回收支出";
+            }
+        }else {
+            throw new CustomException(StatusEnum.PARAM_ERROR);
+        }
+
     }
 
 

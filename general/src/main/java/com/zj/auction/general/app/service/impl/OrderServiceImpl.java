@@ -1,12 +1,10 @@
 package com.zj.auction.general.app.service.impl;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.zj.auction.common.constant.Constant;
 import com.zj.auction.common.constant.RedisConstant;
-import com.zj.auction.common.dto.BaseOrderDto;
-import com.zj.auction.common.dto.OrderNotifyDto;
-import com.zj.auction.common.dto.PaymentVoucher;
-import com.zj.auction.common.dto.PickUpDto;
+import com.zj.auction.common.dto.*;
 import com.zj.auction.common.enums.*;
 import com.zj.auction.common.exception.CustomException;
 import com.zj.auction.common.mapper.*;
@@ -291,15 +289,16 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public List<Order> listUserOrder(OrderQuery query) {
+    public PageVo<Order> listUserOrder(OrderQuery query) {
         if (Objects.isNull(query)) {
             throw new CustomException(StatusEnum.PARAM_ERROR);
         }
-        User user = (User)SecurityUtils.getSubject().getPrincipal();
-        if(Objects.isNull(user)){
+        User user = com.zj.auction.general.shiro.SecurityUtils.getPrincipal();
+        Long userId = user.getUserId();
+        if(Objects.isNull(userId)){
             throw new CustomException(StatusEnum.USER_TOKEN_ERROR);
         }
-        query.setUserId(user.getUserId());
+        query.setUserId(userId);
         Byte orderDirection = query.getOrderDirection();
         if (Objects.nonNull(orderDirection) && Objects.isNull(query.getOrderStat())) {
             if (OrderDirectionEnum.check(orderDirection)) {
@@ -308,7 +307,7 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         PageHelper.startPage(query.getPageNum(), query.getPageSize());
-        return orderMapper.listOrderByCondition(query);
+        return PageVo.of((Page<Order>) orderMapper.listOrderByCondition(query));
     }
 
     @Override
