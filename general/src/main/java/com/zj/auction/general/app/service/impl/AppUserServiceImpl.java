@@ -14,6 +14,7 @@ import com.zj.auction.common.date.DateUtil;
 import com.zj.auction.common.dto.PassWordDTO;
 import com.zj.auction.common.dto.UserDTO;
 import com.zj.auction.common.exception.ServiceException;
+import com.zj.auction.common.exception.SystemExceptionEnum;
 import com.zj.auction.common.mapper.*;
 import com.zj.auction.common.model.Address;
 import com.zj.auction.common.model.Role;
@@ -348,16 +349,14 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
      * @return void
      * @Description 校验验证码
      * @Title messagesCheck
-     * @Author Mao Qi
-     * @Date 2020/4/13 20:04
      */
     private void messagesCheck(String tel, String messages) {
         // 验证码校验
         String messagesCheck = (String) redisTemplate.opsForValue().get(AppTokenUtils.CODE_FILE + tel);// 验证码校验
 
         if (Objects.isNull(messagesCheck) || Objects.isNull(messages)) {
-            System.out.println("====================" + messagesCheck);
-            throw new ServiceException(512, "验证码失效!");
+            System.out.println("==========验证码校验==========" + messagesCheck);
+            throw new ServiceException(SystemExceptionEnum.CODE_ERROR);
         }
         if (!messages.equals(messagesCheck)) {
             throw new ServiceException(SystemConstant.ERROR_MESSAGE_CODE, SystemConstant.ERROR_MESSAGE);

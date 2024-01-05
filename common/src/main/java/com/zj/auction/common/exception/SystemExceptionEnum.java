@@ -17,6 +17,7 @@ public enum SystemExceptionEnum implements GlobalException {
     PARAM_ERROR(606,"参数缺失或错误，请稍后重试"),
     DATA_ILLEGALITY_CODE(607,"数据非法，请稍后重试"),
     UNEXPECTED_ERROR(502,"无法预期的错误，我们正在收集信息"),
+    CODE_ERROR(512,"验证码失效"),
 
     ;
     SystemExceptionEnum(Integer  code, String message){
