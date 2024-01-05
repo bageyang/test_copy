@@ -14,17 +14,21 @@
     <result column="is_deleted" jdbcType="TINYINT" property="isDeleted" />
   </resultMap>
 
+  <sql id="Base_Column_List">
+    id, goods_id, prices, stock_number, stock_status, owner_id, transfer_num, create_time,
+    update_time, is_deleted
+  </sql>
+
   <sql id="delete_flag_sql">
     and is_deleted = 0
   </sql>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from zj_stock
     where id = #{id,jdbcType=BIGINT}
   </delete>
+
   <insert id="insert" parameterType="com.zj.auction.common.model.Stock">
-    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
-      SELECT LAST_INSERT_ID()
-    </selectKey>
     insert into zj_stock (goods_id, prices, stock_number, 
       stock_status, owner_id, transfer_num, 
       create_time, update_time, is_deleted
@@ -34,6 +38,69 @@
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=TINYINT}
       )
   </insert>
+
+  <insert id="insertSelective" parameterType="com.zj.auction.common.model.Stock">
+    insert into zj_stock
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="goodsId != null">
+        goods_id,
+      </if>
+      <if test="prices != null">
+        prices,
+      </if>
+      <if test="stockNumber != null">
+        stock_number,
+      </if>
+      <if test="stockStatus != null">
+        stock_status,
+      </if>
+      <if test="ownerId != null">
+        owner_id,
+      </if>
+      <if test="transferNum != null">
+        transfer_num,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="isDeleted != null">
+        is_deleted,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="goodsId != null">
+        #{goodsId,jdbcType=BIGINT},
+      </if>
+      <if test="prices != null">
+        #{prices,jdbcType=DECIMAL},
+      </if>
+      <if test="stockNumber != null">
+        #{stockNumber,jdbcType=BIGINT},
+      </if>
+      <if test="stockStatus != null">
+        #{stockStatus,jdbcType=TINYINT},
+      </if>
+      <if test="ownerId != null">
+        #{ownerId,jdbcType=BIGINT},
+      </if>
+      <if test="transferNum != null">
+        #{transferNum,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null">
+        #{isDeleted,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+
   <update id="updateByPrimaryKey" parameterType="com.zj.auction.common.model.Stock">
     update zj_stock
     set goods_id = #{goodsId,jdbcType=BIGINT},
@@ -47,22 +114,57 @@
       is_deleted = #{isDeleted,jdbcType=TINYINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.zj.auction.common.model.Stock">
+    update zj_stock
+    <set>
+      <if test="goodsId != null">
+        goods_id = #{goodsId,jdbcType=BIGINT},
+      </if>
+      <if test="prices != null">
+        prices = #{prices,jdbcType=DECIMAL},
+      </if>
+      <if test="stockNumber != null">
+        stock_number = #{stockNumber,jdbcType=BIGINT},
+      </if>
+      <if test="stockStatus != null">
+        stock_status = #{stockStatus,jdbcType=TINYINT},
+      </if>
+      <if test="ownerId != null">
+        owner_id = #{ownerId,jdbcType=BIGINT},
+      </if>
+      <if test="transferNum != null">
+        transfer_num = #{transferNum,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null">
+        is_deleted = #{isDeleted,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select id, goods_id, prices, stock_number, stock_status, owner_id, transfer_num, 
-    create_time, update_time, is_deleted
+    select <include refid="Base_Column_List" />
     from zj_stock
     where id = #{id,jdbcType=BIGINT}
   </select>
+
   <select id="selectAll" resultMap="BaseResultMap">
-    select id, goods_id, prices, stock_number, stock_status, owner_id, transfer_num, 
-    create_time, update_time, is_deleted
+    select <include refid="Base_Column_List" />
     from zj_stock
   </select>
+
   <select id="selectOneBySn" resultType="com.zj.auction.common.model.Stock">
-    select id, goods_id, prices, stock_number, stock_status, owner_id, transfer_num,
-           create_time, update_time, is_deleted
+    select <include refid="Base_Column_List" />
     from zj_stock
     where stock_number = #{sn}
     <include refid="delete_flag_sql"/>
   </select>
+
 </mapper>

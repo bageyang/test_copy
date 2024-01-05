@@ -1,47 +1,138 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zj.auction.common.mapper.AuctionStockRelationMapper">
-  <resultMap id="BaseResultMap" type="com.zj.auction.common.model.AuctionStockRelation">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="auction_id" jdbcType="BIGINT" property="auctionId" />
-    <result column="stock_number" jdbcType="VARCHAR" property="stockNumber" />
-    <result column="stock_id" jdbcType="BIGINT" property="stockId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="is_deleted" jdbcType="TINYINT" property="isDeleted" />
-  </resultMap>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from zj_auction_stock_relation
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
-  <insert id="insert" parameterType="com.zj.auction.common.model.AuctionStockRelation">
-    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
-      SELECT LAST_INSERT_ID()
-    </selectKey>
-    insert into zj_auction_stock_relation (auction_id, stock_number, stock_id, 
-      create_time, update_time, is_deleted
-      )
-    values (#{auctionId,jdbcType=BIGINT}, #{stockNumber,jdbcType=VARCHAR}, #{stockId,jdbcType=BIGINT}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=TINYINT}
-      )
-  </insert>
-  <update id="updateByPrimaryKey" parameterType="com.zj.auction.common.model.AuctionStockRelation">
-    update zj_auction_stock_relation
-    set auction_id = #{auctionId,jdbcType=BIGINT},
-      stock_number = #{stockNumber,jdbcType=VARCHAR},
-      stock_id = #{stockId,jdbcType=BIGINT},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      is_deleted = #{isDeleted,jdbcType=TINYINT}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select id, auction_id, stock_number, stock_id, create_time, update_time, is_deleted
-    from zj_auction_stock_relation
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <select id="selectAll" resultMap="BaseResultMap">
-    select id, auction_id, stock_number, stock_id, create_time, update_time, is_deleted
-    from zj_auction_stock_relation
-  </select>
+    <resultMap id="BaseResultMap" type="com.zj.auction.common.model.AuctionStockRelation">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="auction_id" jdbcType="BIGINT" property="auctionId"/>
+        <result column="stock_number" jdbcType="VARCHAR" property="stockNumber"/>
+        <result column="stock_id" jdbcType="BIGINT" property="stockId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="is_deleted" jdbcType="TINYINT" property="isDeleted"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, auction_id, stock_number, stock_id, create_time, update_time, is_deleted
+    </sql>
+
+    <sql id="delete_flag_sql">
+        and is_deleted = 0
+    </sql>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete
+        from zj_auction_stock_relation
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.zj.auction.common.model.AuctionStockRelation">
+        insert into zj_auction_stock_relation (auction_id, stock_number, stock_id,
+                                               create_time, update_time, is_deleted)
+        values (#{auctionId,jdbcType=BIGINT}, #{stockNumber,jdbcType=VARCHAR}, #{stockId,jdbcType=BIGINT},
+                #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=TINYINT})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.zj.auction.common.model.AuctionStockRelation">
+        insert into zj_auction_stock_relation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="auctionId != null">
+                auction_id,
+            </if>
+            <if test="stockNumber != null">
+                stock_number,
+            </if>
+            <if test="stockId != null">
+                stock_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="isDeleted != null">
+                is_deleted,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="auctionId != null">
+                #{auctionId,jdbcType=BIGINT},
+            </if>
+            <if test="stockNumber != null">
+                #{stockNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="stockId != null">
+                #{stockId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDeleted != null">
+                #{isDeleted,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="com.zj.auction.common.model.AuctionStockRelation">
+        update zj_auction_stock_relation
+        set auction_id   = #{auctionId,jdbcType=BIGINT},
+            stock_number = #{stockNumber,jdbcType=VARCHAR},
+            stock_id     = #{stockId,jdbcType=BIGINT},
+            create_time  = #{createTime,jdbcType=TIMESTAMP},
+            update_time  = #{updateTime,jdbcType=TIMESTAMP},
+            is_deleted   = #{isDeleted,jdbcType=TINYINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from zj_auction_stock_relation
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from zj_auction_stock_relation
+    </select>
+
+    <select id="listStockByAuctionIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from zj_auction_stock_relation
+        where auction_id in
+        <foreach collection="auctionIds" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+        <include refid="delete_flag_sql"/>
+    </select>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.zj.auction.common.model.AuctionStockRelation">
+        update zj_auction_stock_relation
+        <set>
+            <if test="auctionId != null">
+                auction_id = #{auctionId,jdbcType=BIGINT},
+            </if>
+            <if test="stockNumber != null">
+                stock_number = #{stockNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="stockId != null">
+                stock_id = #{stockId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDeleted != null">
+                is_deleted = #{isDeleted,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
 </mapper>

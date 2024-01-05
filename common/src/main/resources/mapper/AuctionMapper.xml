@@ -1,75 +1,176 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zj.auction.common.mapper.AuctionMapper">
-  <resultMap id="BaseResultMap" type="com.zj.auction.common.model.Auction">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="auction_name" jdbcType="VARCHAR" property="auctionName" />
-    <result column="goods_id" jdbcType="BIGINT" property="goodsId" />
-    <result column="prices" jdbcType="DECIMAL" property="prices" />
-    <result column="stock_quantity" jdbcType="INTEGER" property="stockQuantity" />
-    <result column="auction_status" jdbcType="TINYINT" property="auctionStatus" />
-    <result column="auction_area_id" jdbcType="INTEGER" property="auctionAreaId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="is_deleted" jdbcType="TINYINT" property="isDeleted" />
-  </resultMap>
-  
-  <sql id="Base_column_sql">
-    id, auction_name, goods_id, prices, stock_quantity, auction_status, auction_area_id,
-    create_time, update_time, is_deleted
-  </sql>
+    <resultMap id="BaseResultMap" type="com.zj.auction.common.model.Auction">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="auction_name" jdbcType="VARCHAR" property="auctionName"/>
+        <result column="goods_id" jdbcType="BIGINT" property="goodsId"/>
+        <result column="prices" jdbcType="DECIMAL" property="prices"/>
+        <result column="stock_quantity" jdbcType="INTEGER" property="stockQuantity"/>
+        <result column="auction_status" jdbcType="TINYINT" property="auctionStatus"/>
+        <result column="auction_area_id" jdbcType="INTEGER" property="auctionAreaId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="is_deleted" jdbcType="TINYINT" property="isDeleted"/>
+    </resultMap>
 
-  <sql id="delete_flag_sql">
-    and is_deleted = 0
-  </sql>
-  
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from zj_auction
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
-  <insert id="insert" parameterType="com.zj.auction.common.model.Auction">
-    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
-      SELECT LAST_INSERT_ID()
-    </selectKey>
-    insert into zj_auction (auction_name, goods_id, prices, 
-      stock_quantity, auction_status, auction_area_id, 
-      create_time, update_time, is_deleted
-      )
-    values (#{auctionName,jdbcType=VARCHAR}, #{goodsId,jdbcType=BIGINT}, #{prices,jdbcType=DECIMAL}, 
-      #{stockQuantity,jdbcType=INTEGER}, #{auctionStatus,jdbcType=TINYINT}, #{auctionAreaId,jdbcType=INTEGER}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=TINYINT}
-      )
-  </insert>
-  <update id="updateByPrimaryKey" parameterType="com.zj.auction.common.model.Auction">
+    <sql id="Base_column_sql">
+        id, auction_name, goods_id, prices, stock_quantity, auction_status, auction_area_id,
+    create_time, update_time, is_deleted
+    </sql>
+
+    <sql id="Base_Column_List">
+        id
+        , auction_name, goods_id, prices, stock_quantity, auction_status, auction_area_id,
+    create_time, update_time, is_deleted
+    </sql>
+
+    <sql id="delete_flag_sql">
+        and is_deleted = 0
+    </sql>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete
+        from zj_auction
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.zj.auction.common.model.Auction">
+        insert into zj_auction (auction_name, goods_id, prices,
+                                stock_quantity, auction_status, auction_area_id,
+                                create_time, update_time, is_deleted)
+        values (#{auctionName,jdbcType=VARCHAR}, #{goodsId,jdbcType=BIGINT}, #{prices,jdbcType=DECIMAL},
+                #{stockQuantity,jdbcType=INTEGER}, #{auctionStatus,jdbcType=TINYINT}, #{auctionAreaId,jdbcType=INTEGER},
+                #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=TINYINT})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.zj.auction.common.model.Auction">
+        insert into zj_auction
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="auctionName != null">
+                auction_name,
+            </if>
+            <if test="goodsId != null">
+                goods_id,
+            </if>
+            <if test="prices != null">
+                prices,
+            </if>
+            <if test="stockQuantity != null">
+                stock_quantity,
+            </if>
+            <if test="auctionStatus != null">
+                auction_status,
+            </if>
+            <if test="auctionAreaId != null">
+                auction_area_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="isDeleted != null">
+                is_deleted,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="auctionName != null">
+                #{auctionName,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsId != null">
+                #{goodsId,jdbcType=BIGINT},
+            </if>
+            <if test="prices != null">
+                #{prices,jdbcType=DECIMAL},
+            </if>
+            <if test="stockQuantity != null">
+                #{stockQuantity,jdbcType=INTEGER},
+            </if>
+            <if test="auctionStatus != null">
+                #{auctionStatus,jdbcType=TINYINT},
+            </if>
+            <if test="auctionAreaId != null">
+                #{auctionAreaId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDeleted != null">
+                #{isDeleted,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="com.zj.auction.common.model.Auction">
+        update zj_auction
+        set auction_name    = #{auctionName,jdbcType=VARCHAR},
+            goods_id        = #{goodsId,jdbcType=BIGINT},
+            prices          = #{prices,jdbcType=DECIMAL},
+            stock_quantity  = #{stockQuantity,jdbcType=INTEGER},
+            auction_status  = #{auctionStatus,jdbcType=TINYINT},
+            auction_area_id = #{auctionAreaId,jdbcType=INTEGER},
+            create_time     = #{createTime,jdbcType=TIMESTAMP},
+            update_time     = #{updateTime,jdbcType=TIMESTAMP},
+            is_deleted      = #{isDeleted,jdbcType=TINYINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.zj.auction.common.model.Auction">
     update zj_auction
-    set auction_name = #{auctionName,jdbcType=VARCHAR},
-      goods_id = #{goodsId,jdbcType=BIGINT},
-      prices = #{prices,jdbcType=DECIMAL},
-      stock_quantity = #{stockQuantity,jdbcType=INTEGER},
-      auction_status = #{auctionStatus,jdbcType=TINYINT},
-      auction_area_id = #{auctionAreaId,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      is_deleted = #{isDeleted,jdbcType=TINYINT}
+    <set>
+      <if test="auctionName != null">
+        auction_name = #{auctionName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsId != null">
+        goods_id = #{goodsId,jdbcType=BIGINT},
+      </if>
+      <if test="prices != null">
+        prices = #{prices,jdbcType=DECIMAL},
+      </if>
+      <if test="stockQuantity != null">
+        stock_quantity = #{stockQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="auctionStatus != null">
+        auction_status = #{auctionStatus,jdbcType=TINYINT},
+      </if>
+      <if test="auctionAreaId != null">
+        auction_area_id = #{auctionAreaId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null">
+        is_deleted = #{isDeleted,jdbcType=TINYINT},
+      </if>
+    </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select id, auction_name, goods_id, prices, stock_quantity, auction_status, auction_area_id, 
-    create_time, update_time, is_deleted
-    from zj_auction
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <select id="selectAll" resultMap="BaseResultMap">
-    select id, auction_name, goods_id, prices, stock_quantity, auction_status, auction_area_id, 
-    create_time, update_time, is_deleted
-    from zj_auction
-  </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from zj_auction
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from zj_auction
+    </select>
+
     <select id="listAuctionByAreaId" resultMap="BaseResultMap">
-      select
-          <include refid="Base_column_sql"/>
-      from zj_auction
-      where auction_area_id = #{areaId}
-      <include refid="delete_flag_sql"/>
-      limit 1
+        select
+        <include refid="Base_Column_List"/>
+        from zj_auction
+        where auction_area_id = #{areaId}
+        <include refid="delete_flag_sql"/>
+        limit 1
     </select>
 </mapper>

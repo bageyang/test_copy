@@ -11,11 +11,15 @@ public interface GoodsMapper {
 
     int insert(Goods record);
 
+    int insertSelective(Goods record);
+
     Goods selectByPrimaryKey(Long id);
 
     List<Goods> selectAll();
 
     int updateByPrimaryKey(Goods record);
+
+    int updateByPrimaryKeySelective(Goods record);
 
     List<Goods> listGoodsInfoByIds(@Param("goodIds") List<Long> goodIds);
 }

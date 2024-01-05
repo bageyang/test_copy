@@ -16,5 +16,7 @@ public interface AuctionMapper {
 
     int updateByPrimaryKey(Auction record);
 
+    int updateByPrimaryKeySelective(Auction record);
+
     List<Auction> listAuctionByAreaId(@Param("areaId") Integer areaId);
 }

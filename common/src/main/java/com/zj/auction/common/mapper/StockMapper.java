@@ -11,11 +11,15 @@ public interface StockMapper {
 
     int insert(Stock record);
 
+    int insertSelective(Stock record);
+
     Stock selectByPrimaryKey(Long id);
 
     List<Stock> selectAll();
 
     int updateByPrimaryKey(Stock record);
+
+    int updateByPrimaryKeySelective(Stock record);
 
     Stock selectOneBySn(@Param("sn")Long sn);
 }

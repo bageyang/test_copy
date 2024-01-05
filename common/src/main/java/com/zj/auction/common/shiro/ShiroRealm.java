@@ -8,9 +8,6 @@ import com.zj.auction.common.model.User;
 import com.zj.auction.common.util.AuthToken;
 import com.zj.auction.common.util.PcTokenUtils;
 import com.zj.auction.common.util.StringUtils;
-import com.zj.auction.general.pc.service.RoleService;
-import com.zj.auction.general.pc.service.UserRoleService;
-import com.zj.auction.general.pc.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.shiro.authc.*;
@@ -41,9 +38,9 @@ import java.util.stream.Collectors;
 public class ShiroRealm extends AuthorizingRealm {
 
     //用于用户查询
-    private UserService userService;
-    private UserRoleService userRoleService;
-    private RoleService roleService;
+//    private UserService userService;
+//    private UserRoleService userRoleService;
+//    private RoleService roleService;
     private UserRoleMapper userRoleMapper;
     private PermisRoleMapper permisRoleMapper;
 
@@ -80,7 +77,7 @@ public class ShiroRealm extends AuthorizingRealm {
 //        User user = pcUserRepository.findByDeleteFlagFalseAndUserId(Long.parseLong(userId));
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
         wrapper.eq(User::getUserId,userId).eq(User::getDeleteFlag,0);
-        User user = userService.selectOne(wrapper);
+        User user = null;
         if (user == null) {
             //	账号错误
             throw new UnknownAccountException();
@@ -104,7 +101,7 @@ public class ShiroRealm extends AuthorizingRealm {
         //获取登录用户名
         User usercfg = (User) principalCollection.getPrimaryPrincipal();
         //查询用户名称
-        User user = userService.findByDeleteFlagFalseAndUserName(usercfg.getUserName());
+        User user = null;
         //添加角色和权限
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
         //查询当前用户拥有的角色

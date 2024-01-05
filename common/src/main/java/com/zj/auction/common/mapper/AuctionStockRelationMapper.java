@@ -11,15 +11,15 @@ public interface AuctionStockRelationMapper {
 
     int insert(AuctionStockRelation record);
 
+    int insertSelective(AuctionStockRelation record);
+
     AuctionStockRelation selectByPrimaryKey(Long id);
 
     List<AuctionStockRelation> selectAll();
 
     int updateByPrimaryKey(AuctionStockRelation record);
 
+    int updateByPrimaryKeySelective(AuctionStockRelation record);
+
     List<AuctionStockRelation> listStockByAuctionIds(@Param("auctionIds") List<Long> ids);
-
-    Long selectAuctionIdBySn(@Param("sn") Long sn);
-
-    Long selectAuctionIdByStockId(@Param("stockId") Long stockId);
 }
