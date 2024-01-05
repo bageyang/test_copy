@@ -28,9 +28,9 @@ public class CashRechargeHandler implements PayCallBackHandler{
 
     @Override
     public boolean shouldHand(PayDto payDto) {
-        String billType = payDto.getBillType();
+        String payType = payDto.getPayType();
         String billStatus = payDto.getBillStatus();
-        return Objects.equals(CASH_PAY_TYPE,billType)&&Objects.equals(SUCCESS_STAT,billStatus);
+        return Objects.equals(CASH_PAY_TYPE,payType)&&Objects.equals(SUCCESS_STAT,billStatus);
     }
 
     @Override
