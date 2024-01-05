@@ -105,8 +105,9 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     //实名认证
     @Override
     public Boolean authIdentity(String realName, String cardNum, String frontImage, String reverseImage) {
-        AuthToken appToken = AppTokenUtils.getAuthToken();
-        User user = userMapper.selectByPrimaryKey(appToken.getUserId());
+//        AuthToken appToken = AppTokenUtils.getAuthToken();
+        User user=(User)SecurityUtils.getSubject().getPrincipal();
+        //User user = userMapper.selectByPrimaryKey(appToken.getUserId());
         user.setRealName(realName);//真实姓名
         user.setCardNumber(cardNum);//身份证号
         UserConfig u = userConfigMapper.selectAllByUserId(user.getUserId());
@@ -424,6 +425,13 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
      */
     @Override
     public LoginResp login(String userName, String password, String code) {
+
+//        if (userName!=null){
+//            //W3zB;P2'"
+//            Md5Hash md5Hash = new Md5Hash(password, "W3zB;P2'\"", 1024);
+//            System.out.println("md5Hash???"+md5Hash);
+//        }
+
         LoginResp data = new LoginResp();
         PubFun.check(userName);
         User user = userMapper.findByUserName(userName);//查询用户
