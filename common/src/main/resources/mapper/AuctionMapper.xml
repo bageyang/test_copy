@@ -29,6 +29,9 @@
         where id = #{id,jdbcType=BIGINT}
     </delete>
     <insert id="insert" parameterType="com.zj.auction.common.model.Auction">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            select LAST_INSERT_ID()
+        </selectKey>
         insert into zj_auction (auction_name, goods_id, price,
                                 stock_quantity, auction_status, auction_area_id,
                                 create_time, update_time, is_deleted)
@@ -38,6 +41,9 @@
     </insert>
 
     <insert id="insertSelective" parameterType="com.zj.auction.common.model.Auction">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            select LAST_INSERT_ID()
+        </selectKey>
         insert into zj_auction
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="auctionName != null">

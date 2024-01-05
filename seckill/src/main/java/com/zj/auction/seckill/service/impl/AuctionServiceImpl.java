@@ -65,7 +65,7 @@ public class AuctionServiceImpl implements AuctionService {
             String key = String.valueOf(k);
             // hash 缓存库存数量
             redisService.hSet(RedisConstant.AUCTION_REMAINDER_KEY,key,v.size());
-            List<String> snList = v.stream()
+            List<Long> snList = v.stream()
                     .map(AuctionStockRelation::getStockNumber)
                     .collect(Collectors.toList());
             // list 缓存库存编号
@@ -103,7 +103,7 @@ public class AuctionServiceImpl implements AuctionService {
         vo.setAuctionName(auction.getAuctionName());
         vo.setAuctionAreaId(auction.getAuctionAreaId());
         vo.setGoodsId(auction.getGoodsId());
-        vo.setPrices(auction.getPrices());
+        vo.setPrices(auction.getPrice());
         vo.setStockQuantity(auction.getStockQuantity());
         vo.setGoodsInfo(goods);
         return vo;
