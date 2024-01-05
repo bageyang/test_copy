@@ -10,16 +10,15 @@ public enum StatusEnum {
      * 请求状态
      */
     SUCCESS(200, "成功"),
-    FAILED(201, "失败"), // 通用失败
-    ERROR(202, "错误"), //  通用错误
+    FAILED(499, "失败"), // 通用失败
+    ERROR(500, "错误"), //  通用错误
 
 
     /**
      * 系统相关异常 (1000 - 1999）
      */
     AUCTION_FINISH_ERROR(1001,"拍品已结束"),
-    PARAM_ERROR(1002,"参数缺失"),
-    SECKILL_FAIL_ERROR(1003,"抢单失败,请稍后再试！")
+    PARAM_ERROR(1002,"参数缺失")
     ;
 
     private Integer code;
