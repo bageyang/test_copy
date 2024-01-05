@@ -23,9 +23,5 @@ public interface AuctionStockRelationMapper {
 
     List<AuctionStockRelation> listStockByAuctionIds(@Param("auctionIds") List<Long> ids);
 
-    List<AuctionStockRelation> listStockByAuctionId(@Param("auctionId") Long id);
-
     Long getAuctionIdByStockNumber(@Param("stockNumber") Long stockNumber);
-
-    List<AuctionStockRelation> listUnExclusiveStock(@Param("auctionId") Long auctionId);
 }

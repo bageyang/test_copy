@@ -1,6 +1,5 @@
 package com.zj.auction.general.pc.controller;
 
-import com.zj.auction.common.dto.PageVo;
 import com.zj.auction.common.dto.Ret;
 import com.zj.auction.common.model.Order;
 import com.zj.auction.common.query.OrderQuery;
@@ -24,7 +23,7 @@ public class OrderManagementController {
     }
 
     @PostMapping("/list")
-    public Ret<PageVo<Order>> listOrder(OrderQuery query){
+    public Ret<List<Order>> listOrder(OrderQuery query){
         return Ret.ok(orderManagerService.listOrder(query));
     }
 

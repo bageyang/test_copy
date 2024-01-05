@@ -5,7 +5,6 @@ import com.zj.auction.common.dto.Ret;
 import com.zj.auction.general.pc.service.StockManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +19,7 @@ public class StockManagementController {
     }
 
     @PostMapping("/addAuctionStock")
-    public Ret<Boolean> addStockAndTransfer2Auction(@RequestBody AuctionStockNumDto query){
+    public Ret<Boolean> addStockAndTransfer2Auction(AuctionStockNumDto query){
         return Ret.ok(stockManagerService.addAndTransfer2Auction(query));
     }
 }

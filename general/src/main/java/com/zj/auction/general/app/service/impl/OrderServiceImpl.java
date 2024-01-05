@@ -1,10 +1,12 @@
 package com.zj.auction.general.app.service.impl;
 
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.zj.auction.common.constant.Constant;
 import com.zj.auction.common.constant.RedisConstant;
-import com.zj.auction.common.dto.*;
+import com.zj.auction.common.dto.BaseOrderDto;
+import com.zj.auction.common.dto.OrderNotifyDto;
+import com.zj.auction.common.dto.PaymentVoucher;
+import com.zj.auction.common.dto.PickUpDto;
 import com.zj.auction.common.enums.*;
 import com.zj.auction.common.exception.CustomException;
 import com.zj.auction.common.mapper.*;
@@ -16,11 +18,11 @@ import com.zj.auction.general.app.service.OrderMqService;
 import com.zj.auction.general.app.service.OrderService;
 import com.zj.auction.general.app.service.RebateService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -79,14 +81,14 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public boolean uploadPaymentVoucher(PaymentVoucher paymentVoucher) {
-        Long userId = getUserId();
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
         String orderVoucher = paymentVoucher.getOrderVoucher();
         Long orderSn = paymentVoucher.getOrderSn();
         Order buyerOrder = orderMapper.selectOrderByOrderNumber(orderSn);
         if (!buyerOrderUnPaid(buyerOrder)) {
             throw new CustomException(StatusEnum.ORDER_STATUS_ERROR);
         }
-        if(Objects.equals(buyerOrder.getUserId(),userId)){
+        if(Objects.equals(buyerOrder.getUserId(),user.getUserId())){
             throw new CustomException(StatusEnum.OWNER_ORDER_MISS_ERROR);
         }
         if (StringUtils.isBlank(orderVoucher)) {
@@ -117,10 +119,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Boolean transfer2Auction(Long orderSn) {
-        Long userId = getUserId();
-        if(Objects.isNull(userId)){
-            throw new CustomException(StatusEnum.USER_TOKEN_ERROR);
-        }
+//        User user = SecurityUtils.getPrincipal();
+//        if(Objects.isNull(user)){
+//            throw new CustomException(StatusEnum.USER_TOKEN_ERROR);
+//        }
+        Long userId = 2L;
         Order order = orderCheck(userId, orderSn);
         if(OrderStatEnum.WAIT_MARGIN.isEqual(order.getOrderStatus())){
             return true;
@@ -233,7 +236,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public boolean finishOrder(Long orderSn) {
-        Long userId = getUserId();
+//        User user = SecurityUtils.getPrincipal();
+//        if(Objects.isNull(user)){
+//            throw new CustomException(StatusEnum.USER_TOKEN_ERROR);
+//        }
         if (Objects.isNull(orderSn)) {
             throw new CustomException(StatusEnum.PARAM_ERROR);
         }
@@ -242,7 +248,7 @@ public class OrderServiceImpl implements OrderService {
         if (!OrderStatEnum.UN_CONFIRM.isEqual(orderStatus)) {
             throw new CustomException(StatusEnum.ORDER_STATUS_ERROR);
         }
-        if(!Objects.equals(sellerOrder.getUserId(), userId)){
+        if(!Objects.equals(sellerOrder.getUserId(), 2L)){
             throw new CustomException(StatusEnum.ORDER_STATUS_ERROR);
         }
         Long stockNumber = sellerOrder.getStockNumber();
@@ -284,15 +290,15 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public PageVo<Order> listUserOrder(OrderQuery query) {
+    public List<Order> listUserOrder(OrderQuery query) {
         if (Objects.isNull(query)) {
             throw new CustomException(StatusEnum.PARAM_ERROR);
         }
-        Long userId = getUserId();
-        if(Objects.isNull(userId)){
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
+        if(Objects.isNull(user)){
             throw new CustomException(StatusEnum.USER_TOKEN_ERROR);
         }
-        query.setUserId(userId);
+        query.setUserId(user.getUserId());
         Byte orderDirection = query.getOrderDirection();
         if (Objects.nonNull(orderDirection) && Objects.isNull(query.getOrderStat())) {
             if (OrderDirectionEnum.check(orderDirection)) {
@@ -301,7 +307,7 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         PageHelper.startPage(query.getPageNum(), query.getPageSize());
-        return PageVo.of((Page<Order>) orderMapper.listOrderByCondition(query));
+        return orderMapper.listOrderByCondition(query);
     }
 
     @Override
@@ -311,22 +317,16 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void generatorOrder(BaseOrderDto orderInfo) {
         log.info("开始生成用户订单:{}", orderInfo);
         Long sn = orderInfo.getSn();
         Long auctionId = orderInfo.getAuctionId();
         Auction auction = auctionService.getAuctionById(auctionId);
-        if(auction.getStockQuantity()<1){
-            log.error("拍品库存不足,订单信息:{}",orderInfo);
-        }
         // 独占
         int i = orderMapper.countExclusiveAuctionUserNum(sn, OrderStatEnum.UN_PAYMENT.getCode());
         if (i > 0) {
             log.error("生成用户订单失败,userId:{},stockNumber:{}", orderInfo.getUserId(), orderInfo.getSn());
-            return;
         }
-
         Order ownerOrder = orderMapper.selectOwnerOrderByStockNumberAndStatus(sn, OrderStatEnum.ON_AUCTION.getCode());
         Stock stock = stockMapper.selectOneBySn(sn);
         checkOrderStatus(ownerOrder, orderInfo, auction);
@@ -334,12 +334,6 @@ public class OrderServiceImpl implements OrderService {
         ownerOrder.setOrderStatus(OrderStatEnum.WAIT_BUYER_PAYMENT.getCode());
         orderMapper.insertSelective(order);
         orderMapper.updateByPrimaryKeySelective(ownerOrder);
-        boolean ret = auctionService.decrementQuantity(auction.getId(),sn);
-        if(!ret){
-            log.error("生成用户订单失败,userId:{},stockNumber:{}", orderInfo.getUserId(), orderInfo.getSn());
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return;
-        }
         log.info("成功生成用户订单:库存号:{},订单号{}", sn, order.getOrderSn());
         OrderNotifyDto orderNotifyDto = new OrderNotifyDto(order.getOrderSn(), OrderNotifyEnum.PAYMENT_TIME_OUT.getCode());
         orderMqService.sendOrderDelayMsg(orderNotifyDto, 20, TimeUnit.SECONDS);
@@ -394,10 +388,11 @@ public class OrderServiceImpl implements OrderService {
         if (Objects.isNull(pickUpDto) || Objects.isNull(pickUpDto.getOrderId()) || Objects.isNull(pickUpDto.getAddressId())) {
             throw new CustomException(StatusEnum.PARAM_ERROR);
         }
-        Long userId =  getUserId();
-        if(Objects.isNull(userId)){
-            throw new CustomException(StatusEnum.USER_TOKEN_ERROR);
-        }
+//        User user = SecurityUtils.getPrincipal();
+//        if(Objects.isNull(user)){
+//            throw new CustomException(StatusEnum.USER_TOKEN_ERROR);
+//        }
+        Long userId =  2L;
         Long orderId = pickUpDto.getOrderId();
         Long addressId = pickUpDto.getAddressId();
         Order order = orderMapper.selectByPrimaryKey(orderId);
@@ -420,36 +415,7 @@ public class OrderServiceImpl implements OrderService {
         return true;
     }
 
-    @Override
-    public void handNotify(OrderNotifyDto notifyDto) {
-        Long orderSn = notifyDto.getOrderSn();
-        Byte notifyType = notifyDto.getNotifyType();
-        if (OrderNotifyEnum.PAYMENT_TIME_OUT.isEqual(notifyType)) {
-            handPayTimeOut(orderSn);
-        }else if (OrderNotifyEnum.CONFIRM_TIME_OUT.isEqual(notifyType)){
-            handConfirmTimeOut(orderSn);
-        }
-    }
-
-    private void handPayTimeOut(Long orderSn) {
-        Order order = orderMapper.selectOrderByOrderNumber(orderSn);
-        if(Objects.isNull(order)){
-            log.error("超时支付未查询到订单");
-        }
-        if(!OrderStatEnum.WAIT_BUYER_PAYMENT.isEqual(order.getOrderStatus())){
-            return;
-        }
-        order.setOrderStatus(OrderStatEnum.PAY_TIME_OUT.getCode());
-        orderMapper.updateByPrimaryKeySelective(order);
-        // todo 超时支付扣除保证金
-
-    }
-
-    private void handConfirmTimeOut(Long orderSn) {
-    }
-
-
-    private ExpressOrder buildExpressOrder(Order order, Address address) {
+    private ExpressOrder buildExpressOrder(Order order,Address address) {
         ExpressOrder expressOrder = new ExpressOrder();
         expressOrder.setOrderSn(order.getOrderSn());
         expressOrder.setOrderId(order.getId());
@@ -470,10 +436,5 @@ public class OrderServiceImpl implements OrderService {
 
     private boolean canPickUp(Byte statCode){
        return OrderStatEnum.AUCTION_SUCCESS.isEqual(statCode)||OrderStatEnum.WAIT_MARGIN.isEqual(statCode);
-    }
-
-    private Long getUserId(){
-        // todo
-        return 202L;
     }
 }

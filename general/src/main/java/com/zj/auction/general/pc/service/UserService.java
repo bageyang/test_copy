@@ -1,6 +1,5 @@
 package com.zj.auction.general.pc.service;
 import com.github.pagehelper.PageInfo;
-import com.zj.auction.common.dto.Ret;
 import com.zj.auction.common.dto.UserDTO;
 import com.zj.auction.common.model.Permis;
 import com.zj.auction.common.model.User;
@@ -8,7 +7,6 @@ import com.zj.auction.common.vo.GeneralResult;
 import com.zj.auction.common.vo.LoginResp;
 import com.zj.auction.common.vo.PageAction;
 
-import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +46,7 @@ public interface UserService  {
 //     * @return：Boolean
 //     *
 //     */
-    Boolean createManager(User userCfg);
+    int createManager(UserDTO dto);
 //
 //    /**
 //     * @Title: updateManager
@@ -367,4 +365,11 @@ public interface UserService  {
 //     * @return	com.duoqio.common.vo.GeneralResult
 //     */
     GeneralResult updVipType(Long userId, Integer vipType, Long tagId);
+
+    /**
+     * 超级管理员修改用户角色
+     * @param userId
+     * @param roleId
+     */
+    void updateUserAuthority(String userId, String roleId);
 }

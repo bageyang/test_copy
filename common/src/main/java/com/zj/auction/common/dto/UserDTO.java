@@ -6,6 +6,9 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * @author 胖胖不胖
+ */
 @Data
 public class UserDTO {
     /**
@@ -353,6 +356,12 @@ public class UserDTO {
     private LocalDateTime endDate;
 
     private String userIds;
+
+    private String cardNum;
+
+    private String frontImage;
+
+    private String reverseImage;
 
     private Integer page;
     private Integer pageSize;

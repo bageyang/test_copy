@@ -1,11 +1,10 @@
 server:
   port: 8090 #服务端口
-  servlet:
-    context-path: /payment
+
 
 spring:
   application:
-    name: payment-sever #应用的名字
+    name: payment #应用的名字
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -21,9 +20,9 @@ spring:
     password: zhongjiu_test
 
   rabbitmq:
-    addresses: 120.79.20.49:5672
-    username: admin
-    password: zhongjiu_test
+    addresses: 127.0.0.1:5672
+    username: guest
+    password: guest
 
 mybatis-plus:
   configuration: #sql日志

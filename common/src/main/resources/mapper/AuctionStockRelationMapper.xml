@@ -6,14 +6,13 @@
         <result column="auction_id" jdbcType="BIGINT" property="auctionId"/>
         <result column="stock_number" jdbcType="BIGINT" property="stockNumber"/>
         <result column="stock_id" jdbcType="BIGINT" property="stockId"/>
-        <result column="exclusive_status" jdbcType="TINYINT" property="exclusiveStatus"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="is_deleted" jdbcType="TINYINT" property="isDeleted"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, auction_id, stock_number, stock_id,exclusive_status, create_time, update_time, is_deleted
+        id, auction_id, stock_number, stock_id, create_time, update_time, is_deleted
     </sql>
 
     <sql id="delete_flag_sql">
@@ -27,9 +26,9 @@
     </delete>
 
     <insert id="insert" parameterType="com.zj.auction.common.model.AuctionStockRelation">
-        insert into zj_auction_stock_relation (auction_id, stock_number, stock_id,exclusive_status
+        insert into zj_auction_stock_relation (auction_id, stock_number, stock_id,
                                                create_time, update_time, is_deleted)
-        values (#{auctionId,jdbcType=BIGINT}, #{stockNumber,jdbcType=BIGINT}, #{stockId,jdbcType=BIGINT},#{exclusiveStatus,jdbcType=TINYINT},
+        values (#{auctionId,jdbcType=BIGINT}, #{stockNumber,jdbcType=BIGINT}, #{stockId,jdbcType=BIGINT},
                 #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=TINYINT})
     </insert>
 
@@ -44,9 +43,6 @@
             </if>
             <if test="stockId != null">
                 stock_id,
-            </if>
-            <if test="exclusiveStatus != null">
-                exclusive_status,
             </if>
             <if test="createTime != null">
                 create_time,
@@ -68,9 +64,6 @@
             <if test="stockId != null">
                 #{stockId,jdbcType=BIGINT},
             </if>
-            <if test="exclusiveStatus != null">
-                #{exclusiveStatus,jdbcType=TINYINT},,
-            </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=TIMESTAMP},
             </if>
@@ -88,7 +81,6 @@
         set auction_id   = #{auctionId,jdbcType=BIGINT},
             stock_number = #{stockNumber,jdbcType=BIGINT},
             stock_id     = #{stockId,jdbcType=BIGINT},
-            exclusive_status = #{exclusiveStatus,jdbcType=TINYINT},
             create_time  = #{createTime,jdbcType=TIMESTAMP},
             update_time  = #{updateTime,jdbcType=TIMESTAMP},
             is_deleted   = #{isDeleted,jdbcType=TINYINT}
@@ -125,19 +117,6 @@
         where stock_number = #{stockNumber,jdbcType=BIGINT}
         <include refid="delete_flag_sql"/>
     </select>
-    <select id="listStockByAuctionId" resultMap="BaseResultMap">
-        select auction_id
-        from zj_auction_stock_relation
-        where auction_id  = #{auctionId}
-        <include refid="delete_flag_sql"/>
-    </select>
-    <select id="listUnExclusiveStock" resultMap="BaseResultMap">
-        select auction_id
-        from zj_auction_stock_relation
-        where auction_id  = #{auctionId}
-        and exclusive_status = 1
-        <include refid="delete_flag_sql"/>
-    </select>
 
     <update id="updateByPrimaryKeySelective" parameterType="com.zj.auction.common.model.AuctionStockRelation">
         update zj_auction_stock_relation
@@ -150,9 +129,6 @@
             </if>
             <if test="stockId != null">
                 stock_id = #{stockId,jdbcType=BIGINT},
-            </if>
-            <if test="exclusiveStatus != null">
-                exclusive_status = #{exclusiveStatus,jdbcType=BIGINT},
             </if>
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},

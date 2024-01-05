@@ -1,6 +1,5 @@
 package com.zj.auction.general.pc.service;
 
-import com.zj.auction.common.dto.PageVo;
 import com.zj.auction.common.model.Goods;
 import com.zj.auction.common.model.GoodsCategory;
 import com.zj.auction.common.query.GoodsQuery;
@@ -13,7 +12,7 @@ public interface GoodsManagerService {
 
     boolean updateGoods(Goods goods);
 
-    PageVo<Goods> listGoods(GoodsQuery goods);
+    List<Goods> listGoods(GoodsQuery goods);
 
     Goods getGoodsInfo(Long goodsId);
 
