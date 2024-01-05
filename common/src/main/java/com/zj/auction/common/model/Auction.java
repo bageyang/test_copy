@@ -11,7 +11,7 @@ public class Auction implements Serializable {
 
     private Long goodsId;
 
-    private BigDecimal prices;
+    private BigDecimal price;
 
     private Integer stockQuantity;
 
@@ -51,12 +51,12 @@ public class Auction implements Serializable {
         this.goodsId = goodsId;
     }
 
-    public BigDecimal getPrices() {
-        return prices;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setPrices(BigDecimal prices) {
-        this.prices = prices;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     public Integer getStockQuantity() {
@@ -116,7 +116,7 @@ public class Auction implements Serializable {
         sb.append(", id=").append(id);
         sb.append(", auctionName=").append(auctionName);
         sb.append(", goodsId=").append(goodsId);
-        sb.append(", prices=").append(prices);
+        sb.append(", prices=").append(price);
         sb.append(", stockQuantity=").append(stockQuantity);
         sb.append(", auctionStatus=").append(auctionStatus);
         sb.append(", auctionAreaId=").append(auctionAreaId);

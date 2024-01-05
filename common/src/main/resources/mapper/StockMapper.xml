@@ -4,7 +4,7 @@
   <resultMap id="BaseResultMap" type="com.zj.auction.common.model.Stock">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="goods_id" jdbcType="BIGINT" property="goodsId" />
-    <result column="prices" jdbcType="DECIMAL" property="prices" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
     <result column="stock_number" jdbcType="BIGINT" property="stockNumber" />
     <result column="stock_status" jdbcType="TINYINT" property="stockStatus" />
     <result column="owner_id" jdbcType="BIGINT" property="ownerId" />
@@ -15,7 +15,7 @@
   </resultMap>
 
   <sql id="Base_Column_List">
-    id, goods_id, prices, stock_number, stock_status, owner_id, transfer_num, create_time,
+    id, goods_id, price, stock_number, stock_status, owner_id, transfer_num, create_time,
     update_time, is_deleted
   </sql>
 
@@ -29,11 +29,11 @@
   </delete>
 
   <insert id="insert" parameterType="com.zj.auction.common.model.Stock">
-    insert into zj_stock (goods_id, prices, stock_number, 
+    insert into zj_stock (goods_id, price, stock_number,
       stock_status, owner_id, transfer_num, 
       create_time, update_time, is_deleted
       )
-    values (#{goodsId,jdbcType=BIGINT}, #{prices,jdbcType=DECIMAL}, #{stockNumber,jdbcType=BIGINT},
+    values (#{goodsId,jdbcType=BIGINT}, #{price,jdbcType=DECIMAL}, #{stockNumber,jdbcType=BIGINT},
       #{stockStatus,jdbcType=TINYINT}, #{ownerId,jdbcType=BIGINT}, #{transferNum,jdbcType=INTEGER}, 
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=TINYINT}
       )
@@ -45,8 +45,8 @@
       <if test="goodsId != null">
         goods_id,
       </if>
-      <if test="prices != null">
-        prices,
+      <if test="price != null">
+        price,
       </if>
       <if test="stockNumber != null">
         stock_number,
@@ -74,8 +74,8 @@
       <if test="goodsId != null">
         #{goodsId,jdbcType=BIGINT},
       </if>
-      <if test="prices != null">
-        #{prices,jdbcType=DECIMAL},
+      <if test="price != null">
+        #{price,jdbcType=DECIMAL},
       </if>
       <if test="stockNumber != null">
         #{stockNumber,jdbcType=BIGINT},
@@ -104,7 +104,7 @@
   <update id="updateByPrimaryKey" parameterType="com.zj.auction.common.model.Stock">
     update zj_stock
     set goods_id = #{goodsId,jdbcType=BIGINT},
-      prices = #{prices,jdbcType=DECIMAL},
+      price = #{price,jdbcType=DECIMAL},
       stock_number = #{stockNumber,jdbcType=BIGINT},
       stock_status = #{stockStatus,jdbcType=TINYINT},
       owner_id = #{ownerId,jdbcType=BIGINT},
@@ -121,8 +121,8 @@
       <if test="goodsId != null">
         goods_id = #{goodsId,jdbcType=BIGINT},
       </if>
-      <if test="prices != null">
-        prices = #{prices,jdbcType=DECIMAL},
+      <if test="price != null">
+        price = #{price,jdbcType=DECIMAL},
       </if>
       <if test="stockNumber != null">
         stock_number = #{stockNumber,jdbcType=BIGINT},

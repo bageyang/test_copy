@@ -25,6 +25,7 @@ public enum StatusEnum {
     STOCK_NOT_MATCH_ERROR(1006,"库存信息不像符"),
     AUCTION_NOT_MATCH_ERROR(1007,"无法找到拍品信息"),
     AUCTION_STATUS_ERROR(1008,"订单状态异常"),
+    TRANSFER_LIMIT_ERROR(1009,"转拍限制,无法转拍"),
     ;
 
     private Integer code;

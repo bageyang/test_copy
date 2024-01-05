@@ -9,7 +9,7 @@ public class Stock implements Serializable {
 
     private Long goodsId;
 
-    private BigDecimal prices;
+    private BigDecimal price;
 
     private Long stockNumber;
 
@@ -43,12 +43,12 @@ public class Stock implements Serializable {
         this.goodsId = goodsId;
     }
 
-    public BigDecimal getPrices() {
-        return prices;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setPrices(BigDecimal prices) {
-        this.prices = prices;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     public Long getStockNumber() {

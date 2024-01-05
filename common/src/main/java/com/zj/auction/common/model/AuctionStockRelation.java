@@ -8,7 +8,7 @@ public class AuctionStockRelation implements Serializable {
 
     private Long auctionId;
 
-    private String stockNumber;
+    private Long stockNumber;
 
     private Long stockId;
 
@@ -36,11 +36,11 @@ public class AuctionStockRelation implements Serializable {
         this.auctionId = auctionId;
     }
 
-    public String getStockNumber() {
+    public Long getStockNumber() {
         return stockNumber;
     }
 
-    public void setStockNumber(String stockNumber) {
+    public void setStockNumber(Long stockNumber) {
         this.stockNumber = stockNumber;
     }
 

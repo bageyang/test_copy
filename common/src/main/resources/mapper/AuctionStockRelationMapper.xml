@@ -4,7 +4,7 @@
     <resultMap id="BaseResultMap" type="com.zj.auction.common.model.AuctionStockRelation">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="auction_id" jdbcType="BIGINT" property="auctionId"/>
-        <result column="stock_number" jdbcType="VARCHAR" property="stockNumber"/>
+        <result column="stock_number" jdbcType="BIGINT" property="stockNumber"/>
         <result column="stock_id" jdbcType="BIGINT" property="stockId"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
@@ -28,7 +28,7 @@
     <insert id="insert" parameterType="com.zj.auction.common.model.AuctionStockRelation">
         insert into zj_auction_stock_relation (auction_id, stock_number, stock_id,
                                                create_time, update_time, is_deleted)
-        values (#{auctionId,jdbcType=BIGINT}, #{stockNumber,jdbcType=VARCHAR}, #{stockId,jdbcType=BIGINT},
+        values (#{auctionId,jdbcType=BIGINT}, #{stockNumber,jdbcType=BIGINT}, #{stockId,jdbcType=BIGINT},
                 #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=TINYINT})
     </insert>
 
@@ -59,7 +59,7 @@
                 #{auctionId,jdbcType=BIGINT},
             </if>
             <if test="stockNumber != null">
-                #{stockNumber,jdbcType=VARCHAR},
+                #{stockNumber,jdbcType=BIGINT},
             </if>
             <if test="stockId != null">
                 #{stockId,jdbcType=BIGINT},
@@ -79,7 +79,7 @@
     <update id="updateByPrimaryKey" parameterType="com.zj.auction.common.model.AuctionStockRelation">
         update zj_auction_stock_relation
         set auction_id   = #{auctionId,jdbcType=BIGINT},
-            stock_number = #{stockNumber,jdbcType=VARCHAR},
+            stock_number = #{stockNumber,jdbcType=BIGINT},
             stock_id     = #{stockId,jdbcType=BIGINT},
             create_time  = #{createTime,jdbcType=TIMESTAMP},
             update_time  = #{updateTime,jdbcType=TIMESTAMP},
@@ -118,7 +118,7 @@
                 auction_id = #{auctionId,jdbcType=BIGINT},
             </if>
             <if test="stockNumber != null">
-                stock_number = #{stockNumber,jdbcType=VARCHAR},
+                stock_number = #{stockNumber,jdbcType=BIGINT},
             </if>
             <if test="stockId != null">
                 stock_id = #{stockId,jdbcType=BIGINT},
