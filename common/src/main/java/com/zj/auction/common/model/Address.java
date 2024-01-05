@@ -4,12 +4,17 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.zj.auction.common.base.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 @Data
 @TableName("zj_address")
 public class Address extends BaseEntity implements Serializable {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(value = "收货地址编号")
     private Long addrId;
 

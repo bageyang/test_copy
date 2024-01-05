@@ -25,13 +25,11 @@ import com.zj.auction.common.vo.LoginResp;
 import com.zj.auction.common.vo.PageAction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -52,8 +50,8 @@ import java.util.stream.Collectors;
  * @author 变秃变强
  * @date 2022/06/07
  */
-@Slf4j
-@Service
+@Log4j2
+@Repository
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UserServiceImpl extends BaseServiceImpl implements UserService {
     private final UserMapper userMapper;

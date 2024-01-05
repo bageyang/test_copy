@@ -30,6 +30,8 @@ public enum StatusEnum {
     GOODS_INFO_BLANK_ERROR(1011,"商品信息不得为空"),
     STOCK_BASE_GOODS_ERROR(1012,"只能添加同一商品下的库存"),
     CREATE_AUCTION_ERROR(1013,"只能添加同一商品下的库存"),
+    ADDRESS_MISS_ERROR(1014,"地址不存在"),
+    USER_TOKEN_ERROR(1015,"用户登录失效"),
     ;
 
     private Integer code;

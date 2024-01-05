@@ -3,12 +3,15 @@ package com.zj.auction.common.model;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import java.io.Serializable;
 import java.util.List;
 @Data
 @TableName("zj_permis")
 public class Permis implements Serializable {
-    
     private Long permisId;
 
     private String permisName;

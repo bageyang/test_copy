@@ -4,12 +4,18 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.zj.auction.common.base.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 @Data
 @TableName("zj_bank")
 public class Bank extends BaseEntity implements Serializable {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(value = "银行卡编号")
     private Long bankId;
 
@@ -20,6 +26,7 @@ public class Bank extends BaseEntity implements Serializable {
     private Long userId;
 
     @ApiModelProperty(value = "收款方开户行")
+    @Column(columnDefinition = "comment '收款方开户行'")
     private String bankCode;
 
     /**

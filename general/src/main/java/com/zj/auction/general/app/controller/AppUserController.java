@@ -1,6 +1,4 @@
 package com.zj.auction.general.app.controller;
-import com.zj.auction.common.dto.Ret;
-import com.zj.auction.common.dto.UserDTO;
 import com.zj.auction.common.model.User;
 import com.zj.auction.common.util.PubFun;
 import com.zj.auction.common.vo.PageAction;
@@ -12,8 +10,10 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -31,15 +31,25 @@ public class AppUserController {
 
 
     /**
-     * 注册
-     *
-     * @param dto dto
-     * @return {@link GeneralResult}
+     * @param tel     电话
+     * @param code    验证码
+     * @Description   用户注册
      */
     @ApiOperation(value = "注册")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "tel", value = "账户", dataType = "String"),
+            @ApiImplicitParam(name = "password", value = "密码", dataType = "String"),
+            @ApiImplicitParam(name = "code", value = "验证码", dataType = "String"),
+            @ApiImplicitParam(name = "pUsername", value = "父级id", dataType = "String"),
+            @ApiImplicitParam(name = "pid", value = "父级id", dataType = "Long"),
+    })
     @PostMapping(value = "/register")
-    public Ret register(@RequestBody UserDTO dto) {
-        return Ret.ok(appUserService.register(dto));
+    public GeneralResult register(@RequestParam(name = "tel") String tel,
+                                  @RequestParam(name = "password") String password,
+                                  @RequestParam(name = "code") String code,
+                                  @RequestParam(name = "pid")Long pid,
+                                  @RequestParam(name = "pUsername")String pUsername) {
+        return GeneralResult.success(appUserService.register(tel,password, code,pid,pUsername));
     }
 
     /**
@@ -54,25 +64,26 @@ public class AppUserController {
             @ApiImplicitParam(name = "pid", value = "父级id")
     })
     @PostMapping(value = "/registerShare")
-    public GeneralResult registerShare(@RequestBody User userInfoTbl) {
+    public GeneralResult registerShare(User userInfoTbl) {
         return GeneralResult.success(appUserService.registerShare(userInfoTbl));
     }
 
-
     /**
-     * 登录
-     *
-     * @param userName 用户名
-     * @param password 密码
-     * @param code     验证码
-     * @return {@link Ret}
+     * @param userName 用户名/手机号
+     * @param code  短信验证码
+     * @Description 登录
      */
     @ApiOperation("登录")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userName", value = "账户", dataType = "String"),
+            @ApiImplicitParam(name = "password", value = "密码", dataType = "String"),
+            @ApiImplicitParam(name = "code", value = "短信验证码", dataType = "String"),
+    })
     @PostMapping(value = "/login")
-    public Ret login(@RequestParam(name = "userName") String userName,
+    public GeneralResult login(@RequestParam(name = "userName") String userName,
                                @RequestParam(name = "password") String password,
                                @RequestParam(name = "code") String code) {
-        return Ret.ok(appUserService.login(userName,password, code));
+        return GeneralResult.success(appUserService.login(userName,password, code));
     }
 
     /**
@@ -83,8 +94,8 @@ public class AppUserController {
     @ApiOperation(value = "发送短信")
     @ApiImplicitParam(name = "userName", value = "电话")
     @PostMapping(value = "/sendMessages")
-    public Ret sendMessages(HttpServletRequest request,@RequestParam(name = "userName") String userName) {
-        return Ret.ok(appUserService.sendMessages(request,userName));
+    public GeneralResult sendMessages(HttpServletRequest request,@RequestParam(name = "userName") String userName) {
+        return GeneralResult.success(appUserService.sendMessages(request,userName));
     }
 
 
@@ -196,6 +207,8 @@ public class AppUserController {
     /**
      * @Description 新增收货地址
      * @Title addAddr
+     * @Author Mao Qi
+     * @Date 2020/6/12 14:12
      * @param name
      * @param tel1
      * @param addr2
@@ -396,6 +409,10 @@ public class AppUserController {
      * @Description 分页查询我的直接下级
      */
     @ApiOperation(value = "分页查询我的直接下级")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "pageNumber", value = "页数", dataType = "Integer"),
+            @ApiImplicitParam(name = "pageSize", value = "每页条数", dataType = "Integer")
+    })
     @PostMapping(value = "/findCustomer")
     public GeneralResult findCustomerByUserId(PageAction action) {
         return GeneralResult.success(appUserService.findCustomerByUserId(action));
@@ -423,7 +440,7 @@ public class AppUserController {
      */
     @ApiOperation(value = "判断是否是新用户可以提前进入")
     @PostMapping(value = "/whetherNewUser")
-    public GeneralResult whetherNewUser(String time) {
+    public GeneralResult whetherNewUser(String time ) {
         return GeneralResult.success(appUserService.whetherNewUser(time));
     }
 

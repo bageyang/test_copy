@@ -29,6 +29,8 @@ public class GoodsTest {
     @Resource
     private RedisTemplate<String,Object> redisTemplate;
 
+    @Resource
+    private RedisTemplate<String,Object> redisTemplate;
 
     @Test
     public void goodsAddTest(){
@@ -91,10 +93,10 @@ public class GoodsTest {
         goodsManagerService.addGoodsCategory(goodsCategory3);
     }
 
-//    @Test
-//    public void addStockAndTransfer2Auction(){
-//        stockManagerService.addAndTransfer2Auction(16800L,50000,202L);
-//    }
+    @Test
+    public void addStockAndTransfer2Auction(){
+        stockManagerService.addAndTransfer2Auction(16800L,50000,202L);
+    }
 
     @Test
     public void addTestAllData(){
@@ -112,7 +114,7 @@ public class GoodsTest {
         goods.setSellTotal(40000);
         goods.setImgUrl("https://duoqio20180105.oss-cn-beijing.aliyuncs.com/fy/2022/05/04/22/02/b06897fa-53f3-41e2-9dfd-117450be3add.jpg");
         goodsManagerService.addGoods(goods);
-//        stockManagerService.addAndTransfer2Auction(goods.getId(),1000,202L);
+        stockManagerService.addAndTransfer2Auction(goods.getId(),1000,202L);
     }
 
     @Test
