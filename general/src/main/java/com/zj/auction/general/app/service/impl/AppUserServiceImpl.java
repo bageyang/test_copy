@@ -557,6 +557,15 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         return sendMessage;
     }
 
+    @Override
+    public String findNameByTel(String tel){
+        LambdaQueryWrapper<User> wrapper =new LambdaQueryWrapper<>(User.class);
+        wrapper.eq(User::getUserName,tel).eq(User::getDeleteFlag,0);
+        User user = userMapper.selectOne(wrapper);
+        assert user != null;
+        return user.getRealName();
+    }
+
 
     /**
      * @param userCfg 用户信息

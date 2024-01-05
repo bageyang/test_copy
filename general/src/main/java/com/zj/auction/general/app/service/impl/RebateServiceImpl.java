@@ -3,7 +3,6 @@ package com.zj.auction.general.app.service.impl;
 import com.zj.auction.common.constant.Constant;
 import com.zj.auction.common.dto.BalanceChangeDto;
 import com.zj.auction.common.enums.FundTypeEnum;
-import com.zj.auction.common.enums.TransactionTypeEnum;
 import com.zj.auction.common.mapper.SystemCnfMapper;
 import com.zj.auction.common.mapper.UserMapper;
 import com.zj.auction.common.model.Order;
@@ -40,7 +39,6 @@ public class RebateServiceImpl implements RebateService {
         changeDto.setUserId(parentId);
         changeDto.setChangeNum(rebateMoney);
         changeDto.setFundType(FundTypeEnum.REBATE);
-        changeDto.setTransactionType(TransactionTypeEnum.REBATE);
         changeDto.setRemark("用户:"+userId+"转拍成功,获得返利");
         walletService.incrementUserBalance(changeDto);
     }

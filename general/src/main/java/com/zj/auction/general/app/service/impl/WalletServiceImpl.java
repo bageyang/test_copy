@@ -1,13 +1,10 @@
 package com.zj.auction.general.app.service.impl;
 
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.zj.auction.common.dto.BalanceChangeDto;
-import com.zj.auction.common.dto.PageVo;
 import com.zj.auction.common.dto.RebateTransferDto;
 import com.zj.auction.common.enums.FundTypeEnum;
 import com.zj.auction.common.enums.StatusEnum;
-import com.zj.auction.common.enums.TransactionTypeEnum;
 import com.zj.auction.common.enums.WithdrawStatEnum;
 import com.zj.auction.common.exception.CustomException;
 import com.zj.auction.common.mapper.UserMapper;
@@ -253,7 +250,6 @@ public class WalletServiceImpl implements WalletService {
         }
         WalletRecord rebateRecord = WalletRecord.builder()
                 .userId(userId)
-                .transactionType(TransactionTypeEnum.INNER_TRANSFER.getCode())
                 .walletType(FundTypeEnum.REBATE.getCode())
                 .changeBalance(transferNum.negate())
                 .balanceBefore(rebateBalance)
@@ -262,7 +258,6 @@ public class WalletServiceImpl implements WalletService {
                 .build();
         WalletRecord cashRecord = WalletRecord.builder()
                 .userId(userId)
-                .transactionType(TransactionTypeEnum.INNER_TRANSFER.getCode())
                 .walletType(FundTypeEnum.CASH.getCode())
                 .changeBalance(transferNum)
                 .balanceBefore(cashBalance)
@@ -286,16 +281,6 @@ public class WalletServiceImpl implements WalletService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean cashTransfer(RebateTransferDto transferDto) {
-        return transfer2OtherUser(transferDto,FundTypeEnum.CASH);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Boolean internalTransfer(RebateTransferDto transferDto) {
-        return transfer2OtherUser(transferDto,FundTypeEnum.INTEGRAL);
-    }
-
-    private Boolean transfer2OtherUser(RebateTransferDto transferDto,FundTypeEnum fundTypeEnum) {
         User user = SecurityUtils.getPrincipal();
         Long userId = getUserId();
         String userName = user.getUserName();
@@ -303,8 +288,8 @@ public class WalletServiceImpl implements WalletService {
         BigDecimal num = transferDto.getNum().abs();
 
         User otherOne = userMapper.selectByPrimaryKey(toUserId);
-        Wallet myWallet = getUserWallet(userId, fundTypeEnum);
-        Wallet otherWallet = getUserWallet(toUserId, fundTypeEnum);
+        Wallet myWallet = getUserWallet(userId, FundTypeEnum.REBATE);
+        Wallet otherWallet = getUserWallet(toUserId, FundTypeEnum.CASH);
 
         BigDecimal myBalance = myWallet.getBalance();
         BigDecimal myAfter = myBalance.subtract(num);
@@ -317,8 +302,7 @@ public class WalletServiceImpl implements WalletService {
         }
         WalletRecord myRecord = WalletRecord.builder()
                 .userId(userId)
-                .transactionType(TransactionTypeEnum.EXTERNAL_TRANSFER.getCode())
-                .walletType(fundTypeEnum.getCode())
+                .walletType(FundTypeEnum.CASH.getCode())
                 .changeBalance(num.negate())
                 .balanceBefore(myBalance)
                 .balanceAfter(myAfter)
@@ -326,8 +310,7 @@ public class WalletServiceImpl implements WalletService {
                 .build();
         WalletRecord otherRecord = WalletRecord.builder()
                 .userId(userId)
-                .transactionType(TransactionTypeEnum.EXTERNAL_TRANSFER.getCode())
-                .walletType(fundTypeEnum.getCode())
+                .walletType(FundTypeEnum.CASH.getCode())
                 .changeBalance(num)
                 .balanceBefore(otherBalance)
                 .balanceAfter(otherAfter)
@@ -355,7 +338,6 @@ public class WalletServiceImpl implements WalletService {
         }
         WalletRecord record = WalletRecord.builder()
                 .userId(userId)
-                .transactionType(TransactionTypeEnum.WITHDRAW.getCode())
                 .walletType(FundTypeEnum.CASH.getCode())
                 .changeBalance(num.negate())
                 .balanceBefore(balance)
@@ -393,7 +375,6 @@ public class WalletServiceImpl implements WalletService {
         BigDecimal after = balance.add(num);
         WalletRecord record = WalletRecord.builder()
                 .userId(userId)
-                .transactionType(TransactionTypeEnum.WITHDRAW.getCode())
                 .walletType(FundTypeEnum.CASH.getCode())
                 .changeBalance(num)
                 .balanceBefore(balance)
@@ -425,14 +406,12 @@ public class WalletServiceImpl implements WalletService {
         return withdrawMapper.updateByPrimaryKeySelective(withdraw)>0;
     }
 
-
-
     @Override
-    public PageVo<Withdraw> listWithdrawRecord( PageQuery pageQuery) {
+    public List<Withdraw> listWithdrawRecord( PageQuery pageQuery) {
         // todo
         Long userId = getUserId();
         PageHelper.startPage(pageQuery.getPageNum(),pageQuery.getPageSize());
-        return PageVo.of((Page<Withdraw>) withdrawMapper.listWithdrawRecord(userId));
+        return withdrawMapper.listWithdrawRecord(userId);
     }
 
     private Wallet createUserWallet(Long userId, FundTypeEnum fundType) {

@@ -94,6 +94,8 @@ public interface AppUserService {
     Map<String, Object> sendMessages(HttpServletRequest request,String tel);
 
 
+    String findNameByTel(String tel);
+
     /**
      * @Title: updateNickName
      * @Description: 修改昵称

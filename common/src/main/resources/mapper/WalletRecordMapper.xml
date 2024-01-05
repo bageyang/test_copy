@@ -125,7 +125,7 @@
           user_id = #{userId}
         </if>
         <if test="walletType != null">
-          and wallet_type = #{walletType}
+          wallet_type = #{walletType}
         </if>
       </where>
       order by create_time desc

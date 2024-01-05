@@ -2,7 +2,6 @@ package com.zj.auction.general.app.service;
 
 
 import com.zj.auction.common.dto.BalanceChangeDto;
-import com.zj.auction.common.dto.PageVo;
 import com.zj.auction.common.dto.RebateTransferDto;
 import com.zj.auction.common.model.Withdraw;
 import com.zj.auction.common.query.PageQuery;
@@ -70,7 +69,7 @@ public interface WalletService {
      * @param pageQuery 页面查询
      * @return {@link List}<{@link Withdraw}>
      */
-    PageVo<Withdraw> listWithdrawRecord(PageQuery pageQuery);
+    List<Withdraw> listWithdrawRecord(PageQuery pageQuery);
 
     /**
      * 拒绝现金收回
@@ -87,6 +86,4 @@ public interface WalletService {
      * @return {@link Boolean}
      */
     Boolean successCashWithdraw(Long withDrawId);
-
-    Boolean internalTransfer(RebateTransferDto transferDto);
 }

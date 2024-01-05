@@ -91,6 +91,14 @@ public class AppUserController {
         return Ret.ok(appUserService.sendMessages(request,dto.getTel()));
     }
 
+    @PostMapping(value = "/findNameByTel")
+    public Ret findNameByTel(@RequestBody UserDTO dto){
+        return Ret.ok(appUserService.findNameByTel(dto.getTel()));
+    }
+
+
+
+
 
     /**
      * @Description 增加或修改支付宝账户

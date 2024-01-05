@@ -14,7 +14,6 @@ import com.zj.auction.common.date.TimeTypeEnum;
 import com.zj.auction.common.dto.BalanceChangeDto;
 import com.zj.auction.common.dto.UserDTO;
 import com.zj.auction.common.enums.StatusEnum;
-import com.zj.auction.common.enums.TransactionTypeEnum;
 import com.zj.auction.common.exception.CustomException;
 import com.zj.auction.common.exception.ServiceException;
 import com.zj.auction.common.mapper.*;
@@ -814,7 +813,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         balanceChangeDto.setUserId(userId);
         balanceChangeDto.setRemark(memo.concat("-").concat(remark));
         balanceChangeDto.setChangeNum(decimal);
-        balanceChangeDto.setTransactionType(TransactionTypeEnum.EXTERNAL_TRANSFER);
         walletService.changeUserBalance(balanceChangeDto);
         return null;
     }
