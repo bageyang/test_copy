@@ -43,6 +43,15 @@ public class WalletController {
     public Ret<Boolean> cashTransfer(@RequestBody RebateTransferDto transferDto){
         return Ret.ok(walletService.cashTransfer(transferDto));
     }
+    @PostMapping("/rejectCashWithdraw")
+    public Ret<Boolean> rejectCashWithdraw(@RequestParam(name = "withDrawId") Long withDrawId){
+        return Ret.ok(walletService.rejectCashWithdraw(withDrawId));
+    }
+
+    @PostMapping("/successCashWithdraw")
+    public Ret<Boolean> successCashWithdraw(@RequestParam(name = "withDrawId") Long withDrawId){
+        return Ret.ok(walletService.successCashWithdraw(withDrawId));
+    }
 
     @PostMapping("/applyWithdraw")
     public Ret<Boolean> applyWithdraw(@RequestBody RebateTransferDto transferDto){
