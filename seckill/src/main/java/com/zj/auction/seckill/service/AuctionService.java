@@ -19,8 +19,9 @@ public interface AuctionService {
     /**
      * 用户商品上架拍卖
      * @param stockId 用户拥有的库存id
-     * @return 拍品信息 TODO
+     * @return 拍品信息 TODO 不在秒杀服务处理此业务,挪到通用服务中去
      */
+    @Deprecated
     Auction transfer2Auction(Long stockId);
 
     /**

@@ -29,6 +29,7 @@ public class RedisTest {
 //        for (int i = 0; i < num; i++) {
 //            redisService.lPush("auction:stock","socket_"+i);
 //        }
+        redissonClient.getLiveObjectService()
         RScript script = redissonClient.getScript();
         List<String> keys = new ArrayList<>();
         keys.add("auction:volume");

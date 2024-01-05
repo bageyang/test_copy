@@ -2,6 +2,7 @@ package com.zj.auction.common.mapper;
 
 import com.zj.auction.common.model.Order;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 @Mapper
