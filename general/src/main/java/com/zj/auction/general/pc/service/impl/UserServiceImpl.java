@@ -545,13 +545,13 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             //所有下级团队都可以进入
             userMapper.updUserChildByPidStr(tagId, user.getUserId(), pUser.getUserId());
             //附带的产品同时进入相应的分馆
-            goodsMapper.updGoodsTagIdByPidStr(tagId,user.getUserId(),pUser.getUserId());
+//            goodsMapper.updGoodsTagIdByPidStr(tagId,user.getUserId(),pUser.getUserId());
         } else if (user.getVipType() == 2 && (vipType.compareTo(0) == 0 || vipType.compareTo(1) == 0)) {//取消馆长
             user.setTagId(0L);
             //取消用户分馆归属
             userMapper.updUserChildByPidStr(0L, user.getUserId(), pUser.getUserId());
             //附带的产品同时进入相应的分馆
-            goodsMapper.updGoodsTagIdByPidStr(0L,user.getUserId(),pUser.getUserId());
+//            goodsMapper.updGoodsTagIdByPidStr(0L,user.getUserId(),pUser.getUserId());
         }
         user.setVipType(vipType);
         user.setUpdateTime(LocalDateTime.now());
@@ -806,44 +806,44 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         return userMapper.selectList(wrapper);
     }
 
-    //导出用户
-    @Override
-    public void exportUser(PageAction pageAction, Integer userType, String userIds, HttpServletResponse httpServletResponse) {
-        List<Long> userList = new ArrayList<>();
-        if (!StringUtils.isEmpty(userIds)) {
-            userList = JSON.parseArray(userIds, Long.class);
-        }
-        PageInfo<User> userPage = getUserPage(pageAction, userList);
-
-        List<List<String>> excelData = new ArrayList<>();
-        List<String> head = new ArrayList<>();
-        head.add("用户ID");
-        head.add("账号");
-        head.add("昵称");
-        head.add("电话");
-        head.add("用户类型");
-//		head.add("金币余额");
-//		head.add("银币余额");
-//		head.add("店铺收入");
-        head.add("注册时间");
-        // 添加头部
-        excelData.add(head);
-        for (User user : userPage.getList()) {
-            List<String> data1 = new ArrayList<>();
-            data1.add(user.getUserId().toString());  //ID
-            data1.add(user.getUserName());  //账号
-            data1.add(Objects.toString(user.getNickName(), ""));  //昵称
-            data1.add(Objects.toString(user.getTel(), ""));  //手机号
-            data1.add(user.getUserType() == 1 ? "店主" : "用户");   //用户类型
-//			data1.add(Objects.toString(user.getGoldBalance(), "0"));   //金币余额
-//			data1.add(Objects.toString(user.getSilverBalance(), "0"));   //银币余额
-//			data1.add(Objects.toString(user.getBalance(), "0"));   //店铺收入
-            data1.add(Objects.toString(DateTimeUtils.toString(user.getAddTime(), "yyyy-MM-dd HH:mm:ss"), ""));
-            excelData.add(data1);
-        }
-        ExcelUtil.exportExcel(httpServletResponse,
-                excelData, "会员信息", "member.xls", 20);
-    }
+//    //导出用户
+//    @Override
+//    public void exportUser(PageAction pageAction, Integer userType, String userIds, HttpServletResponse httpServletResponse) {
+//        List<Long> userList = new ArrayList<>();
+//        if (!StringUtils.isEmpty(userIds)) {
+//            userList = JSON.parseArray(userIds, Long.class);
+//        }
+//        PageInfo<User> userPage = getUserPage(pageAction, userList);
+//
+//        List<List<String>> excelData = new ArrayList<>();
+//        List<String> head = new ArrayList<>();
+//        head.add("用户ID");
+//        head.add("账号");
+//        head.add("昵称");
+//        head.add("电话");
+//        head.add("用户类型");
+////		head.add("金币余额");
+////		head.add("银币余额");
+////		head.add("店铺收入");
+//        head.add("注册时间");
+//        // 添加头部
+//        excelData.add(head);
+//        for (User user : userPage.getList()) {
+//            List<String> data1 = new ArrayList<>();
+//            data1.add(user.getUserId().toString());  //ID
+//            data1.add(user.getUserName());  //账号
+//            data1.add(Objects.toString(user.getNickName(), ""));  //昵称
+//            data1.add(Objects.toString(user.getTel(), ""));  //手机号
+//            data1.add(user.getUserType() == 1 ? "店主" : "用户");   //用户类型
+////			data1.add(Objects.toString(user.getGoldBalance(), "0"));   //金币余额
+////			data1.add(Objects.toString(user.getSilverBalance(), "0"));   //银币余额
+////			data1.add(Objects.toString(user.getBalance(), "0"));   //店铺收入
+//            data1.add(Objects.toString(DateTimeUtils.toString(user.getAddTime(), "yyyy-MM-dd HH:mm:ss"), ""));
+//            excelData.add(data1);
+//        }
+//        ExcelUtil.exportExcel(httpServletResponse,
+//                excelData, "会员信息", "member.xls", 20);
+//    }
 
 
     /**

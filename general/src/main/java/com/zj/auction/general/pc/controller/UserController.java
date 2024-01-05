@@ -226,21 +226,21 @@ public class UserController{
 
 
 
-    /**
-     * @Description 导出会员
-     * @Title exportUser
-     * @Author Mao Qi
-     * @Date 2020/10/21 10:41
-     * @param pageAction
-     * @param httpServletResponse
-     * @return	void
-     */
-//    @SystemLog
-    @RequiresPermissions(value="member:export")
-    @PostMapping("/exportUser")
-    public void exportUser(@RequestBody PageAction pageAction,Integer userType,String userIds, HttpServletResponse httpServletResponse){
-        pcUserServer.exportUser(pageAction,userType,userIds, httpServletResponse);
-    }
+//    /**
+//     * @Description 导出会员
+//     * @Title exportUser
+//     * @Author Mao Qi
+//     * @Date 2020/10/21 10:41
+//     * @param pageAction
+//     * @param httpServletResponse
+//     * @return	void
+//     */
+////    @SystemLog
+//    @RequiresPermissions(value="member:export")
+//    @PostMapping("/exportUser")
+//    public void exportUser(@RequestBody PageAction pageAction,Integer userType,String userIds, HttpServletResponse httpServletResponse){
+//        pcUserServer.exportUser(pageAction,userType,userIds, httpServletResponse);
+//    }
 
     /**
      * @Description 根据id查询会员信息
