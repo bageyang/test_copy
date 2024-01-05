@@ -78,6 +78,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void incrementUserBalance(BalanceChangeDto changeDto) {
         if (!checkBalanceParam(changeDto)) {
             throw new CustomException(StatusEnum.PARAM_ERROR);
@@ -101,6 +102,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void decrementUserBalance(BalanceChangeDto changeDto) {
         if (!checkBalanceParam(changeDto)) {
             throw new CustomException(StatusEnum.PARAM_ERROR);
