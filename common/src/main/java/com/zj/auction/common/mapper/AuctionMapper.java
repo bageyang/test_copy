@@ -28,10 +28,4 @@ public interface AuctionMapper {
     Auction selectAuctionByGoodsIdAndCashPrice(@Param("goodsId") Long goodsId, @Param("price")BigDecimal price);
 
     List<Auction> listAuction(AuctionQuery queryCondition);
-
-    List<Auction> listUnAuctionOrderByAreaId(@Param("areaIds") List<Long> areaIds);
-
-    int decrementQuantity(@Param("auctionId") Long id);
-
-    int exclusiveStockNumber(@Param("auctionId") Long id,@Param("stockNumber")Long stockNumber);
 }

@@ -3,8 +3,6 @@ package com.zj.auction.general.listener.strategy;
 import com.zj.auction.common.dto.BalanceChangeDto;
 import com.zj.auction.common.dto.PayDto;
 import com.zj.auction.common.enums.FundTypeEnum;
-import com.zj.auction.common.enums.StatusEnum;
-import com.zj.auction.common.exception.CustomException;
 import com.zj.auction.general.app.service.WalletRecordService;
 import com.zj.auction.general.app.service.WalletService;
 import lombok.extern.slf4j.Slf4j;
@@ -38,23 +36,13 @@ public class CashRechargeHandler implements PayCallBackHandler{
     @Override
     public void hand(PayDto payDto) {
         log.info("处理余额充值到账,msg: {}",payDto);
-        Long userId = getUserId(payDto);
         BalanceChangeDto changeDto = new BalanceChangeDto();
         changeDto.setTransactionSn(payDto.getTranstionSn());
         changeDto.setChangeNum(payDto.getAmount());
-        changeDto.setUserId(userId);
+        changeDto.setUserId(payDto.getUserId());
         changeDto.setFundType(FundTypeEnum.CASH);
-        changeDto.setRemark(REMARK);
+        changeDto.setRemark("REMARK");
         walletService.incrementUserBalance(changeDto);
         log.info("处理余额充值到账完成");
-    }
-
-    private Long getUserId(PayDto payDto) {
-        Long userId = payDto.getUserId();
-        Long originSn = payDto.getOriginSn();
-        if(Objects.isNull(userId)&&Objects.isNull(originSn)){
-            throw new CustomException(StatusEnum.PARAM_ERROR);
-        }
-        return Objects.nonNull(userId)?userId:originSn;
     }
 }

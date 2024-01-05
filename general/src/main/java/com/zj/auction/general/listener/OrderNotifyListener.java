@@ -3,7 +3,6 @@ package com.zj.auction.general.listener;
 import com.alibaba.fastjson.JSONObject;
 import com.zj.auction.common.constant.Constant;
 import com.zj.auction.common.dto.BaseOrderDto;
-import com.zj.auction.common.dto.OrderNotifyDto;
 import com.zj.auction.general.app.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -26,8 +25,6 @@ public class OrderNotifyListener {
     public void OrderDelayListener(byte[] msgBody){
         String msg = new String(msgBody);
         log.info("订单延时消费消息:{}",msg);
-        OrderNotifyDto notifyDto = JSONObject.parseObject(msg, OrderNotifyDto.class);
-        orderService.handNotify(notifyDto);
     }
 
     @RabbitListener(queues = Constant.ORDER_QUEUE_KEY)

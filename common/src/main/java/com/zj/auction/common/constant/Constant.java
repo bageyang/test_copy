@@ -14,5 +14,4 @@ public class Constant {
      */
     public static final String INTEGRAL_PREMIUM_KEY = "integralPremium";
     public static final String REBATE_RATE_KEY = "rebateRate";
-    public static final String WAIT_PAY_TIME_OUT = "waitPayTimeOut";
 }

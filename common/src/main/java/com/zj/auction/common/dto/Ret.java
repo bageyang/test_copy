@@ -16,7 +16,18 @@ public class Ret<T> {
     private int code;
     private String msg;
 
+    /**
+     * 分页实体
+     **/
+    private transient PageAction pageAction;
 
+    public PageAction getPageAction() {
+        return pageAction;
+    }
+
+    public void setPageAction(PageAction pageAction) {
+        this.pageAction = pageAction;
+    }
 
     //成功，无返回值
     public Ret() {
@@ -37,6 +48,12 @@ public class Ret<T> {
         this.msg = resultStatus.getMessage();
     }
 
+    //成功，有返回值 有分页
+    public Ret(T data , PageAction pageAction) {
+        super();
+        this.pageAction = pageAction;
+        this.data = data;
+    }
 
     //成功，无返回值
     public static <T> Ret<T> ok() {
