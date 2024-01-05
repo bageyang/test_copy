@@ -21,7 +21,7 @@ public class UserConfig implements Serializable {
 
     private Integer subUserNum;
 
-    private String subUserNumAll;
+    private Integer subUserNumAll;
 
     private String province;
 

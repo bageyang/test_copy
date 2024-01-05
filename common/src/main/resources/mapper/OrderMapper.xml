@@ -292,7 +292,7 @@
         from zj_order
     </select>
 
-    <select id="selectOwnerOrderByStockNumberAndStatus" resultMap="BaseResultMap">
+    <select id="selectOwnerOrderBySnAndStatus" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from zj_order
@@ -301,21 +301,13 @@
         limit 1
     </select>
 
-    <select id="selectOrderByOrderNumber" resultMap="BaseResultMap">
+    <select id="selectOrderByStockNumber" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from zj_order
-        where order_sn = #{sn}
+        where stock_number = #{sn}
         <include refid="delete_flag_sql"/>
         limit 1
-    </select>
-
-    <select id="listOrderByUserId" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from zj_order
-        where user_id = #{userId}
-        <include refid="delete_flag_sql"/>
     </select>
 
 </mapper>

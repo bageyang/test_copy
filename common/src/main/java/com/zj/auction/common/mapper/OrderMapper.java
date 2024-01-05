@@ -22,9 +22,5 @@ public interface OrderMapper {
 
     int updateByPrimaryKeySelective(Order record);
 
-    Order selectOwnerOrderByStockNumberAndStatus(@Param("sn")Long sn, @Param("orderStat") int code);
-
-    Order selectOrderByOrderNumber(@Param("sn")Long sn);
-
-    List<Order> listOrderByUserId(@Param("userId") Long userId);
+    Order selectOwnerOrderBySnAndStatus(@Param("sn")Long sn, @Param("orderStat") int code);
 }

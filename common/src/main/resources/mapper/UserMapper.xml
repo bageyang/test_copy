@@ -67,7 +67,11 @@
     <result column="diamond_order_limit" jdbcType="INTEGER" property="diamondOrderLimit" />
     <result column="common_name" jdbcType="VARCHAR" property="commonName" />
     <result column="common_tel" jdbcType="VARCHAR" property="commonTel" />
+    <result column="card_number" jdbcType="VARCHAR" property="cardNumber" />
     <result column="memo" jdbcType="VARCHAR" property="memo" />
+    <result column="memo1" jdbcType="VARCHAR" property="memo1" />
+    <result column="memo2" jdbcType="VARCHAR" property="memo2" />
+    <result column="memo3" jdbcType="VARCHAR" property="memo3" />
     <result column="user_type" jdbcType="INTEGER" property="userType" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
@@ -97,7 +101,7 @@
       come_up_num, vip_type, tag_id, 
       subordinate_level, subordinate_num, seal_num, 
       diamond_order_limit, common_name, common_tel, 
-      memo, user_type)
+      memo, user_type,card_number)
     values (#{userId,jdbcType=BIGINT}, #{roleId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, 
       #{passWord,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR}, #{salt,jdbcType=VARCHAR}, 
       #{sex,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{audit,jdbcType=INTEGER}, 
@@ -205,7 +209,7 @@
     come_up_num, vip_type, tag_id, subordinate_level, subordinate_num, seal_num, diamond_order_limit, 
     common_name, common_tel, memo, user_type
     from zj_user
-    where user_id = #{userId,jdbcType=BIGINT}
+    where user_id = #{userId,jdbcType=BIGINT} and delete_flag=0
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select user_id, role_id, user_name, pass_word, real_name, salt, sex, status, audit, 
@@ -223,4 +227,63 @@
   <select id="countByName" resultType="integer">
     select count(*) from zj_user where user_name=#{userName} and user_type=1
   </select>
+
+  <select id="getStatistics" resultType="map">
+    SELECT
+	COUNT(*) AS stock,
+	ifnull( sum( CASE WHEN pid = #{userId} THEN 1 ELSE 0 END ), 0 ) AS num1,
+	ifnull( sum( CASE WHEN pid != #{userId} THEN 1 ELSE 0 END ), 0 ) AS num2
+FROM
+	zj_user
+WHERE
+	pid_str LIKE CONCAT(
+		#{ids}
+	)
+  </select>
+    <select id="listMemberIndirect" resultType="java.util.Map">
+      SELECT
+        a.*,
+       b.role_name
+      FROM
+        (
+          SELECT
+            *
+          FROM
+            zj_user
+
+            <where>
+              pid_str LIKE CONCAT( '%',#{dto.userIds}, '%' )
+            <if test="dto.userId!=null">
+              and user_id like CONCAT('%',#{dto.userId},'%')
+            </if>
+              <if test="dto.userName!=null">
+                and user_name like CONCAT('%',#{dto.userName},'%')
+              </if>
+              <if test="dto.realName!=null">
+                and real_name like CONCAT('%',#{dto.realName},'%')
+              </if>
+              <if test="dto.nickName!=null">
+                and nick_name like CONCAT('%',#{dto.nickName},'%')
+              </if>
+              <if test="dto.tel!=null">
+                and tel like CONCAT('%',#{dto.tel},'%')
+              </if>
+<!--              <if test="dto.startDate!=null">-->
+<!--                and add_time#{dto.startDate}-->
+<!--              </if>-->
+              <if test="dto.endDate!=null">
+                and endDate>=#{dto.endDate}
+              </if>
+              <if test="dto.userType!=null">
+                and userType =0
+              </if>
+              AND delete_flag = 0
+            </where>
+
+          ORDER BY
+            add_time DESC
+        ) a
+         LEFT JOIN zj_role b ON a.user_type = b.role_id
+
+    </select>
 </mapper>

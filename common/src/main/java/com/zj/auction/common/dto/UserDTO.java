@@ -343,4 +343,10 @@ public class UserDTO {
     private Integer userType;
 
     private String address;
+
+    private LocalDateTime startDate;
+
+    private LocalDateTime endDate;
+
+    private String userIds;
 }

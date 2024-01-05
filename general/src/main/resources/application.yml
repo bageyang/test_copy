@@ -1,20 +1,22 @@
 server:
   port: 9090
 spring:
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848
-      config:
-        server-addr: 127.0.0.1:8848
+  main:
+    allow-circular-references: true
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: 127.0.0.1:8848
+#      config:
+#        server-addr: 127.0.0.1:8848
   datasource:
-    url:  jdbc:mysql://localhost:3306/zj_auction?useSSL=false&useUnicode=true&characterEncoding=utf-8
+    url:  jdbc:mysql://120.77.247.13:3306/zj?useSSL=false&useUnicode=true&characterEncoding=utf-8
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: yangbing
+    password: zhongjiu_test
   redis:
     port: 6379
-    host: 127.0.0.1
+    host: 120.77.247.13
     username: root
     timeout: 3000
     lettuce:
@@ -24,6 +26,9 @@ spring:
         max-idle: 64
         max-wait: -1
 
-mybatis:
-  mapper-locations:
-    - classpath:mapper/*.xml
+#mybatis:
+#  mapper-locations:
+#    - classpath:mapper/*.xml
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
