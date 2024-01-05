@@ -11,7 +11,8 @@
 		<module>gateway</module>
 		<module>seckill</module>
         <module>general</module>
-    </modules>
+		<module>payment</module>
+	</modules>
 	<packaging>pom</packaging>
 	<name>auction</name>
 	<description>auction</description>
@@ -27,7 +28,6 @@
 		<spring.clould.version>2021.0.1</spring.clould.version>
 		<spring.boot.version>2.6.3</spring.boot.version>
 		<fastjson.version>2.0.4</fastjson.version>
-		<redisson.version>3.12.5</redisson.version>
 	</properties>
 
 	<dependencyManagement>
@@ -67,11 +67,6 @@
 				<version>${spring.boot.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.redisson</groupId>
-				<artifactId>redisson-spring-boot-starter</artifactId>
-				<version>${redisson.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

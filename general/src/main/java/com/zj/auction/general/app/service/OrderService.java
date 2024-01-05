@@ -10,16 +10,16 @@ public interface OrderService {
     // todo 查看订单详情
 
     /**
-     * 用户支付拍品完成回调
+     * 支付转拍收费费回调
      * @param orderSn
      */
-    void finishPayCallBack(Long orderSn);
+    void finishPayTransferFee(String orderSn);
 
     /**
      * 上传支付凭证
      * @param orderSn 订单号
      */
-    void uploadPaymentVoucher(Long orderSn,String orderVoucher);
+    void uploadPaymentVoucher(String orderSn);
 
     /**
      * 转拍上架拍品
@@ -28,7 +28,7 @@ public interface OrderService {
     Object transfer2Auction(Long stockSn);
 
     /**
-     * 转拍支付回调
+     * 转怕支付回调
      * @param stockSn
      */
     void transferPaymentCallBack(Long stockSn);
@@ -36,7 +36,7 @@ public interface OrderService {
     /**
      * 放货
      */
-    void finishOrder(Long orderSn);
+    void finishOrder(String orderSn);
 
     /**
      * 查询我的订单

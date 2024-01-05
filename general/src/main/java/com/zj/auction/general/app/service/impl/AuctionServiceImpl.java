@@ -10,38 +10,30 @@ import com.zj.auction.common.model.AuctionStockRelation;
 import com.zj.auction.common.model.Goods;
 import com.zj.auction.common.model.Stock;
 import com.zj.auction.general.app.service.AuctionService;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Service
 public class AuctionServiceImpl implements AuctionService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuctionServiceImpl.class);
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
     private final AuctionMapper auctionMapper;
     private final GoodsMapper goodsMapper;
     private final AuctionStockRelationMapper auctionStockMapper;
     private final RedisTemplate<String,Object> redisTemplate;
-    private final RedissonClient redissonClient;
 
-    @Autowired
-    public AuctionServiceImpl(AuctionMapper auctionMapper, GoodsMapper goodsMapper, AuctionStockRelationMapper auctionStockMapper, RedisTemplate<String, Object> redisTemplate, RedissonClient redissonClient) {
+    public AuctionServiceImpl(AuctionMapper auctionMapper, GoodsMapper goodsMapper, AuctionStockRelationMapper auctionStockMapper, RedisTemplate<String, Object> redisTemplate) {
         this.auctionMapper = auctionMapper;
         this.goodsMapper = goodsMapper;
         this.auctionStockMapper = auctionStockMapper;
         this.redisTemplate = redisTemplate;
-        this.redissonClient = redissonClient;
     }
 
     @Override
@@ -52,9 +44,6 @@ public class AuctionServiceImpl implements AuctionService {
         Auction auction = auctionMapper.selectAuctionByGoodsIdAndPrice(goodsId, price);
         if(Objects.isNull(auction)){
             auction = createAuction(goodsId, price);
-            if(Objects.isNull(auction)){
-                return;
-            }
         }
         AuctionStockRelation relation = new AuctionStockRelation();
         relation.setAuctionId(auction.getId());
@@ -65,37 +54,21 @@ public class AuctionServiceImpl implements AuctionService {
 
     private Auction createAuction(Long goodsId, BigDecimal price) {
         // 全局锁
-        RLock lock = redissonClient.getLock(RedisConstant.AUCTION_GENERATOR_LOCK_KEY);
-        Auction auction;
-        try {
-            boolean b = lock.tryLock(5, TimeUnit.SECONDS);
-            if (b) {
-                auction = auctionMapper.selectAuctionByGoodsIdAndPrice(goodsId, price);
-                if(Objects.nonNull(auction)){
-                    return auction;
-                }else {
-                    auction = new Auction();
-                }
-                Goods goods = goodsMapper.selectByPrimaryKey(goodsId);
-                LocalDate now = LocalDate.now();
-                LocalDate tomorrow = now.plusDays(1);
-                String auctionName = createAuctionName(goods.getGoodsName(), tomorrow.format(FORMATTER));
-                auction.setGoodsId(goodsId);
-                auction.setAuctionName(auctionName);
-                auction.setAuctionStatus(AuctionStatEnum.UN_START.getCode());
-                auction.setPrice(price);
-                auction.setStockQuantity(1);
-                // todo 竞拍区
-        //        auction.setAuctionAreaId();
-                auctionMapper.insertSelective(auction);
-                return auction;
-            }else {
-                LOGGER.error("创建拍品获取锁失败,goodsId:{},price:{}",goodsId,price);
-            }
-        }catch (Exception e){
-            LOGGER.error("转拍回调获取锁异常",e);
-        }
-        return null;
+        Auction auction = new Auction();
+        Goods goods = goodsMapper.selectByPrimaryKey(goodsId);
+        LocalDate now = LocalDate.now();
+        LocalDate tomorrow = now.plusDays(1);
+        String auctionName = createAuctionName(goods.getGoodsName(), tomorrow.format(FORMATTER));
+        auction.setGoodsId(goodsId);
+        auction.setAuctionName(auctionName);
+        auction.setAuctionStatus(AuctionStatEnum.UN_START.getCode());
+        auction.setPrice(price);
+        auction.setStockQuantity(1);
+        // todo 竞拍区
+//        auction.setAuctionAreaId();
+        // todo 返回id
+        auctionMapper.insertSelective(auction);
+        return auction;
     }
 
     private String createAuctionName(String goodsName,String tagDateStr){
