@@ -9,12 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.persistence.Column;
-import javax.persistence.Id;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 @SuperBuilder
@@ -23,9 +19,7 @@ import java.util.Date;
 public class BaseEntity implements Serializable {
 
 
-    @Id
     @ApiModelProperty(value = "主键")
-    @Column(name = "`id`")
     private String id;
 
     @ApiModelProperty(value = "删除标志  默认0")
@@ -36,7 +30,6 @@ public class BaseEntity implements Serializable {
     private LocalDateTime addTime;
 
     @ApiModelProperty(value = "创建者")
-    @Column(columnDefinition = "bigint(20) UNSIGNED DEFAULT 0 comment '创建者'")
     private Long addUserId;
 
     @LastModifiedDate
@@ -44,11 +37,9 @@ public class BaseEntity implements Serializable {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "更新时间")
-    @Column(columnDefinition = "datetime comment '更新时间'")
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "更新者")
-    @Column(columnDefinition = "bigint(20) UNSIGNED DEFAULT 0 comment '更新者'")
     private Long updateUserId;
 
     @ApiModelProperty(value = "事务ID")
