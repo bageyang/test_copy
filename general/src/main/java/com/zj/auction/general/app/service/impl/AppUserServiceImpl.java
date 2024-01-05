@@ -112,7 +112,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     public Boolean authIdentity(UserDTO dto) {
         System.out.println(">>>>>>>>>>>>>>>>>>>"+dto);
 //        AuthToken appToken = AppTokenUtils.getAuthToken();
-        User user=SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         //User user = userMapper.selectByPrimaryKey(appToken.getUserId());
         user.setRealName(dto.getRealName());//真实姓名
         user.setCardNumber(dto.getCardNum());//身份证号
@@ -696,7 +696,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     @Transactional
     @Override
     public Boolean deleteAddr(Long addrId) {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         PubFun.check(addrId);
         Address oldAddr = Optional.ofNullable(addressMapper.selectByPrimaryKey(addrId)).orElseThrow(() -> PubFun.throwException("未查询到地址信息"));
         oldAddr.setDeleteFlag(1);
@@ -709,7 +709,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     @Override
     public Boolean addAddr(String name, String tel1, String addr2, String city, String district, String province,
                            String cityId, String districtId, String provinceId, Integer defaultFlag) {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         PubFun.check(name, tel1, addr2, defaultFlag);
         Address addr = new Address();
         List<Address> addrs = addressMapper.findByUserId(user.getUserId());
@@ -756,7 +756,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     @Override
     public Boolean updateAddr(Long addrId, String name, String tel1, String addr2, String city, String district, String province,
                               String cityId, String districtId, String provinceId, Integer defaultFlag) {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         PubFun.check(addrId, name, tel1, addr2, defaultFlag);
         Address oldAddr = Optional.ofNullable(addressMapper.selectByPrimaryKey(addrId)).orElseThrow(() -> PubFun.throwException("未查询到地址信息"));
         if (oldAddr.getDefaultFlag() != null && oldAddr.getDefaultFlag() == 1) {//	原本是默认
@@ -795,7 +795,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Boolean updatePassWord(PassWordDTO dto) {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         if (!StringUtils.hasText(dto.getOldPassWord()) || !StringUtils.hasText(dto.getNewPassWord())) {
             throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, SystemConstant.DATA_ILLEGALITY);
         }
@@ -867,7 +867,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Boolean addPassword(PassWordDTO dto) {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         PubFun.check(user.getTel(), dto.getCode(), dto.getPassword());
         messagesCheck(user.getTel(), dto.getCode());
         if (dto.getPassword().length() < 8) {
@@ -891,7 +891,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     //是否有交易密码
     @Override
     public boolean hasPayPassword() {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         User data = userMapper.findByUserName(user.getUserName());
         if (null == data) {
             return false;
@@ -902,7 +902,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     //交易密码验证
     @Override
     public boolean isPayPassword(String payPassword ) {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         return user.getPayPassword().equals(MD5Utils.isEncryption(payPassword, user.getUserId().toString()));
     }
 
@@ -926,7 +926,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
      */
     @Override
     public User findByUserCfg() {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         return BeanUtils.copy(user);
     }
 
@@ -940,7 +940,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
      */
     @Override
     public Boolean exit() {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         if (!Objects.isNull(user.getUserId())) {
             SecurityUtils.logout();
             redisTemplate.delete(String.format(RedisConstant.KEY_USER_TOKEN, user.getUserId()));
@@ -960,7 +960,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     @Transactional
     public User updateUserImg(String userImg) {
         PubFun.check(userImg);
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         user.setShareImg(getAppQrCode(user.getUserId()));
         user.setUserImg(userImg);
         userMapper.updateByPrimaryKeySelective(user);
@@ -997,7 +997,9 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
      */
     @Override
     public PageInfo<User> findCustomerByUserId(PageAction pageAction) {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
+
+        System.out.println("user----->"+user);
         PageHelper.startPage(pageAction.getCurrentPage(), pageAction.getPageSize());
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
         wrapper.eq(User::getPid, user.getUserId()).eq(User::getDeleteFlag, 0).eq(User::getUserType, 0);
@@ -1008,7 +1010,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     //查询直接上级
     @Override
     public GeneralResult parentUser() {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         User pUser = userMapper.selectByPrimaryKey(user.getPid());
         return GeneralResult.success(pUser == null ? null : BeanUtils.copy(pUser));
     }
@@ -1035,7 +1037,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     @Transactional
     public User addOrUpdateAliNum(UserDTO dto) {
         PubFun.check(dto.getRealName(), dto.getAlipayNum());
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         user.setAlipayNum(dto.getAlipayNum());//支付宝账户
         user.setRealName(dto.getRealName());//真实姓名
         user.setUpdateUserId(user.getUserId());
@@ -1092,7 +1094,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
      */
     @Override
     public Boolean checkUserByChildren(Long userId) {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         if (super.baseCheck(userId, Objects::isNull)) {
             throw new RuntimeException("未获取到用户ID");
         }
@@ -1113,7 +1115,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Boolean updateUserType(Long userId) {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         if (super.baseCheck(userId, Objects::isNull)) {
             throw new RuntimeException("未获取到用户ID");
         }
@@ -1178,7 +1180,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     @Override
     public User addOrUpdateAliOrWx(String tel, String name, String account, Integer type) {
         PubFun.check(account, type);
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         if (type == 1) {//支付宝
             PubFun.check(account, name);
             user.setAliName(name);
@@ -1197,7 +1199,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     //分页查询我的直接和间接下级以及统计
     @Override
     public GeneralResult findCustomerAndStatistics(PageRequest pageRequest) {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         Map<String, Object> map = new HashMap<>();
 //		List<UserResp> res = new ArrayList<>();
 //		List<UserResp> res1 = new ArrayList<>();
@@ -1243,7 +1245,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
      */
     @Override
     public GeneralResult findRealAutheInfo() {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         return GeneralResult.success(user);
     }
 
@@ -1252,7 +1254,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
      */
     @Override
     public GeneralResult runRealAutheInfo(UserDTO dto) {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         JSONObject jsonObject = CardCheckUtils.checkUserCard(dto.getRealName(), dto.getCardNum());
         if (jsonObject != null) {
             Boolean isok = jsonObject.getBoolean("isok");
@@ -1271,7 +1273,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     //根据是否是新用户提前五秒进入
     @Override
     public Boolean whetherNewUser(String time) {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         LocalTime scheduleTime = DateUtil.stringToLocalTime(time, "HH:mm");//规定的开始时间
         int newUserDay = SystemConfig.getNewUserDay() == null ? 30 : Integer.parseInt(SystemConfig.getNewUserDay());
         LocalDateTime addTime = user.getAddTime();

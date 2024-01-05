@@ -402,7 +402,7 @@ public class AppUserController {
      */
     @ApiOperation(value = "分页查询我的直接下级")
     @PostMapping(value = "/findCustomer")
-    public GeneralResult findCustomerByUserId(PageAction action) {
+    public GeneralResult findCustomerByUserId(@RequestBody PageAction action) {
         return GeneralResult.success(appUserService.findCustomerByUserId(action));
     }
 
