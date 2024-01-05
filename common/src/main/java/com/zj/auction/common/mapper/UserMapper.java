@@ -48,5 +48,4 @@ public interface UserMapper extends BaseMapper<User> {
 
     Long countUserChildByUserId(@Param("userId") Long userId);
 
-    Long selectUserParent(@Param("userId") Long userId);
 }

@@ -16,10 +16,6 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="is_deleted" jdbcType="TINYINT" property="isDeleted" />
   </resultMap>
-  <sql id="Base_Column_List">
-    id, user_id, bill_type, pay_type, bill_status, transtion_sn, external_sn,
-    amount, finish_time, remark, create_time, update_time, is_deleted
-  </sql>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from zj_user_bill
     where id = #{id,jdbcType=BIGINT}
@@ -65,12 +61,5 @@
     select id, user_id, bill_type, pay_type, bill_status, transtion_sn, external_sn, 
     amount, finish_time, remark, create_time, update_time, is_deleted
     from zj_user_bill
-  </select>
-  <select id="selectUserBillByTranstionSn" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List"/>
-    from zj_user_bill
-    where transtion_sn = #{sn}
-    limit 1
   </select>
 </mapper>

@@ -2,7 +2,6 @@ package com.zj.auction.general.app.service.impl;
 
 import com.zj.auction.common.constant.RedisConstant;
 import com.zj.auction.common.enums.AuctionStatEnum;
-import com.zj.auction.common.enums.OrderTypeEnum;
 import com.zj.auction.common.enums.StatusEnum;
 import com.zj.auction.common.exception.CustomException;
 import com.zj.auction.common.mapper.AuctionMapper;
@@ -51,13 +50,12 @@ public class AuctionServiceImpl implements AuctionService {
 
     @Override
     @Transactional
-    public Auction addAuction(Stock stock, OrderTypeEnum orderType) {
+    public Auction addAuction(Stock stock) {
         Long goodsId = stock.getGoodsId();
-        BigDecimal cashPrice = stock.getCashPrice();
-        BigDecimal integralPrice = stock.getIntegralPrice();
-        Auction auction = auctionMapper.selectAuctionByGoodsIdAndCashPrice(goodsId, cashPrice);
+        BigDecimal price = stock.getPrice();
+        Auction auction = auctionMapper.selectAuctionByGoodsIdAndPrice(goodsId, price);
         if (Objects.isNull(auction)) {
-            auction = createAuction(goodsId, cashPrice,integralPrice);
+            auction = createAuction(goodsId, price);
             auctionMapper.insertSelective(auction);
             if (Objects.isNull(auction)) {
                 return null;
@@ -80,11 +78,10 @@ public class AuctionServiceImpl implements AuctionService {
             throw new CustomException(StatusEnum.STOCK_BASE_GOODS_ERROR);
         }
         Long goodsId = stockList.get(0).getGoodsId();
-        BigDecimal cashPrice = stockList.get(0).getCashPrice();
-        BigDecimal integralPrice = stockList.get(0).getIntegralPrice();
-        Auction auction = auctionMapper.selectAuctionByGoodsIdAndCashPrice(goodsId, cashPrice);
+        BigDecimal price = stockList.get(0).getPrice();
+        Auction auction = auctionMapper.selectAuctionByGoodsIdAndPrice(goodsId, price);
         if (Objects.isNull(auction)) {
-            auction = createAuction(goodsId, cashPrice,integralPrice);
+            auction = createAuction(goodsId, price);
             if (Objects.isNull(auction)) {
                 throw new CustomException(StatusEnum.CREATE_AUCTION_ERROR);
             }
@@ -105,14 +102,14 @@ public class AuctionServiceImpl implements AuctionService {
         return auction;
     }
 
-    private Auction createAuction(Long goodsId, BigDecimal cashPrice,BigDecimal integralPrice) {
+    private Auction createAuction(Long goodsId, BigDecimal price) {
         // 全局锁
         RLock lock = redissonClient.getLock(RedisConstant.AUCTION_GENERATOR_LOCK_KEY);
         Auction auction;
         try {
             boolean b = lock.tryLock(5, TimeUnit.SECONDS);
             if (b) {
-                auction = auctionMapper.selectAuctionByGoodsIdAndCashPrice(goodsId, cashPrice);
+                auction = auctionMapper.selectAuctionByGoodsIdAndPrice(goodsId, price);
                 if (Objects.nonNull(auction)) {
                     return auction;
                 } else {
@@ -125,15 +122,14 @@ public class AuctionServiceImpl implements AuctionService {
                 auction.setGoodsId(goodsId);
                 auction.setAuctionName(auctionName);
                 auction.setAuctionStatus(AuctionStatEnum.UN_START.getCode());
-                auction.setCashPrice(cashPrice);
-                auction.setIntegralPrice(integralPrice);
+                auction.setPrice(price);
                 auction.setStockQuantity(1);
                 // todo 竞拍区
                 //        auction.setAuctionAreaId();
                 auctionMapper.insertSelective(auction);
                 return auction;
             } else {
-                LOGGER.error("创建拍品获取锁失败,goodsId:{},price:{}", goodsId, cashPrice);
+                LOGGER.error("创建拍品获取锁失败,goodsId:{},price:{}", goodsId, price);
             }
         } catch (Exception e) {
             LOGGER.error("转拍回调获取锁异常", e);

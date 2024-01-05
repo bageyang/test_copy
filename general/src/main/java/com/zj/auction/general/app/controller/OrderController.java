@@ -69,6 +69,7 @@ public class OrderController {
 
     /**
      * 提货
+     * @param orderSn 订单号
      * @return true/false
      */
     @PostMapping("/pickUp")
