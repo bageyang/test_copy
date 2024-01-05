@@ -16,6 +16,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -47,9 +48,9 @@ public class PermissionController {
      */
 
     @PostMapping(value="/findMenuAll")
-    public Ret findMenuAll() {
+    public Ret findMenuAll(@RequestParam(name = "levelNum")Integer levelNum) {
         Ret result = new Ret();
-        result.setData(permissionService.findMenuAll());
+        result.setData(permissionService.findMenuAll(levelNum));
         return result;
     }
 
@@ -66,27 +67,7 @@ public class PermissionController {
     }
 
 
-    /**
-     * @Description 查询菜单list
-     * @Title findMenuList
-     * @Author Mao Qi
-     * @Date 2019/10/31 19:30
-     * @param pageAction
-     * @param levelNum
-     * @param jsTreeByPermissionId
-     * @return	com.duoqio.boot.framework.result.GeneralResult
-     */
-    @PostMapping(value="/findMenuList")
-    public Ret findMenuList(PageAction pageAction, String levelNum, Integer jsTreeByPermissionId) {
-        Ret result = new Ret();
-        HashMap<String, Object> map =new HashMap<>(1);
-        map.put("levelNum", levelNum);
-        map.put("jsTreeByPermissionId", jsTreeByPermissionId);
-        GeneralResult generalResult = userService.getManagerList(pageAction);
-        result.setData(generalResult.getResult());
-        result.setPageAction(generalResult.getPageAction());
-        return result;
-    }
+
 
     /**
      * @Description 修改菜单弹框

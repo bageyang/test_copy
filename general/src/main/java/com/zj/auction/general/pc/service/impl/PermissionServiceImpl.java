@@ -59,8 +59,8 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
     }
 
     @Override
-    public List<Map<String, Object>> findMenuAll() {
-        return permisMapper.findMenuAll();
+    public List<Map<String, Object>> findMenuAll(Integer levelNum) {
+        return permisMapper.findMenuAll(levelNum);
     }
 
 
