@@ -22,4 +22,7 @@ public interface GoodsMapper {
     int updateByPrimaryKeySelective(Goods record);
 
     List<Goods> listGoodsInfoByIds(@Param("goodIds") List<Long> goodIds);
+
+    Integer updGoodsTagIdByPidStr(@Param("tagId") Long tagId, @Param("userId") Long userId,@Param("pcUserId") Long pcUserId);
+
 }

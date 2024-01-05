@@ -16,7 +16,7 @@ import com.zj.auction.common.exception.ServiceException;
 import com.zj.auction.common.mapper.*;
 import com.zj.auction.common.model.*;
 import com.zj.auction.common.util.*;
-import com.zj.auction.general.pc.service.*;
+import com.zj.auction.general.pc.service.UserService;
 import com.zj.auction.general.shiro.SecurityUtils;
 import com.zj.auction.general.vo.GeneralResult;
 import com.zj.auction.general.vo.LoginResp;
@@ -57,6 +57,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     private final UserConfigMapper userConfigMapper;
     private final AreaMapper areaMapper;
     private final WalletMapper walletMapper;
+    private final GoodsMapper goodsMapper;
 
 
     /**
@@ -235,6 +236,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
     //修改管理员
     @Transactional(rollbackFor = Exception.class)
+    @Override
     public Boolean updateManager(UserDTO userCfg) {
         User user = SecurityUtils.getPrincipal();
         PubFun.check(userCfg, userCfg.getTel(), userCfg.getUserName(), userCfg.getRealName());
@@ -423,6 +425,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         return true;
     }
 
+
 //	//根据用户id查询间接下级
 //	@Override
 //	public GeneralResult listMemberIndirect(PageAction pageAction, HashMap<String, Object> maps) {
@@ -477,11 +480,48 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 //	}
 
     //根据用户id查询间接下级
-	@Override
+    @Override
     public PageInfo<Map<String, Object>> listMemberIndirect(UserDTO dto) {
         List<Map<String, Object>> map = userMapper.listMemberIndirect(dto);
-        PageHelper.startPage(dto.getPage(),dto.getPageSize());
+        PageHelper.startPage(dto.getPage(), dto.getPageSize());
         return new PageInfo<>(map);
+    }
+
+    //修改用户VIP类型
+    @Transactional
+    @Override
+    public GeneralResult updVipType(Long userId, Integer vipType, Long tagId) {
+        PubFun.check(userId, vipType);
+        User pUser = SecurityUtils.getPrincipal();
+        User user = userMapper.selectByPrimaryKey(userId);
+        if ((user.getVipType() == 0 || user.getVipType() == 1) && vipType.compareTo(2) == 0) {//设置团长必须设置分馆馆长
+            PubFun.check(userId, tagId);
+            if (tagId <= 0) throw new ServiceException(410, "请选择分馆");
+            if (user.getTagId().compareTo(tagId) == 0) throw new ServiceException(411, "该用户已经属于该馆成员了");
+            if (user.getTagId().compareTo(tagId) != 0 && user.getTagId() > 0)
+                throw new ServiceException(412, "该用户已经属于其他馆成员了");
+            //判断这个馆是否已经有馆长了
+            LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
+            wrapper.eq(User::getDeleteFlag, 0).eq(User::getTagId, tagId).eq(User::getVipType, 2);
+            Long count = userMapper.selectCount(wrapper);
+            if (count > 0) throw new ServiceException(413, "该分馆已经有馆长了");
+            user.setTagId(tagId);
+            //所有下级团队都可以进入
+            userMapper.updUserChildByPidStr(tagId, user.getUserId(), pUser.getUserId());
+            //附带的产品同时进入相应的分馆
+            goodsMapper.updGoodsTagIdByPidStr(tagId,user.getUserId(),pUser.getUserId());
+        } else if (user.getVipType() == 2 && (vipType.compareTo(0) == 0 || vipType.compareTo(1) == 0)) {//取消馆长
+            user.setTagId(0L);
+            //取消用户分馆归属
+            userMapper.updUserChildByPidStr(0L, user.getUserId(), pUser.getUserId());
+            //附带的产品同时进入相应的分馆
+            goodsMapper.updGoodsTagIdByPidStr(0L,user.getUserId(),pUser.getUserId());
+        }
+        user.setVipType(vipType);
+        user.setUpdateTime(LocalDateTime.now());
+        user.setUpdateUserId(pUser.getUserId());
+        userMapper.updateById(user);
+        return GeneralResult.success();
     }
 
 
@@ -575,7 +615,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     }
 
 
-
     private RuntimeException throwException(String errorMessage) {
         return new RuntimeException(errorMessage);
     }
@@ -603,56 +642,56 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     }
 
     /**
+     * @param userId
+     * @param
+     * @return
      * @title: updateAuditRejection
      * @description: 会员审核拒绝通过
      * @author: Mao Qi
      * @date: 2020年4月3日下午7:22:33
-     * @param userId
-     * @param
-     * @return
      */
-	@Transactional
-	public Integer updateAuditRejection(Long userId, String auditExplain) {
-		SecurityUtils.getPrincipal();
-		if (super.baseCheck(userId, Objects::isNull)) {
-			throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE,"数据非法");
-		}
-		return userMapper.updateAuditRejection(userId,auditExplain);
-	}
+    @Transactional
+    public Integer updateAuditRejection(Long userId, String auditExplain) {
+        SecurityUtils.getPrincipal();
+        if (super.baseCheck(userId, Objects::isNull)) {
+            throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, "数据非法");
+        }
+        return userMapper.updateAuditRejection(userId, auditExplain);
+    }
 
-//    实名通过审核
-	@Transactional
-	public Integer updateAuditApproval(Long userId) {
-		SecurityUtils.getPrincipal();
-		if (super.baseCheck(userId, Objects::isNull)) {
-			throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE,"数据非法");
-		}
+    //    实名通过审核
+    @Transactional
+    public Integer updateAuditApproval(Long userId) {
+        SecurityUtils.getPrincipal();
+        if (super.baseCheck(userId, Objects::isNull)) {
+            throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, "数据非法");
+        }
 
-		return userMapper.updateAuditApproval(userId);
-	}
+        return userMapper.updateAuditApproval(userId);
+    }
 
     //后台操作变更资金
-	@Override
-	public Integer changeBalance(Long userId,Integer moneyType,Integer type, BigDecimal integral,String remark) {
-		User pcUser = SecurityUtils.getPrincipal();
-		PubFun.check(userId,moneyType,type);
-		if(com.zj.auction.common.util.StringUtils.isEmpty(integral) || integral.compareTo(BigDecimal.ZERO)<=0) {
-			throw new ServiceException(506,"变更数量输入有误!");
-		}
-		User user =Optional.ofNullable(userMapper.selectByPrimaryKey(userId)).orElseThrow(()-> PubFun.throwException("该用户不存在"));
+    @Override
+    public Integer changeBalance(Long userId, Integer moneyType, Integer type, BigDecimal integral, String remark) {
+        User pcUser = SecurityUtils.getPrincipal();
+        PubFun.check(userId, moneyType, type);
+        if (com.zj.auction.common.util.StringUtils.isEmpty(integral) || integral.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ServiceException(506, "变更数量输入有误!");
+        }
+        User user = Optional.ofNullable(userMapper.selectByPrimaryKey(userId)).orElseThrow(() -> PubFun.throwException("该用户不存在"));
         Wallet wallet = walletMapper.selectAllByUserId(userId);
-		if(type==1) {//增加
-			String transactionId = UidGenerator.createOrderXid();
-			String memo = "";
-			if(moneyType==0){
-				memo = "后台人工增加店铺收入";
-			}else if(moneyType == 1){
-				memo = "后台人工充值获得";
-			}else{
-				memo = "后台人工充值获得";
-			}
-			//添加余额
-			walletMapper.insert(Wallet.builder()
+        if (type == 1) {//增加
+            String transactionId = UidGenerator.createOrderXid();
+            String memo = "";
+            if (moneyType == 0) {
+                memo = "后台人工增加店铺收入";
+            } else if (moneyType == 1) {
+                memo = "后台人工充值获得";
+            } else {
+                memo = "后台人工充值获得";
+            }
+            //添加余额
+            walletMapper.insert(Wallet.builder()
                     .userId(wallet.getUserId())
                     .updateBalance(integral)
                     .balanceBefore(wallet.getBalance())
@@ -661,24 +700,24 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
                     .fundType(moneyType)
                     .tradeNo(transactionId)
                     .updateTime(LocalDateTime.now())
-                    .remark(memo+"-"+remark)
+                    .remark(memo + "-" + remark)
                     .build());
-			// addTotalPlatform(1, integral, saveMoney);//给平台加明细
-		}else if(type==2) {//减少
-			//查询该用户剩余余额数量
-			if(wallet.getBalance().compareTo(BigDecimal.ZERO)<1 || wallet.getBalance().compareTo(integral) < 0) {
-				throw new ServiceException(508,"余额不足");
-			}
-			String transactionId = UidGenerator.createOrderXid();
-			String memo = "";
-			if(moneyType==0){
-				memo = "后台人工减少店铺收入";
-			}else if(moneyType == 1){
-				memo = "后台人工回收支出";
-			}else{
-				memo = "后台人工回收支出";
-			}
-			//扣除余额
+            // addTotalPlatform(1, integral, saveMoney);//给平台加明细
+        } else if (type == 2) {//减少
+            //查询该用户剩余余额数量
+            if (wallet.getBalance().compareTo(BigDecimal.ZERO) < 1 || wallet.getBalance().compareTo(integral) < 0) {
+                throw new ServiceException(508, "余额不足");
+            }
+            String transactionId = UidGenerator.createOrderXid();
+            String memo = "";
+            if (moneyType == 0) {
+                memo = "后台人工减少店铺收入";
+            } else if (moneyType == 1) {
+                memo = "后台人工回收支出";
+            } else {
+                memo = "后台人工回收支出";
+            }
+            //扣除余额
             walletMapper.insert(Wallet.builder()
                     .userId(wallet.getUserId())
                     .updateBalance(integral)
@@ -688,14 +727,14 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
                     .fundType(moneyType)
                     .tradeNo(transactionId)
                     .updateTime(LocalDateTime.now())
-                    .remark(memo+"-"+remark)
+                    .remark(memo + "-" + remark)
                     .build());
-			//addTotalPlatform(-1, integral, saveMoney);//给平台加明细
-		}else {
-			throw new RuntimeException("变更余额类型有误");
-		}
-		return null;
-	}
+            //addTotalPlatform(-1, integral, saveMoney);//给平台加明细
+        } else {
+            throw new RuntimeException("变更余额类型有误");
+        }
+        return null;
+    }
 
 
     /**
@@ -774,11 +813,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     /**
      * @param userId
      * @param upLevel
+     * @return java.util.List<com.duoqio.boot.business.entity.UserInfoTbl>
      * @Description 所有上级
      * @Title listParentUser
      * @Author Mao Qi
      * @Date 2019/10/24 21:35
-     * @return java.util.List<com.duoqio.boot.business.entity.UserInfoTbl>
      */
     @Override
     public List<User> listParentUser(Long userId, Integer upLevel) {
@@ -926,7 +965,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         updateUserById(userId, remarks, 3);
         return GeneralResult.success();
     }
-
 
 
 }

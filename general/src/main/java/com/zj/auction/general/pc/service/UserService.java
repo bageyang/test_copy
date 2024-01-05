@@ -6,6 +6,8 @@ import com.zj.auction.common.model.User;
 import com.zj.auction.general.vo.GeneralResult;
 import com.zj.auction.general.vo.LoginResp;
 import com.zj.auction.general.vo.PageAction;
+import org.apache.ibatis.annotations.Param;
+
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -71,7 +73,8 @@ public interface UserService  {
 //     * @return：Boolean
 //     *
 //     */
-//    Boolean updateManager(User userCfg);
+
+    Boolean updateManager(UserDTO userCfg);
 //
 //    /**
 //     * @Title: deleteManager
@@ -146,17 +149,9 @@ public interface UserService  {
 //     * @return	com.duoqio.boot.framework.result.GeneralResult
 //     */
     PageInfo<Map<String,Object>> listMemberIndirect( UserDTO dto);
+
 //
-//    /**
-//     * @title: findMemberAudit
-//     * @description: 查询待审核会员
-//     * @author: Mao Qi
-//     * @date: 2020年4月3日下午5:50:35
-//     * @param pageAction
-//     * @param map
-//     * @return: GeneralResult
-//     */
-//    GeneralResult findMemberAudit(PageAction pageAction, HashMap<String, Object> map);
+
 //
 //
 //    /**
@@ -193,11 +188,7 @@ public interface UserService  {
 //     * @param userCfg
 //     * @return: Boolean
 //     */
-//    Boolean deleteMember(User userCfg);
-//
-
-
-
+    Boolean deleteMember(Long userId);
 
 
 //
@@ -388,5 +379,5 @@ public interface UserService  {
 //     * @param vipType
 //     * @return	com.duoqio.common.vo.GeneralResult
 //     */
-//    GeneralResult updVipType(Long userId, Integer vipType, Long tagId);
+    GeneralResult updVipType(Long userId, Integer vipType, Long tagId);
 }
