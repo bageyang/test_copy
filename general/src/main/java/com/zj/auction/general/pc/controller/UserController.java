@@ -1,19 +1,22 @@
 package com.zj.auction.general.pc.controller;
 
-import com.github.pagehelper.PageInfo;
 import com.zj.auction.common.constant.RedisConstant;
 import com.zj.auction.common.constant.SystemConfig;
 import com.zj.auction.common.model.Permis;
 import com.zj.auction.common.model.SystemCnf;
 import com.zj.auction.common.model.User;
-import com.zj.auction.general.shiro.SecurityUtils;
+import com.zj.auction.common.shiro.SecurityUtils;
 import com.zj.auction.common.util.RedisUtil;
 import com.zj.auction.general.pc.service.UserService;
 import com.zj.auction.general.vo.GeneralResult;
 import com.zj.auction.general.vo.PageAction;
 import io.swagger.annotations.Api;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -198,9 +201,9 @@ public class UserController{
      */
     @PostMapping(value="/getUserPage")
     public GeneralResult getUserPage(PageAction pageAction,Integer userType) {
-        PageInfo<User> page = pcUserServer.getUserPage(pageAction, userType, null);
-        pageAction.setTotalCount((int)page.getTotal());
-        return GeneralResult.success(page.getList(),pageAction);
+        Page<User> page = pcUserServer.getUserPage(pageAction, userType, null);
+        pageAction.setTotalCount((int)page.getTotalElements());
+        return GeneralResult.success(page.getContent(),pageAction);
     }
 
     /**

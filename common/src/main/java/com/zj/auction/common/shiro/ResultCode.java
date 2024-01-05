@@ -1,4 +1,4 @@
-package com.zj.auction.general.shiro;
+package com.zj.auction.common.shiro;
 
 public enum ResultCode {
 

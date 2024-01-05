@@ -1,5 +1,6 @@
-package com.zj.auction.general.shiro;
+package com.zj.auction.common.shiro;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.zj.auction.common.mapper.PermisMapper;
 import com.zj.auction.common.mapper.PermisRoleMapper;
 import com.zj.auction.common.mapper.UserRoleMapper;
 import com.zj.auction.common.model.Role;

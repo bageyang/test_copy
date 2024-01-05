@@ -1,78 +1,23 @@
 package com.zj.auction.common.model;
 
-import lombok.Builder;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-@Builder
+
 public class Wallet implements Serializable {
     private Long id;
 
-    /**
-     * 用户id
-     */
-    private Long userId;
+    private Integer userId;
 
-    /**
-     * 基金类型
-     */
-    private Integer fundType;
+    private Byte fundType;
 
-    /**
-     * 资金
-     */
     private BigDecimal balance;
 
-    /**
-     * 冻结
-     */
     private BigDecimal freeze;
 
-    /**
-     * 创建时间
-     */
     private LocalDateTime createTime;
 
-    /**
-     * 更新时间
-     */
     private LocalDateTime updateTime;
-
-    /**
-     * 交易类型
-     */
-    private Integer transactionType;
-
-    /**
-     * 更改之前资金
-     */
-    private BigDecimal balanceBefore;
-
-    /**
-     * 更新资金
-     */
-    private BigDecimal updateBalance;
-
-    /**
-     * 更改后资金
-     */
-    private BigDecimal balanceAfter;
-
-    /**
-     * 备注
-     */
-    private String remark;
-
-    /**
-     * 钱包类型
-     */
-    private Integer walletType;
-
-    /**
-     * 贸易号
-     */
-    private String tradeNo;
 
     private static final long serialVersionUID = 1L;
 
@@ -84,19 +29,19 @@ public class Wallet implements Serializable {
         this.id = id;
     }
 
-    public Long getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
-    public Integer getFundType() {
+    public Byte getFundType() {
         return fundType;
     }
 
-    public void setFundType(Integer fundType) {
+    public void setFundType(Byte fundType) {
         this.fundType = fundType;
     }
 
@@ -132,62 +77,6 @@ public class Wallet implements Serializable {
         this.updateTime = updateTime;
     }
 
-    public Integer getTransactionType() {
-        return transactionType;
-    }
-
-    public void setTransactionType(Integer transactionType) {
-        this.transactionType = transactionType;
-    }
-
-    public BigDecimal getBalanceBefore() {
-        return balanceBefore;
-    }
-
-    public void setBalanceBefore(BigDecimal balanceBefore) {
-        this.balanceBefore = balanceBefore;
-    }
-
-    public BigDecimal getUpdateBalance() {
-        return updateBalance;
-    }
-
-    public void setUpdateBalance(BigDecimal updateBalance) {
-        this.updateBalance = updateBalance;
-    }
-
-    public BigDecimal getBalanceAfter() {
-        return balanceAfter;
-    }
-
-    public void setBalanceAfter(BigDecimal balanceAfter) {
-        this.balanceAfter = balanceAfter;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public Integer getWalletType() {
-        return walletType;
-    }
-
-    public void setWalletType(Integer walletType) {
-        this.walletType = walletType;
-    }
-
-    public String getTradeNo() {
-        return tradeNo;
-    }
-
-    public void setTradeNo(String tradeNo) {
-        this.tradeNo = tradeNo;
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -201,13 +90,6 @@ public class Wallet implements Serializable {
         sb.append(", freeze=").append(freeze);
         sb.append(", createTime=").append(createTime);
         sb.append(", updateTime=").append(updateTime);
-        sb.append(", transactionType=").append(transactionType);
-        sb.append(", balanceBefore=").append(balanceBefore);
-        sb.append(", updateBalance=").append(updateBalance);
-        sb.append(", balanceAfter=").append(balanceAfter);
-        sb.append(", remark=").append(remark);
-        sb.append(", walletType=").append(walletType);
-        sb.append(", tradeNo=").append(tradeNo);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

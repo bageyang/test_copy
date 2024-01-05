@@ -1,4 +1,4 @@
-package com.zj.auction.general.shiro;
+package com.zj.auction.common.shiro;
 
 import org.apache.shiro.ShiroException;
 import org.springframework.lang.NonNull;

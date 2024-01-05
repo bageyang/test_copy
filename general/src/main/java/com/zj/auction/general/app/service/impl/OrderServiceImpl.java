@@ -9,9 +9,11 @@ import com.zj.auction.common.mapper.StockMapper;
 import com.zj.auction.common.model.Goods;
 import com.zj.auction.common.model.Order;
 import com.zj.auction.common.model.Stock;
+import com.zj.auction.common.util.StringUtils;
 import com.zj.auction.general.app.service.AuctionService;
 import com.zj.auction.general.app.service.OrderService;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,7 @@ import java.util.Objects;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
     private final OrderMapper orderMapper;
     private final StockMapper stockMapper;
     private final GoodsMapper goodsMapper;
@@ -34,13 +37,44 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void finishPayTransferFee(String orderSn) {
-
+    public void finishPayCallBack(Long orderSn) {
+        Order buyerOrder = orderMapper.selectOrderByOrderNumber(orderSn);
+        Byte orderStatus = buyerOrder.getOrderStatus();
+        if (!OrderStatEnum.UN_PAYMENT.isEqual(orderStatus)) {
+            LOGGER.error("用户支付拍品状态异常,订单号{}",orderSn);
+            return;
+        }
+        Long stockNumber = buyerOrder.getStockNumber();
+        Order sellerOrder = orderMapper.selectOwnerOrderByStockNumberAndStatus(stockNumber, OrderStatEnum.WAIT_BUYER_PAYMENT.getCode());
+        if(Objects.isNull(sellerOrder)){
+            LOGGER.error("卖家订单状态异常,库存号{}",stockNumber);
+        }
+        buyerOrder.setOrderStatus(OrderStatEnum.WAIT_SELLER_CONFIRM.getCode());
+        sellerOrder.setOrderStatus(OrderStatEnum.UN_CONFIRM.getCode());
+        orderMapper.updateByPrimaryKeySelective(buyerOrder);
+        orderMapper.updateByPrimaryKeySelective(sellerOrder);
+        // todo 发送延迟队列 卖家完成支付,卖家
     }
 
     @Override
-    public void uploadPaymentVoucher(String orderSn) {
+    public void uploadPaymentVoucher(Long orderSn,String orderVoucher) {
+        Order order = orderMapper.selectOrderByOrderNumber(orderSn);
+        if(!orderInStatus(order)){
+            throw new CustomException(StatusEnum.AUCTION_STATUS_ERROR);
+        }
+        if(StringUtils.isBlank(orderVoucher)){
+            throw new CustomException(StatusEnum.PAYMENT_VOUCHER_BLANK_ERROR);
+        }
+        order.setOrderStatus(OrderStatEnum.WAIT_SELLER_CONFIRM.getCode());
+        orderMapper.updateByPrimaryKeySelective(order);
+        // todo 发送延迟队列 卖家完成支付,卖家
+    }
 
+    private boolean orderInStatus(Order order) {
+        return Objects.nonNull(order)
+                && (OrderStatEnum.WAIT_BUYER_PAYMENT.isEqual(order.getOrderStatus())
+                        || OrderStatEnum.SELLER_REJECT.isEqual(order.getOrderStatus())
+                );
     }
 
     @Override
@@ -84,7 +118,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void transferPaymentCallBack(Long stockSn) {
-        Order order = orderMapper.selectOwnerOrderBySnAndStatus(stockSn,OrderStatEnum.WAIT_MARGIN.getCode());
+        Order order = orderMapper.selectOwnerOrderByStockNumberAndStatus(stockSn,OrderStatEnum.WAIT_MARGIN.getCode());
         Stock stock = stockMapper.selectOneBySn(stockSn);
 
         Order updateOrder = new Order();
@@ -116,7 +150,7 @@ public class OrderServiceImpl implements OrderService {
             throw new CustomException(StatusEnum.PARAM_ERROR);
         }
         int orderStatCode = OrderStatEnum.AUCTION_SUCCESS.getCode();
-        Order order = orderMapper.selectOwnerOrderBySnAndStatus(stockSn,orderStatCode);
+        Order order = orderMapper.selectOwnerOrderByStockNumberAndStatus(stockSn,orderStatCode);
         if(Objects.isNull(order)){
             throw new CustomException(StatusEnum.OWNER_ORDER_MISS_ERROR);
         }
@@ -128,12 +162,28 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void finishOrder(String orderSn) {
+    public void finishOrder(Long orderSn) {
+        Order sellerOrder = orderMapper.selectOrderByOrderNumber(orderSn);
+        Byte orderStatus = sellerOrder.getOrderStatus();
+        if (!OrderStatEnum.UN_CONFIRM.isEqual(orderStatus)) {
+            throw new CustomException(StatusEnum.AUCTION_STATUS_ERROR);
+        }
+        Long stockNumber = sellerOrder.getStockNumber();
+        Order buyerOrder = orderMapper.selectOwnerOrderByStockNumberAndStatus(stockNumber, OrderStatEnum.WAIT_SELLER_CONFIRM.getCode());
+        if(Objects.isNull(buyerOrder)){
+            throw new CustomException(StatusEnum.AUCTION_STATUS_ERROR);
+        }
+        sellerOrder.setOrderStatus(OrderStatEnum.FINISH.getCode());
+        buyerOrder.setOrderStatus(OrderStatEnum.AUCTION_SUCCESS.getCode());
+        orderMapper.updateByPrimaryKeySelective(sellerOrder);
+        orderMapper.updateByPrimaryKeySelective(buyerOrder);
+        // todo 计算业绩
 
     }
 
+
     @Override
     public List<Order> listUserOrder(Long userId) {
-        return null;
+        return orderMapper.listOrderByUserId(userId);
     }
 }

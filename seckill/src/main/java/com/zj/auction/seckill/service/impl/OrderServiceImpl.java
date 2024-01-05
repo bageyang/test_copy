@@ -39,15 +39,18 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void generatorOrder(BaseOrderDto orderInfo) {
+        // todo 挪到 general 服务?
         logger.info("生成用户订单:{}",orderInfo);
         Long sn = orderInfo.getSn();
         Long auctionId = orderInfo.getAuctionId();
         Auction auction = auctionMapper.selectByPrimaryKey(auctionId);
-        Order ownerOrder = orderMapper.selectOwnerOrderBySnAndStatus(sn, OrderStatEnum.ON_AUCTION.getCode());
+        Order ownerOrder = orderMapper.selectOwnerOrderByStockNumberAndStatus(sn, OrderStatEnum.ON_AUCTION.getCode());
         Stock stock = stockMapper.selectOneBySn(sn);
         checkOrderStatus(ownerOrder,orderInfo,auction);
         Order order = buildOrder(orderInfo, auction, ownerOrder, stock);
         orderMapper.insert(order);
+        // todo 发送mq 支付超时
+
     }
 
     private Order buildOrder(BaseOrderDto orderInfo, Auction auction, Order ownerOrder, Stock stock) {
@@ -56,9 +59,10 @@ public class OrderServiceImpl implements OrderService {
         order.setAuctionId(orderInfo.getAuctionId());
         order.setOrderSn(orderInfo.getOrderSn());
         order.setStockId(stock.getId());
+        order.setStockNumber(stock.getStockNumber());
         order.setUserId(orderInfo.getUserId());
-        order.setTotalAmount(auction.getPrices());
-        order.setPayAmount(auction.getPrices());
+        order.setTotalAmount(auction.getPrice());
+        order.setPayAmount(auction.getPrice());
         order.setItemId(ownerOrder.getId());
         order.setCreateTime(LocalDateTime.now());
         order.setOrderStatus(OrderStatEnum.UN_PAYMENT.getCode());

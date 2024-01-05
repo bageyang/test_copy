@@ -1,8 +1,6 @@
 package com.zj.auction.general.pc.service;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.mapper.Mapper;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.github.pagehelper.PageInfo;
 import com.zj.auction.common.model.Permis;
 import com.zj.auction.common.model.SystemCnf;
 import com.zj.auction.common.model.User;
@@ -28,7 +26,7 @@ import java.util.Map;
  * @Copyright 重庆多企源科技有限公司
  * @Website {http://www.duoqio.com/index.asp?source=code}
  */
-public interface UserService  {
+public interface UserService extends BaseMapper<User> {
 
     /**
      * @Description pc登录
@@ -143,7 +141,7 @@ public interface UserService  {
      * @param pageAction
      * @return	com.duoqio.common.vo.GeneralResult
      */
-    PageInfo<User> getUserPage(PageAction pageAction, Integer userType, List<Long> userIds);
+    org.springframework.data.domain.Page<User> getUserPage(PageAction pageAction, Integer userType, List<Long> userIds);
 
 
 
