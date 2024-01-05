@@ -31,6 +31,7 @@ import com.zj.auction.general.auth.AppTokenUtils;
 import com.zj.auction.general.auth.AuthToken;
 import com.zj.auction.general.shiro.JwtToken;
 import com.zj.auction.general.shiro.JwtUtil;
+import com.zj.auction.general.shiro.PwdTool;
 import lombok.extern.log4j.Log4j2;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.ExpiredCredentialsException;
@@ -130,9 +131,10 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
             User user = new User();// 创建用户
             //String[] md5 = MD5Utils.encryption(dto.getPassWord());//密码处理
             //String salt = dto.getUserName();
-            Md5Hash md5Hash = new Md5Hash(dto.getPassWord(), dto.getUserName(), 1024);
+            String salt= PwdTool.getRandomSalt();
+            Md5Hash md5Hash = new Md5Hash(dto.getPassWord(),salt, 1024);
             user.setPassWord(md5Hash.toString());
-            //user.setSalt(md5[1]);
+            user.setSalt(salt);
 
             if (Objects.isNull(dto.getPid())) {
                 PubFun.check(dto.getPUserName());
@@ -417,7 +419,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
 //                String md5 = MD5Utils.isEncryption(password, user.getSalt());
 //                System.out.println("md5------->"+md5);
 
-                String salt = user.getUserName();
+                String salt = user.getSalt();
                 Md5Hash md5Hash = new Md5Hash(password, salt, 1024);
 
                 System.out.println("md5Hash---->"+md5Hash);
@@ -1012,8 +1014,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean delUser() {
-        AuthToken authToken = AppTokenUtils.getAuthToken();
-        User user = Optional.ofNullable(userMapper.selectByPrimaryKey(authToken.getUserId())).orElseThrow(() -> PubFun.throwException("未查询到用户信息"));
+        User user=(User)SecurityUtils.getSubject().getPrincipal();
         user.setDeleteFlag(1);
         user.setUpdateUserId(user.getUserId());
         userMapper.updateByPrimaryKeySelective(user);
@@ -1030,15 +1031,13 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     @Transactional
     public User addOrUpdateAliNum(String realName, String alipayNum) {
         PubFun.check(realName,alipayNum);
-        AuthToken authToken = AppTokenUtils.getAuthToken();
-        User user = Optional.ofNullable(userMapper.selectByPrimaryKey(authToken.getUserId())).orElseThrow(() -> PubFun.throwException("未查询到用户信息"));
+        User user=(User)SecurityUtils.getSubject().getPrincipal();
         user.setAlipayNum(alipayNum);//支付宝账户
         user.setRealName(realName);//真实姓名
-        user.setUpdateUserId(authToken.getUserId());
+        user.setUpdateUserId(user.getUserId());
         user.setUpdateTime(LocalDateTime.now());
         userMapper.updateByPrimaryKeySelective(user);
-        authToken.setUser(user);
-        redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, authToken.getUserId()), JSON.toJSONString(authToken));
+        redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, user.getUserId()), JSON.toJSONString(user));
         return BeanUtils.copy(user);
     }
 
