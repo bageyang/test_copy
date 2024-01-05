@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.zj.auction.common.dto.PassWordDTO;
 import com.zj.auction.common.dto.UserDTO;
 import com.zj.auction.common.model.Address;
+import com.zj.auction.common.model.Role;
 import com.zj.auction.common.model.User;
 import com.zj.auction.common.vo.GeneralResult;
 import com.zj.auction.common.vo.LoginResp;
@@ -446,4 +447,25 @@ public interface AppUserService {
     Boolean whetherNewUser(String time);
 
     LoginResp refreshToken();
+
+    /**
+     * 查询所有角色
+     * @return
+     */
+    List<Role> geRole();
+
+    /**
+     * 添加角色
+     * @param role
+     * @return
+     */
+    int addRole(Role role);
+
+    /**
+     * 修改角色
+     * @param role
+     * @return
+     */
+    int updateRole(Role role);
+
 }

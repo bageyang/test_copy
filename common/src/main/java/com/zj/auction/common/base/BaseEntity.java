@@ -1,6 +1,7 @@
 package com.zj.auction.common.base;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -29,7 +30,7 @@ public class BaseEntity implements Serializable {
     private LocalDateTime addTime;
 
     @ApiModelProperty(value = "创建者")
-    private Long addUserId;
+    private Long addUserid;
 
     @LastModifiedDate
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
@@ -38,9 +39,11 @@ public class BaseEntity implements Serializable {
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
 
+    @TableField(exist = false)
     @ApiModelProperty(value = "更新者")
     private Long updateUserId;
 
+    @TableField(exist = false)
     @ApiModelProperty(value = "事务ID")
     private String transactionId;
 
