@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: seckill-server
+  profiles:
+    active: @env@
+server:
+  servlet:
+    context-path: /seckill
+
+
+
+
