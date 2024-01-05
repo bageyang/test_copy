@@ -9,6 +9,10 @@ public class RejectRet {
         this.msg = msg;
     }
 
+    public static RejectRet of(int code,String msg){
+        return new RejectRet(code,msg);
+    }
+
     public int getCode() {
         return code;
     }

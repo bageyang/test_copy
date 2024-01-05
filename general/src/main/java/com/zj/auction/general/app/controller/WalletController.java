@@ -41,6 +41,16 @@ public class WalletController {
         return Ret.ok(walletService.rebateTransfer(transferDto));
     }
 
+    @PostMapping("/internalTransfer")
+    public Ret<Boolean> internalTransfer(@RequestBody RebateTransferDto transferDto){
+        return Ret.ok(walletService.internalTransfer(transferDto));
+    }
+
+    /**
+     * 现金转账
+     * @param transferDto
+     * @return
+     */
     @PostMapping("/cashTransfer")
     public Ret<Boolean> cashTransfer(@RequestBody RebateTransferDto transferDto){
         return Ret.ok(walletService.cashTransfer(transferDto));
@@ -61,7 +71,7 @@ public class WalletController {
     }
 
     @PostMapping("/withdraw/record")
-    public Ret<List<Withdraw>> withdrawRecord(@RequestBody PageQuery pageQuery){
+    public Ret<PageVo<Withdraw>> withdrawRecord(@RequestBody PageQuery pageQuery){
         return Ret.ok(walletService.listWithdrawRecord(pageQuery));
     }
 }

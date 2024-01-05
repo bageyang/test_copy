@@ -1,6 +1,7 @@
 package com.zj.auction.common.dto;
 
 import com.zj.auction.common.enums.FundTypeEnum;
+import com.zj.auction.common.enums.TransactionTypeEnum;
 
 import java.math.BigDecimal;
 
@@ -19,6 +20,8 @@ public class BalanceChangeDto {
     private Long userId;
 
     private String transactionSn;
+
+    private TransactionTypeEnum transactionType;
 
     /**
      * 备注
@@ -63,5 +66,13 @@ public class BalanceChangeDto {
 
     public void setTransactionSn(String transactionSn) {
         this.transactionSn = transactionSn;
+    }
+
+    public TransactionTypeEnum getTransactionType() {
+        return transactionType;
+    }
+
+    public void setTransactionType(TransactionTypeEnum transactionType) {
+        this.transactionType = transactionType;
     }
 }
