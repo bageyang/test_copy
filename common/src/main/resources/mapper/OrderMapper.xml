@@ -84,55 +84,15 @@
             is_deleted     = #{isDeleted,jdbcType=TINYINT}
         where id = #{id,jdbcType=BIGINT}
     </update>
+
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-        select id,
-               order_sn,
-               goods_id,
-               auction_id,
-               stock_id,
-               stock_number,
-               user_id,
-               total_amount,
-               pay_amount,
-               order_fee,
-               freight_amount,
-               pay_type,
-               payment_time,
-               order_type,
-               delete_status,
-               order_status,
-               delivery_time,
-               receive_time,
-               item_id,
-               create_time,
-               update_time,
-               is_deleted
+        select <include refid="Base_column_sql"/>
         from zj_order
         where id = #{id,jdbcType=BIGINT}
     </select>
+
     <select id="selectAll" resultMap="BaseResultMap">
-        select id,
-               order_sn,
-               goods_id,
-               auction_id,
-               stock_id,
-               stock_number,
-               user_id,
-               total_amount,
-               pay_amount,
-               order_fee,
-               freight_amount,
-               pay_type,
-               payment_time,
-               order_type,
-               delete_status,
-               order_status,
-               delivery_time,
-               receive_time,
-               item_id,
-               create_time,
-               update_time,
-               is_deleted
+        select <include refid="Base_column_sql"/>
         from zj_order
     </select>
 
@@ -143,6 +103,15 @@
       where stock_number = #{sn} and order_status = #{orderStat}
       <include refid="delete_flag_sql"/>
       limit 1
+    </select>
+
+    <select id="selectOrderByStockNumber" resultMap="BaseResultMap">
+        select
+        <include refid="Base_column_sql"/>
+        from zj_order
+        where stock_number = #{sn}
+        <include refid="delete_flag_sql"/>
+        limit 1
     </select>
 
 </mapper>

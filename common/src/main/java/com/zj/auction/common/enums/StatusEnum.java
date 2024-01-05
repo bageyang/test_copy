@@ -24,6 +24,7 @@ public enum StatusEnum {
     AUCTION_MISS_ERROR(1005,"无法找到拍品信息"),
     STOCK_NOT_MATCH_ERROR(1006,"库存信息不像符"),
     AUCTION_NOT_MATCH_ERROR(1007,"无法找到拍品信息"),
+    AUCTION_STATUS_ERROR(1008,"订单状态异常"),
     ;
 
     private Integer code;

@@ -1,5 +1,6 @@
 package com.zj.auction.general.app.service;
 
+import com.zj.auction.common.dto.Ret;
 import com.zj.auction.common.model.Order;
 
 import java.util.List;
@@ -22,9 +23,15 @@ public interface OrderService {
 
     /**
      * 转拍上架拍品
-     * @param orderSn 订单号
+     * @param stockSn 库存编号
      */
-    void transfer2Auction(String orderSn);
+    Object transfer2Auction(Long stockSn);
+
+    /**
+     * 转怕支付回调
+     * @param stockSn
+     */
+    void transferPaymentCallBack(Long stockSn);
 
     /**
      * 放货

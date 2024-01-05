@@ -1,5 +1,7 @@
 package com.zj.auction.common.enums;
 
+import java.util.Objects;
+
 /**
  * 订单状态枚举
  *  -2 流拍 => 4 商品流拍 Commodity Auction
@@ -33,7 +35,11 @@ public enum OrderStatEnum {
         return code;
     }
 
-    public void setCode(byte code) {
+    public void setCode(int code) {
         this.code = code;
+    }
+
+    public boolean isEqual(Integer code){
+        return Objects.nonNull(code) && Objects.equals(this.code,code);
     }
 }
