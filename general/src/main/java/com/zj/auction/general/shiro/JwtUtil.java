@@ -15,10 +15,9 @@ import java.util.Date;
 public class JwtUtil {
 
     //指定一个token过期时间（毫秒）
-    private static long EXPIRE_TIME =  1 * 1 * 60 * 1000; //1天  24 * 60 * 60 * 1000
+    private static long EXPIRE_TIME =  24 * 60 * 60 * 1000; //1天  24 * 60 * 60 * 1000
 
-
-    /**
+    /**ji
 
      生成token
      */
@@ -85,7 +84,8 @@ public class JwtUtil {
 //        }
 //            Date date = new Date(jwt.getExpiresAt().getTime());
 //            SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//            System.out.println(sd.format(date));
+//            System.out.println(sd.format(da
+//            te));
             return jwt.getExpiresAt().getTime() < System.currentTimeMillis();
         }
         return false;
