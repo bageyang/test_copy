@@ -1,7 +1,0 @@
-spring:
-  cloud:
-    nacos:
-      discovery:
-        server-addr: nacos.zj
-      config:
-        server-addr: nacos.zj
