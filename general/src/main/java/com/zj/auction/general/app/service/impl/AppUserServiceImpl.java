@@ -736,29 +736,54 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         return true;
     }
 
+//    //修改手机号/用户名
+//    @Override
+//    @Transactional
+//    public User updateUserName(String userName, String code) {
+//        AuthToken authToken = AppTokenUtils.getAuthToken();
+//        // 数据校验
+//        PubFun.check(userName, code);
+//        //校验手机验证
+//        messagesCheck(userName, code);
+//        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
+//        wrapper.eq(User::getUserName,userName).eq(User::getUserType,0).eq(User::getDeleteFlag,0);
+//        Long count = userMapper.selectCount(wrapper);
+//        User currentUser = userMapper.selectByPrimaryKey(authToken.getUserId());
+//        if (count > 0) {//存在
+//            throw new ServiceException(525,"手机号已注册,请更换手机号!");
+//        } else {
+//            currentUser.setUserName(userName);
+//            currentUser.setTel(userName);
+//            userMapper.updateByPrimaryKeySelective(currentUser);
+//        }
+//        redisTemplate.delete(AppTokenUtils.CODE_FILE + userName);//删除验证码
+//        authToken.setUser(currentUser);
+//        redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, authToken.getUserId()), JSON.toJSONString(authToken));
+//        return BeanUtils.copy(currentUser);
+//    }
     //修改手机号/用户名
     @Override
     @Transactional
-    public User updateUserName(String userName, String code) {
-        AuthToken authToken = AppTokenUtils.getAuthToken();
+    public User updateUserName(String userName, String code,String newUserName) {
+//        AuthToken authToken = AppTokenUtils.getAuthToken();
         // 数据校验
         PubFun.check(userName, code);
         //校验手机验证
         messagesCheck(userName, code);
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
-        wrapper.eq(User::getUserName,userName).eq(User::getUserType,0).eq(User::getDeleteFlag,0);
+        wrapper.eq(User::getUserName,newUserName).eq(User::getUserType,0).eq(User::getDeleteFlag,0);
         Long count = userMapper.selectCount(wrapper);
-        User currentUser = userMapper.selectByPrimaryKey(authToken.getUserId());
+        User currentUser = userMapper.findByUserName(userName);
         if (count > 0) {//存在
             throw new ServiceException(525,"手机号已注册,请更换手机号!");
         } else {
-            currentUser.setUserName(userName);
-            currentUser.setTel(userName);
+            currentUser.setUserName(newUserName);
+            currentUser.setTel(newUserName);
             userMapper.updateByPrimaryKeySelective(currentUser);
         }
         redisTemplate.delete(AppTokenUtils.CODE_FILE + userName);//删除验证码
-        authToken.setUser(currentUser);
-        redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, authToken.getUserId()), JSON.toJSONString(authToken));
+//        authToken.setUser(currentUser);
+//        redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, currentUser.getUserId()));
         return BeanUtils.copy(currentUser);
     }
 
@@ -766,7 +791,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Boolean addPassword(String tel, String code, String password) {
-        AuthToken authToken = AppTokenUtils.getAuthToken();
+//        AuthToken authToken = AppTokenUtils.getAuthToken();
         PubFun.check(tel, code, password);
         messagesCheck(tel, code);
         if (password.length() < 8) throw new ServiceException(526,"密码必须八位以上!");
@@ -779,9 +804,9 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         user.setPassWord(encryption[0]);
         user.setSalt(encryption[1]);
         userMapper.updateByPrimaryKeySelective(user);
-        if (Objects.nonNull(authToken))
-            authToken.setUser(user);
-        redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, user.getUserId()), JSON.toJSONString(authToken));
+//        if (Objects.nonNull(authToken))
+//            authToken.setUser(user);
+//        redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, user.getUserId()), JSON.toJSONString(authToken));
         return true;
     }
 
@@ -790,9 +815,9 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
 
     //是否有交易密码
     @Override
-    public boolean hasPayPassword() {
-        AuthToken authToken = AppTokenUtils.getAuthToken();
-        User data = userMapper.selectByPrimaryKey(authToken.getUserId());
+    public boolean hasPayPassword(String userName) {
+//        AuthToken authToken = AppTokenUtils.getAuthToken();
+        User data = userMapper.findByUserName(userName);
         if (null == data) {
             return false;
         }
@@ -801,9 +826,9 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
 
     //交易密码验证
     @Override
-    public boolean isPayPassword(String payPassword) {
-        AuthToken authToken = AppTokenUtils.getAuthToken();
-        User data = userMapper.selectByPrimaryKey(authToken.getUserId());
+    public boolean isPayPassword(String payPassword,String userName) {
+//        AuthToken authToken = AppTokenUtils.getAuthToken();
+        User data = userMapper.findByUserName(userName);
         if (null == data) {
             return false;
         }
@@ -812,9 +837,9 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
 
     //设置支付密码
     @Override
-    public boolean addPayPassword(String payPassword) {
-        AuthToken authToken = AppTokenUtils.getAuthToken();
-        User user = userMapper.selectByPrimaryKey(authToken.getUserId());
+    public boolean addPayPassword(String payPassword,String userName) {
+//        AuthToken authToken = AppTokenUtils.getAuthToken();
+        User user = userMapper.findByUserName(userName);
         if (Objects.isNull(user)) throw new RuntimeException("用户已经不存在,请联系管理员");
         user.setPayPassword(MD5Utils.isEncryption(payPassword, user.getUserId().toString()));
         userMapper.updateByPrimaryKeySelective(user);
