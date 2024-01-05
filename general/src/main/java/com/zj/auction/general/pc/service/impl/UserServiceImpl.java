@@ -387,6 +387,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
 
     //查询平台管理员
+    @Override
     public PageInfo<User> getUserPage(PageAction pageAction, List<Long> userIds) {
         LocalDateTime sTime = null;
         LocalDateTime eTime = null;
@@ -537,15 +538,22 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         User user = userMapper.selectByPrimaryKey(userId);
         if ((user.getVipType() == 0 || user.getVipType() == 1) && vipType.compareTo(2) == 0) {//设置团长必须设置分馆馆长
             PubFun.check(userId, tagId);
-            if (tagId <= 0) throw new ServiceException(410, "请选择分馆");
-            if (user.getTagId().compareTo(tagId) == 0) throw new ServiceException(411, "该用户已经属于该馆成员了");
-            if (user.getTagId().compareTo(tagId) != 0 && user.getTagId() > 0)
+            if (tagId <= 0) {
+                throw new ServiceException(410, "请选择分馆");
+            }
+            if (user.getTagId().compareTo(tagId) == 0) {
+                throw new ServiceException(411, "该用户已经属于该馆成员了");
+            }
+            if (user.getTagId().compareTo(tagId) != 0 && user.getTagId() > 0) {
                 throw new ServiceException(412, "该用户已经属于其他馆成员了");
+            }
             //判断这个馆是否已经有馆长了
             LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
             wrapper.eq(User::getDeleteFlag, 0).eq(User::getTagId, tagId).eq(User::getVipType, 2);
             Long count = userMapper.selectCount(wrapper);
-            if (count > 0) throw new ServiceException(413, "该分馆已经有馆长了");
+            if (count > 0) {
+                throw new ServiceException(413, "该分馆已经有馆长了");
+            }
             user.setTagId(tagId);
             //所有下级团队都可以进入
             userMapper.updUserChildByPidStr(tagId, user.getUserId(), pUser.getUserId());
@@ -653,6 +661,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     }
 
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean deleteMember(Long userId) {
         User user = (User)SecurityUtils.getSubject();
@@ -701,6 +710,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
      * @author: Mao Qi
      * @date: 2020年4月3日下午7:22:33
      */
+    @Override
     @Transactional
     public Integer updateAuditRejection(Long userId, String auditExplain) {
         //SecurityUtils.getPrincipal();
@@ -711,6 +721,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     }
 
     //    实名通过审核
+    @Override
     @Transactional
     public Integer updateAuditApproval(Long userId) {
         //SecurityUtils.getPrincipal();
