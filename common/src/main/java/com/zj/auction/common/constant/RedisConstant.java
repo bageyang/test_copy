@@ -18,7 +18,12 @@ public class RedisConstant {
      * 拍品库存量(hashmap)
      */
     public static final String AUCTION_REMAINDER_KEY = "auction:remainder";
+    /**
+     * 拍品自增id序列
+     */
     public static final String AUCTION_SEQUENCE_KEY = "auction:sequence:";
+
+    public static final String AUCTION_GENERATOR_LOCK_KEY = "auction:generator:lock";
 
     public static final String MACHINE_SEQUENCE_KEY = "machine:sn";
 

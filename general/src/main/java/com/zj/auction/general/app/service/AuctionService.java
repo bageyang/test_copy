@@ -7,4 +7,5 @@ public interface AuctionService {
      * 添加拍品
      */
     void addAuction(Stock stock);
+
 }
