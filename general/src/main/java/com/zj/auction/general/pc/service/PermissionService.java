@@ -38,7 +38,7 @@ public interface PermissionService {
      * @return
      *************************************************
      */
-    List<Map<String,Object>> findMenuAll(Integer levelNum);
+    List<Map<String,Object>> findMenuAll();
 
 
 

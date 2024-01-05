@@ -1,5 +1,6 @@
 package com.zj.auction.general.app.service;
 
+import com.zj.auction.common.enums.OrderTypeEnum;
 import com.zj.auction.common.model.Auction;
 import com.zj.auction.common.model.Stock;
 
@@ -9,7 +10,7 @@ public interface AuctionService {
     /**
      * 添加拍品
      */
-    Auction addAuction(Stock stock);
+    Auction addAuction(Stock stock, OrderTypeEnum orderType);
 
     /**
      * 批量添加库存进同一拍品

@@ -33,7 +33,7 @@ public class RedisConstant {
     /**
      * SnowFlake 全局机器号相关 key
      */
-    public static final String MACHINE_SEQUENCE_KEY = "machine:sn";
+    public static final String MACHINE_SEQUENCE_KEY = "machine:sn:";
 
     /**
      * SnowFlake 全局机器号相关 key
