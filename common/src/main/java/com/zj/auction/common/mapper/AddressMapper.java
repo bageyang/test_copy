@@ -1,9 +1,10 @@
 package com.zj.auction.common.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zj.auction.common.model.Address;
 import java.util.List;
 
-public interface AddressMapper {
+public interface AddressMapper extends BaseMapper<Address> {
     int deleteByPrimaryKey(Long addrId);
 
     int insert(Address record);

@@ -5,6 +5,7 @@ import com.zj.auction.common.mapper.UserRoleMapper;
 import com.zj.auction.common.model.Role;
 import com.zj.auction.common.model.User;
 import com.zj.auction.common.util.StringUtils;
+import com.zj.auction.general.auth.AuthToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.shiro.authc.*;

@@ -13,8 +13,10 @@ import com.zj.auction.common.vo.PageAction;
 import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -35,6 +37,8 @@ public class UserController{
 
     @Autowired
     private UserService pcUserServer;
+    @Resource
+    private RedisTemplate<String,Object> redisTemplate;
 
 
     @PostMapping("/test")
@@ -288,7 +292,7 @@ public class UserController{
     public GeneralResult removeSession() {
         User user =  SecurityUtils.getPrincipal();
         SecurityUtils.logout();
-        RedisUtil.del(RedisConstant.PC_USER_TOKEN+user.getUserId());
+        redisTemplate.delete(RedisConstant.PC_USER_TOKEN+user.getUserId());
 
         return GeneralResult.success();
     }

@@ -670,7 +670,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         addr.setTel1(tel1);
         addr.setStatus(0);
         addr.setAddUserId(authToken.getUserId());
-        addressMapper.updateByPrimaryKey(addr);
+        addressMapper.insert(addr);
         return true;
     }
 
