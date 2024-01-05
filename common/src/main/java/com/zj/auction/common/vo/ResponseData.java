@@ -5,7 +5,7 @@ import com.zj.auction.common.exception.ServiceException;
 /**
  * 统一数据返回 可根据实际需要修改和扩编
  */
-public class addResponseData<T> {
+public class ResponseData<T> {
 
     private static final long serialVersionUID = 1L;
 
