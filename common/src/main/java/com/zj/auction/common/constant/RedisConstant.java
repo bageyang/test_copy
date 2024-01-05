@@ -14,6 +14,8 @@ public class RedisConstant {
 
     public static final String PC_USER_TOKEN = "PcToken:%s";
 
+    public static final String KEY_USER_TOKEN = "Token:%s";
+
     /**
      * 拍品库存量(hashmap)
      */

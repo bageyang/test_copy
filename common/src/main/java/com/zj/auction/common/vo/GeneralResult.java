@@ -1,4 +1,4 @@
-package com.zj.auction.general.vo;
+package com.zj.auction.common.vo;
 
 import com.zj.auction.common.enums.StatusEnum;
 import lombok.Data;

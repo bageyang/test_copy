@@ -1,10 +1,13 @@
 package com.zj.auction.common.model;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
 @Data
 public class User implements Serializable {
     /**
@@ -108,6 +111,7 @@ public class User implements Serializable {
      * 支付密码
      */
     private String payPassword;
+
 
     /**
      * 部门id
@@ -346,6 +350,12 @@ public class User implements Serializable {
     private String memo1;
     private String memo2;
     private String memo3;
+
+    @ApiModelProperty(value = "直推人数")
+    private Integer subUserNum;
+
+    @ApiModelProperty(value = "推荐总人数")
+    private Integer subUserNumAll;
 
     /**
      * 用户类型

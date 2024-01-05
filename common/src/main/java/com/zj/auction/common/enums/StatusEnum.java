@@ -27,7 +27,6 @@ public enum StatusEnum {
     AUCTION_STATUS_ERROR(1008,"订单状态异常"),
     TRANSFER_LIMIT_ERROR(1009,"转拍限制,无法转拍"),
     PAYMENT_VOUCHER_BLANK_ERROR(1010,"支付凭证不得为空"),
-    GOODS_INFO_BLANK_ERROR(1011,"商品信息不得为空"),
     ;
 
     private Integer code;

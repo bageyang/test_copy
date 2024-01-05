@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 @Service
-
 public class OrderManagerServiceImpl implements OrderManagerService {
     @Override
     public List<Order> listOrder(Order order) {

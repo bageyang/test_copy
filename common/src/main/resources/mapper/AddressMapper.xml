@@ -95,4 +95,17 @@
     user_id, transaction_id, update_user_id, longitude, latitude, city, county, province
     from zj_address
   </select>
+
+  <select id="findByUserId" resultMap="BaseResultMap">
+    select * from zj_address where user_id=#{userId}
+  </select>
+  <select id="findByDefault" resultMap="BaseResultMap">
+    select * from zj_address where user_id=#{userId} and default_flag=1
+  </select>
+  <update id="updateAddrDefaultByIdNot" parameterType="com.zj.auction.common.model.Address">
+    update zj_address set default_flag = 0 where user_id=#{userId} and addr_id!=#{addrId} and delete_flag = 0
+  </update>
+  <update id="updateAddrDefaultFlag" parameterType="com.zj.auction.common.model.Address">
+    update zj_address set default_flag = 0 where user_id=#{userId} and default_flag=1 and delete_flag = 0
+  </update>
 </mapper>

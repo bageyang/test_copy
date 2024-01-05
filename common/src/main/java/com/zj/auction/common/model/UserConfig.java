@@ -15,13 +15,7 @@ public class UserConfig implements Serializable {
 
     private String addr;
 
-    private Integer cardNumber;
-
     private String domainName;
-
-    private Integer subUserNum;
-
-    private Integer subUserNumAll;
 
     private String province;
 
