@@ -31,7 +31,5 @@ public interface OrderMapper {
 
     List<Order> listOrderByCondition(OrderQuery query);
 
-    int countExclusiveAuctionUserNum(@Param("stockNumber") Long sn,@Param("orderStat") byte code);
-
-    List<Order> listOrderByStockNumberOrderByCreatTime(@Param("stockNumber")Long stockNumber);
+    int countExclusiveAuctionUserNum(@Param("stockeNumber") Long sn,@Param("orderStat") byte code);
 }

@@ -1,7 +1,6 @@
 package com.zj.auction.common.dto;
 
 import com.zj.auction.common.enums.StatusEnum;
-import com.zj.auction.common.vo.PageAction;
 
 
 /**
@@ -15,19 +14,6 @@ public class Ret<T> {
     private T data;
     private int code;
     private String msg;
-
-    /**
-     * 分页实体
-     **/
-    private transient PageAction pageAction;
-
-    public PageAction getPageAction() {
-        return pageAction;
-    }
-
-    public void setPageAction(PageAction pageAction) {
-        this.pageAction = pageAction;
-    }
 
     //成功，无返回值
     public Ret() {
@@ -46,13 +32,6 @@ public class Ret<T> {
     public Ret(StatusEnum resultStatus) {
         this.code = resultStatus.getCode();
         this.msg = resultStatus.getMessage();
-    }
-
-    //成功，有返回值 有分页
-    public Ret(T data , PageAction pageAction) {
-        super();
-        this.pageAction = pageAction;
-        this.data = data;
     }
 
     //成功，无返回值

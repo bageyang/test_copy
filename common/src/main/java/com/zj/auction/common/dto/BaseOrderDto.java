@@ -1,7 +1,5 @@
 package com.zj.auction.common.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.time.LocalDateTime;
 
 /**
@@ -9,12 +7,7 @@ import java.time.LocalDateTime;
  */
 public class BaseOrderDto {
     private LocalDateTime createTime;
-    /**
-     * 订单编号
-     */
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long orderSn;
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long auctionId;
     private Long userId;
     /**

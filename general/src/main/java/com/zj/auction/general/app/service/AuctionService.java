@@ -17,6 +17,4 @@ public interface AuctionService {
      */
     Auction addStockListIntoAuction(List<Stock> stockList);
 
-    Auction getAuctionById(Long auctionId);
-
 }

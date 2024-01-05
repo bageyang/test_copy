@@ -6,13 +6,19 @@ import com.zj.auction.common.base.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.data.annotation.Transient;
-import java.io.Serializable;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 @Data
 @TableName("zj_area")
 public class Area extends BaseEntity implements Serializable {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(value = "地区编号")
     private Long areaId;
 

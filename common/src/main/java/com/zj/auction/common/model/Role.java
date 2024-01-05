@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.zj.auction.common.base.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,7 +47,13 @@ public class Role extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "所有父级")
     private String pidStr;
 
-
+    @ManyToMany(cascade = CascadeType.ALL,fetch= FetchType.EAGER)
+    @JoinTable(name = "zj_permis_role", joinColumns = {
+            @JoinColumn(name = "role_id", referencedColumnName="role_id")
+    },
+            inverseJoinColumns = {
+                    @JoinColumn(name = "permis_id", referencedColumnName = "permis_id")
+            })
     @TableField(exist = false)
     private List<Permis> permisList;
 

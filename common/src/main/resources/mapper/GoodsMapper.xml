@@ -465,7 +465,7 @@
     <include refid="Base_Column_List"/>
     from zj_goods
     where id in
-    <foreach collection="goodIds" item="id" separator="," open="(" close=")">
+    <foreach collection="ids" item="id" separator="," open="(" close=")">
       #{id}
     </foreach>
     <include refid="delete_flag_sql"/>

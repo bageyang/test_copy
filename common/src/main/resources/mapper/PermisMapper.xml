@@ -55,16 +55,6 @@
   <select id="selectAll" resultMap="BaseResultMap">
     select permis_id, permis_name, permis, level_num, status, pid, res_url, type_id, 
     delete_flag, order_index, img_path, memo
-    from zj_permis where delete_flag=0
+    from zj_permis
   </select>
-<!--  <select id="listSysPermisTbl" resultType="map">-->
-<!--    SELECT-->
-<!--      a.*,-->
-<!--      b.permis-->
-<!--    FROM-->
-<!--        ( SELECT permis_id FROM zj_permis_role WHERE role_id =#{roleId} ) a-->
-<!--          LEFT JOIN zj_permis b ON a.permis_id = b.permis_id-->
-<!--    WHERE-->
-<!--      b.delete_flag =0-->
-<!--  </select>-->
 </mapper>
