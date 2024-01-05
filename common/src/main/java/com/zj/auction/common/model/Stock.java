@@ -11,7 +11,7 @@ public class Stock implements Serializable {
 
     private BigDecimal prices;
 
-    private String stockNumber;
+    private Long stockNumber;
 
     private Byte stockStatus;
 
@@ -51,11 +51,11 @@ public class Stock implements Serializable {
         this.prices = prices;
     }
 
-    public String getStockNumber() {
+    public Long getStockNumber() {
         return stockNumber;
     }
 
-    public void setStockNumber(String stockNumber) {
+    public void setStockNumber(Long stockNumber) {
         this.stockNumber = stockNumber;
     }
 
