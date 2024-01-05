@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zj.auction.common.mapper.BankMapper">
+  <resultMap id="BaseResultMap" type="com.zj.auction.common.model.Bank">
+    <id column="bank_id" jdbcType="BIGINT" property="bankId" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="bank_code" jdbcType="VARCHAR" property="bankCode" />
+    <result column="bank_name" jdbcType="VARCHAR" property="bankName" />
+    <result column="bank_number" jdbcType="VARCHAR" property="bankNumber" />
+    <result column="account_name" jdbcType="VARCHAR" property="accountName" />
+    <result column="bank_logo" jdbcType="VARCHAR" property="bankLogo" />
+    <result column="add_user_id" jdbcType="BIGINT" property="addUserId" />
+    <result column="add_time" jdbcType="TIMESTAMP" property="addTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="delete_flag" jdbcType="INTEGER" property="deleteFlag" />
+    <result column="update_user_id" jdbcType="BIGINT" property="updateUserId" />
+    <result column="tel" jdbcType="VARCHAR" property="tel" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from zj_bank
+    where bank_id = #{bankId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.zj.auction.common.model.Bank">
+    insert into zj_bank (bank_id, user_id, bank_code, 
+      bank_name, bank_number, account_name, 
+      bank_logo, add_user_id, add_time, 
+      update_time, delete_flag, update_user_id, 
+      tel)
+    values (#{bankId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{bankCode,jdbcType=VARCHAR}, 
+      #{bankName,jdbcType=VARCHAR}, #{bankNumber,jdbcType=VARCHAR}, #{accountName,jdbcType=VARCHAR}, 
+      #{bankLogo,jdbcType=VARCHAR}, #{addUserId,jdbcType=BIGINT}, #{addTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{deleteFlag,jdbcType=INTEGER}, #{updateUserId,jdbcType=BIGINT}, 
+      #{tel,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zj.auction.common.model.Bank">
+    update zj_bank
+    set user_id = #{userId,jdbcType=BIGINT},
+      bank_code = #{bankCode,jdbcType=VARCHAR},
+      bank_name = #{bankName,jdbcType=VARCHAR},
+      bank_number = #{bankNumber,jdbcType=VARCHAR},
+      account_name = #{accountName,jdbcType=VARCHAR},
+      bank_logo = #{bankLogo,jdbcType=VARCHAR},
+      add_user_id = #{addUserId,jdbcType=BIGINT},
+      add_time = #{addTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      delete_flag = #{deleteFlag,jdbcType=INTEGER},
+      update_user_id = #{updateUserId,jdbcType=BIGINT},
+      tel = #{tel,jdbcType=VARCHAR}
+    where bank_id = #{bankId,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select bank_id, user_id, bank_code, bank_name, bank_number, account_name, bank_logo, 
+    add_user_id, add_time, update_time, delete_flag, update_user_id, tel
+    from zj_bank
+    where bank_id = #{bankId,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select bank_id, user_id, bank_code, bank_name, bank_number, account_name, bank_logo, 
+    add_user_id, add_time, update_time, delete_flag, update_user_id, tel
+    from zj_bank
+  </select>
+</mapper>

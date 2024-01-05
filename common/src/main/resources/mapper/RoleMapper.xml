@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zj.auction.common.mapper.RoleMapper">
+  <resultMap id="BaseResultMap" type="com.zj.auction.common.model.Role">
+    <id column="role_id" jdbcType="BIGINT" property="roleId" />
+    <result column="role_name" jdbcType="VARCHAR" property="roleName" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="be_permissible" jdbcType="INTEGER" property="bePermissible" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="delete_flag" jdbcType="INTEGER" property="deleteFlag" />
+    <result column="add_userid" jdbcType="BIGINT" property="addUserid" />
+    <result column="role_code" jdbcType="VARCHAR" property="roleCode" />
+    <result column="add_time" jdbcType="TIMESTAMP" property="addTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="pid" jdbcType="INTEGER" property="pid" />
+    <result column="level_num" jdbcType="INTEGER" property="levelNum" />
+    <result column="pid_str" jdbcType="LONGVARCHAR" property="pidStr" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from zj_role
+    where role_id = #{roleId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.zj.auction.common.model.Role">
+    insert into zj_role (role_id, role_name, description, 
+      be_permissible, status, delete_flag, 
+      add_userid, role_code, add_time, 
+      update_time, pid, level_num, 
+      pid_str)
+    values (#{roleId,jdbcType=BIGINT}, #{roleName,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{bePermissible,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{deleteFlag,jdbcType=INTEGER}, 
+      #{addUserid,jdbcType=BIGINT}, #{roleCode,jdbcType=VARCHAR}, #{addTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{pid,jdbcType=INTEGER}, #{levelNum,jdbcType=INTEGER}, 
+      #{pidStr,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zj.auction.common.model.Role">
+    update zj_role
+    set role_name = #{roleName,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      be_permissible = #{bePermissible,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      delete_flag = #{deleteFlag,jdbcType=INTEGER},
+      add_userid = #{addUserid,jdbcType=BIGINT},
+      role_code = #{roleCode,jdbcType=VARCHAR},
+      add_time = #{addTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      pid = #{pid,jdbcType=INTEGER},
+      level_num = #{levelNum,jdbcType=INTEGER},
+      pid_str = #{pidStr,jdbcType=LONGVARCHAR}
+    where role_id = #{roleId,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select role_id, role_name, description, be_permissible, status, delete_flag, add_userid, 
+    role_code, add_time, update_time, pid, level_num, pid_str
+    from zj_role
+    where role_id = #{roleId,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select role_id, role_name, description, be_permissible, status, delete_flag, add_userid, 
+    role_code, add_time, update_time, pid, level_num, pid_str
+    from zj_role
+  </select>
+</mapper>

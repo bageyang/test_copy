@@ -1,15 +1,28 @@
 //package com.zj.auction.general.pc.service.impl;
 //import com.alibaba.fastjson.JSON;
 //import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+//import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+//import com.baomidou.mybatisplus.core.enums.SqlLike;
 //import com.fasterxml.jackson.databind.util.BeanUtil;
+//import com.github.pagehelper.PageHelper;
+//import com.github.pagehelper.PageInfo;
+//import com.zj.auction.common.base.BaseService;
+//import com.zj.auction.common.base.BaseServiceImpl;
 //import com.zj.auction.common.constant.RedisConstant;
+//import com.zj.auction.common.dto.UserDTO;
 //import com.zj.auction.common.exception.ServiceException;
-//import com.zj.auction.common.model.Permis;
-//import com.zj.auction.common.model.Role;
-//import com.zj.auction.common.model.User;
+//import com.zj.auction.common.mapper.UserMapper;
+//import com.zj.auction.common.mapper.UserRoleMapper;
+//import com.zj.auction.common.model.*;
+//import com.zj.auction.common.shiro.SecurityUtils;
 //import com.zj.auction.common.util.*;
+//import com.zj.auction.general.pc.service.RoleService;
+//import com.zj.auction.general.pc.service.UserConfigService;
+//import com.zj.auction.general.pc.service.UserRoleService;
 //import com.zj.auction.general.pc.service.UserService;
+//import com.zj.auction.general.vo.GeneralResult;
 //import com.zj.auction.general.vo.LoginResp;
+//import com.zj.auction.general.vo.PageAction;
 //import lombok.RequiredArgsConstructor;
 //import lombok.extern.log4j.Log4j2;
 //import org.apache.commons.beanutils.BeanUtils;
@@ -47,8 +60,12 @@
 //@Log4j2
 //@Repository
 //@RequiredArgsConstructor(onConstructor_={@Autowired})
-//public class UserServiceImpl  implements UserService {
+//public class UserServiceImpl extends BaseServiceImpl implements UserService {
 //	private final UserService userService;
+//	private final UserMapper userMapper;
+//	private final UserRoleService userRoleService;
+//	private final RoleService roleService;
+//	private final UserConfigService userConfigService;
 //	private final SHCommonDao shCommonDaoImpl;
 //	private final BusinessBaseUtil businessBaseUtil;
 //	private final PcUserRepository pcUserRepository;
@@ -107,8 +124,8 @@
 //			throw new ServiceException(610,"账号或密码错误,请重新输入");
 //		}
 //		//校验密码
-//		String md5 = MD5Utils.isEncryption(password,user.getPcSalt());
-//		if(!user.getPcPassword().equals(md5)) {
+//		String md5 = MD5Utils.isEncryption(password,user.getSalt());
+//		if(!user.getPassWord().equals(md5)) {
 //			throw new ServiceException(612,"您输入的密码错误,请重新输入");
 //		}
 //		// 保存最近一次登入时间
@@ -157,14 +174,23 @@
 //			//	查询当前用户的角色
 //			StringBuilder sql = new StringBuilder();
 //			Map<String, Object> map = new HashMap<>();
-//			sql.append("select role_id from sys_user_role_md where user_id=:userId ");
-//			map.put("userId", userId);
-//			List<Map<String,Object>> list = shCommonDaoImpl.getSqlList(sql.toString(), map);
+//			LambdaQueryWrapper<UserRole> wrapper = new LambdaQueryWrapper<>(UserRole.class);
+//			wrapper.select(UserRole::getRoleId).eq(UserRole::getUserId,userId);
+//			List<Map<String,Object>> list= userRoleService.selectMaps(wrapper);
+//			System.out.println(list);
+////			sql.append("select role_id from sys_user_role_md where user_id=:userId ");
+////			map.put("userId", userId);
+////			List<Map<String,Object>> list = shCommonDaoImpl.getSqlList(sql.toString(), map);
 //			List<Permis> collect2 = new ArrayList<>();
 //			if(!list.isEmpty()) {
 //				List<Integer> collect = list.stream().map(m -> PubFun.ObjectStrongToInt(m.get("role_id"))).collect(Collectors.toList());
 //				//获取用户角色
-//				List<Role> sysRoleTblList = pcSysRoleTblRepository.findAllByDeleteFlagAndRoleIdIn(0, collect);
+//
+////				List<Role> sysRoleTblList = pcSysRoleTblRepository.findAllByDeleteFlagAndRoleIdIn(0, collect);
+//				LambdaQueryWrapper<Role> wrapper1 = new LambdaQueryWrapper<>(Role.class);
+//				wrapper1.in(Role::getRoleId,0+","+collect);
+//				List<Role> sysRoleTblList = roleService.selectList(wrapper1);
+//				System.out.println("==========角色列表========="+sysRoleTblList);
 //				if(!sysRoleTblList.isEmpty()) {
 //					//获取菜单
 //					collect2 = sysRoleTblList.stream().filter(f ->f.getDeleteFlag()==0).map(Role::getPermisList).flatMap(fm -> fm.stream().filter(e -> e.getDeleteFlag()==0)).distinct().collect(Collectors.toList());
@@ -173,8 +199,7 @@
 //			return collect2;
 //		};
 //
-//		Supplier supplier;
-//		return base(deal);
+//		return super.base(deal);
 //	}
 //
 //
@@ -183,135 +208,118 @@
 //	//查询平台管理员
 //	@Override
 //	public GeneralResult getManagerList(PageAction pageAction) {
-//		UserInfoTbl user =SecurityUtils.getPrincipal();
-//		Pageable pageable = PageUtil.getPageable(pageAction.getCurrentPage(), pageAction.getPageSize(), Sort.Direction.DESC, "userId");
-//		Specification<UserInfoTbl> spec = Specifications.<UserInfoTbl>and()
-//				.eq("deleteFlag",0)
-//				.eq("roleType",1)
-//				.ne(user.getUserId()!=1,"userId",1L)
-//				.predicate(!StringUtils.isEmpty(pageAction.getKeyword()), Specifications.or()
-//						.eq(StringUtils.isNumeric(pageAction.getKeyword()), "userId", StringUtils.toLong(pageAction.getKeyword()))
-//						.like("nickName", "%"+pageAction.getKeyword()+"%")
-//						.like("userName", "%"+pageAction.getKeyword()+"%")
-//						.like("tel", "%"+pageAction.getKeyword()+"%")
-//						.build())
-//				.build();
-//		Page<UserInfoTbl> page = pcUserRepository.findAll(spec, pageable);
-//		pageAction.setTotalCount((int)page.getTotalElements());
-//		return GeneralResult.success(page.getContent(),pageAction);
-//		/*Function<PageAction, GeneralResult> deal = parm -> {
-//			StringBuffer sql = new StringBuffer();
-//			Map<String, Object> map = new HashMap<>();
-//			sql.append(" select t1.* from user_info_tbl as t1  where t1.role_type=1 and t1.delete_flag=0 ");
-//			if(authToken.getUserId()!=1) {
-//				sql.append(" and t1.user_id!=1 ");
-//			}
-//			if(super.baseCheck(pageAction, param -> StringUtils.hasText(parm.getKeyword()))){
-//				sql.append(" and CONCAT(IFNULL(t1.user_id,''),IFNULL(t1.user_name,'')) like CONCAT('%',:keyword,'%')  ");
-//				map.put("keyword", parm.getKeyword());
-//			}
-//			Integer total = shCommonDaoImpl.getSQLRecordNumber(sql.toString(),map);
-//			List<Map<String, Object>> result = new ArrayList<>();
-//			if(total>0){
-//				PageAction page = pageAction;
-//				page.setTotalCount(total);
-//				page.validateSite();
-//				if(page.getCurrentPage()<=page.getTotalPage()){
-//					sql.append(" order by t1.user_id asc");
-//					result = shCommonDaoImpl.getSqlPageListCheakNull(sql.toString(), map, pageAction);
-//				}
-//			}
-//			pageAction.setTotalCount(total);
-//			return GeneralResult.success(result,pageAction);
-//		};
-//		return super.base(pageAction, deal);*/
+//		User user = SecurityUtils.getPrincipal();
+//		PageHelper.startPage(pageAction.getCountPage(),pageAction.getPageSize());
+////		Pageable pageable = PageUtil.getPageable(pageAction.getCurrentPage(), pageAction.getPageSize(), Sort.Direction.DESC, "userId");
+//		LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
+//		wrapper.eq(User::getDeleteFlag,0)
+//				.eq(User::getUserType,1)
+//				.ne(User::getUserId,1)
+//				.or(!StringUtils.isEmpty(pageAction.getKeyword()))
+//				.or(com.zj.auction.common.util.StringUtils.isNumeric(pageAction.getKeyword()))
+//				.like(User::getUserId, com.zj.auction.common.util.StringUtils.toLong(pageAction.getKeyword()))
+//				.like(User::getUserName,pageAction.getKeyword())
+//				.like(User::getNickName,pageAction.getKeyword())
+//				.like(User::getTel,pageAction.getKeyword());
+//				List<User> userList =userService.selectList(wrapper);
+//				PageInfo<User> pageInfo= new PageInfo<>(userList);
+//				pageAction.setTotalCount(pageInfo.getSize());
+//				pageAction.setTotalPage(pageInfo.getPageNum());
+//				return GeneralResult.success(pageInfo.getList(),pageAction);
 //	}
 //
 //	//添加管理员
 //	@Override
 //	@Transactional
-//	public Boolean createManager(UserInfoTbl userCfg) {
-//		PubFun.check(userCfg.getUserName(),userCfg.getTel(),userCfg.getPcPassword());
-//		UserInfoTbl user =SecurityUtils.getPrincipal();
+//	public Boolean createManager(User userCfg) {
+//		PubFun.check(userCfg.getUserName(),userCfg.getTel(),userCfg.getPassWord());
+//		User user =SecurityUtils.getPrincipal();
 //		//	查询该用户名是否使用
-//		Integer count = pcUserRepository.findAllByUserName(userCfg.getUserName());
+//		Integer count = userMapper.countByName(userCfg.getUserName());
 //		if(count>0) {
-//			throw new BaseException("该账号已存在!");
+//			throw new ServiceException(404,"该账号已存在!");
 //		}
-//		if(userCfg.getUserName().length()<6) throw new BaseException("账号设置太短");
-//		UserInfoTbl newUser = new UserInfoTbl();
+////		if(userCfg.getUserName().length()<6) throw new ServiceException(407,"账号设置太短");
+//		User newUser = new User();
 //		newUser.setUserName(userCfg.getUserName());
 //		newUser.setNickName(userCfg.getRealName());
 //		newUser.setRealName(userCfg.getRealName());
 //		if(!StringUtils.isEmpty(userCfg.getUserImg())) newUser.setUserImg(userCfg.getUserImg());
-//		String[] md5pwd = MD5Utils.encryption(userCfg.getPcPassword());//md5加密
-//		newUser.setPcPassword(md5pwd[0]);
-//		newUser.setPcSalt(md5pwd[1]);
-//		newUser.setRoleType(1);
-//		newUser.setUserType(-1);//后台管理员 用于区分APP登录
+//		String[] md5pwd = MD5Utils.encryption(userCfg.getPassWord());//md5加密
+//		newUser.setPassWord(md5pwd[0]);
+//		newUser.setSalt(md5pwd[1]);
+//		newUser.setUserType(1);//后台管理员 用于区分APP登录
 //		newUser.setTel(userCfg.getTel());
 //		newUser.setStatus(0);
 //		newUser.setRoleShopId(userCfg.getRoleShopId()==null?0L:userCfg.getRoleShopId());
-//		newUser.setDeleteFlag(false);
+//		newUser.setDeleteFlag(0);
 //		newUser.setAddUserId(user.getUserId());
 //		newUser.setUpdateTime(LocalDateTime.now());
 //		/*newUser.setRoleRange(authToken.getRoleRange());
 //		if(!StringUtils.isEmpty(userCfg.getRoleShopId())) {
 //			newUser.setRoleShopId(param.getRoleShopId());
 //		}*/
-//		UserInfoTbl userInfoTbl = pcUserRepository.saveAndFlush(newUser);
-//		return true;
+//
+//		return userService.insert(newUser)>0;
 //	}
 //
 //	//根据id查询会员信息
 //	@Override
-//	public UserInfoTbl findManagerByUserId(UserInfoTbl userCfg) {
+//	public User findManagerByUserId(User userCfg) {
 //		if(super.baseCheck(userCfg.getUserId(), Objects::isNull)) {
 //			throw new RuntimeException("未获取到管理员ID");
 //		}
-//		Function<UserInfoTbl, UserInfoTbl> deal = param->{
-//			UserInfoTbl userInfoTbl = pcUserRepository.findById(param.getUserId()).orElseThrow(()-> throwException("未查询到管理员信息"));
-//			userInfoTbl.setSalt("");
-//			userInfoTbl.setPassWord("******");
-//			return userInfoTbl;
+//		Function<User, User> deal = param->{
+//			User u = Optional.ofNullable(userService.selectById(param.getUserId())).orElseThrow(()-> throwException("未查询到管理员信息"));
+////			if (u==null){
+////				throwException("未查询到管理员信息");
+////			}
+//			u.setSalt("");
+//			u.setPassWord("******");
+//			return u;
 //		};
 //		return super.base(userCfg, deal);
 //	}
 //
 //	//修改管理员
-//	@Override
 //	@Transactional(rollbackFor = Exception.class)
-//	public Boolean updateManager(UserInfoTbl userCfg) {
-//		UserInfoTbl user =SecurityUtils.getPrincipal();
-//		PubFun.check(userCfg,userCfg.getTel(),userCfg.getUserName(),userCfg.getRealName(),userCfg.getRadio());
+//	public Boolean updateManager(UserDTO userCfg) {
+//		User user =SecurityUtils.getPrincipal();
+//		PubFun.check(userCfg,userCfg.getTel(),userCfg.getUserName(),userCfg.getRealName());
 //		if(super.baseCheck(userCfg.getUserId(), Objects::isNull)) {
 //			throw new RuntimeException("未获取到管理员ID");
 //		}
-//		Function<UserInfoTbl, Boolean> deal = param->{
+//		Function<UserDTO, Boolean> deal = param->{
 //			//	查询该用户名是否使用
-//			Integer count = pcUserRepository.findAllByUserNameAsEdit(userCfg.getUserId(),param.getUserName());
+//			Integer count = userMapper.countByName(param.getUserName());
 //			if(count>0) {
-//				throw new BaseException("该账号已注册");
+//				throw new ServiceException(407,"该账号已注册");
 //			}
-//			UserInfoTbl oldUser = pcUserRepository.findById(param.getUserId()).orElseThrow(()-> throwException("未查询到管理员信息"));
+////			User oldUser = pcUserRepository.findById(param.getUserId()).orElseThrow(()-> throwException("未查询到管理员信息"));
+//			User oldUser = Optional.ofNullable(userService.selectById(param.getUserId())).orElseThrow(()-> throwException("未查询到管理员信息"));
 //			if(!StringUtils.isEmpty(param.getUserName())) oldUser.setUserName(param.getUserName());
 //			if(!StringUtils.isEmpty(param.getRealName())) oldUser.setRealName(param.getRealName());
 //			//if(!StringUtils.isEmpty(param.getRealName())) oldUser.setNickName(param.getRealName());
 //			if(!StringUtils.isEmpty(param.getUserImg())) oldUser.setUserImg(param.getUserImg());
-//			if(param.getRadio()==2) {//x要修改密码
-//				String[] md5pwd = MD5Utils.encryption(param.getPcPassword());//md5加密
-//				oldUser.setPcPassword(md5pwd[0]);
-//				oldUser.setPcSalt(md5pwd[1]);
+//			if(param.getPassWord()!=null) {//x要修改密码
+//				String[] md5pwd = MD5Utils.encryption(param.getPassWord());//md5加密
+//				oldUser.setPassWord(md5pwd[0]);
+//				oldUser.setSalt(md5pwd[1]);
 //			}
 //			oldUser.setRoleShopId(userCfg.getRoleShopId()==null?0L:userCfg.getRoleShopId());
 //			if(!StringUtils.isEmpty(param.getTel())) oldUser.setTel(param.getTel());
-//			if(!StringUtils.isEmpty(param.getAddr())) oldUser.setAddr(param.getAddr());
+//			UserConfig userConfig = new UserConfig();
+//
+//			if(!StringUtils.isEmpty(param.getAddress())) userConfig.setAddr(param.getAddress());
 //			oldUser.setUpdateTime(LocalDateTime.now());
 //			oldUser.setUpdateUserId(user.getUserId());
-//			if(param.getAgentUserId()==0) oldUser.setAgentUserId(user.getUserId());
+//			userConfig.setUserId(oldUser.getUserId());
+//			userConfig.setUpdateTime(new Date());
+////			if(param.getAgentUserId()==0) oldUser.setAgentUserId(user.getUserId());
 //			//if(!StringUtils.isEmpty(param.getRoleRange())) oldUser.setRoleRange(param.getRoleRange());
 //			//if(!StringUtils.isEmpty(param.getRoleShopId())) oldUser.setRoleShopId(param.getRoleShopId());
-//            pcUserRepository.saveAndFlush(oldUser);
+//            userService.insertUser(oldUser);
+//            userConfigService.updateById(userConfig);
 //			return true;
 //		};
 //		return super.base(userCfg, deal);

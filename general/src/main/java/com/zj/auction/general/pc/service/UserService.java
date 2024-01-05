@@ -48,6 +48,7 @@ public interface UserService extends BaseMapper<User> {
      */
     List<Map<String, Object>> getSystemConfig(String parameter);
 
+
     /**
      * @Description 根据用户id查找菜单
      * @Title findByMenuId

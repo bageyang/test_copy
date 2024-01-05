@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zj.auction.common.mapper.PermisMapper">
+  <resultMap id="BaseResultMap" type="com.zj.auction.common.model.Permis">
+    <id column="permis_id" jdbcType="BIGINT" property="permisId" />
+    <result column="permis_name" jdbcType="VARCHAR" property="permisName" />
+    <result column="permis" jdbcType="VARCHAR" property="permis" />
+    <result column="level_num" jdbcType="INTEGER" property="levelNum" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="pid" jdbcType="BIGINT" property="pid" />
+    <result column="res_url" jdbcType="VARCHAR" property="resUrl" />
+    <result column="type_id" jdbcType="INTEGER" property="typeId" />
+    <result column="delete_flag" jdbcType="INTEGER" property="deleteFlag" />
+    <result column="order_index" jdbcType="INTEGER" property="orderIndex" />
+    <result column="img_path" jdbcType="VARCHAR" property="imgPath" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from zj_permis
+    where permis_id = #{permisId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.zj.auction.common.model.Permis">
+    insert into zj_permis (permis_id, permis_name, permis, 
+      level_num, status, pid, 
+      res_url, type_id, delete_flag, 
+      order_index, img_path, memo
+      )
+    values (#{permisId,jdbcType=BIGINT}, #{permisName,jdbcType=VARCHAR}, #{permis,jdbcType=VARCHAR}, 
+      #{levelNum,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{pid,jdbcType=BIGINT}, 
+      #{resUrl,jdbcType=VARCHAR}, #{typeId,jdbcType=INTEGER}, #{deleteFlag,jdbcType=INTEGER}, 
+      #{orderIndex,jdbcType=INTEGER}, #{imgPath,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zj.auction.common.model.Permis">
+    update zj_permis
+    set permis_name = #{permisName,jdbcType=VARCHAR},
+      permis = #{permis,jdbcType=VARCHAR},
+      level_num = #{levelNum,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      pid = #{pid,jdbcType=BIGINT},
+      res_url = #{resUrl,jdbcType=VARCHAR},
+      type_id = #{typeId,jdbcType=INTEGER},
+      delete_flag = #{deleteFlag,jdbcType=INTEGER},
+      order_index = #{orderIndex,jdbcType=INTEGER},
+      img_path = #{imgPath,jdbcType=VARCHAR},
+      memo = #{memo,jdbcType=VARCHAR}
+    where permis_id = #{permisId,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select permis_id, permis_name, permis, level_num, status, pid, res_url, type_id, 
+    delete_flag, order_index, img_path, memo
+    from zj_permis
+    where permis_id = #{permisId,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select permis_id, permis_name, permis, level_num, status, pid, res_url, type_id, 
+    delete_flag, order_index, img_path, memo
+    from zj_permis
+  </select>
+</mapper>

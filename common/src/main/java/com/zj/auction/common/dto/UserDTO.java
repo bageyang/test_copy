@@ -1,12 +1,12 @@
-package com.zj.auction.common.model;
+package com.zj.auction.common.dto;
 
 import lombok.Data;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
 @Data
-public class User implements Serializable {
+public class UserDTO {
     /**
      * 用户id
      */
@@ -342,7 +342,5 @@ public class User implements Serializable {
      */
     private Integer userType;
 
-    private static final long serialVersionUID = 1L;
-
-
+    private String address;
 }

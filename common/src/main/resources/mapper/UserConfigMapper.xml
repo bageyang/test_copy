@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zj.auction.common.mapper.UserConfigMapper">
+  <resultMap id="BaseResultMap" type="com.zj.auction.common.model.UserConfig">
+    <id column="user_config_id" jdbcType="INTEGER" property="userConfigId" />
+    <result column="addr" jdbcType="VARCHAR" property="addr" />
+    <result column="card_number" jdbcType="INTEGER" property="cardNumber" />
+    <result column="domain_name" jdbcType="VARCHAR" property="domainName" />
+    <result column="sub_user_num" jdbcType="INTEGER" property="subUserNum" />
+    <result column="sub_user_num_all" jdbcType="VARCHAR" property="subUserNumAll" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="county" jdbcType="VARCHAR" property="county" />
+    <result column="province_id" jdbcType="BIGINT" property="provinceId" />
+    <result column="city_id" jdbcType="BIGINT" property="cityId" />
+    <result column="county_id" jdbcType="BIGINT" property="countyId" />
+    <result column="front_image" jdbcType="VARCHAR" property="frontImage" />
+    <result column="reverse_image" jdbcType="VARCHAR" property="reverseImage" />
+    <result column="apply_time" jdbcType="TIMESTAMP" property="applyTime" />
+    <result column="face_img" jdbcType="VARCHAR" property="faceImg" />
+    <result column="entering_status" jdbcType="VARCHAR" property="enteringStatus" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from zj_user_config
+    where user_config_id = #{userConfigId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zj.auction.common.model.UserConfig">
+    insert into zj_user_config (user_config_id, addr, card_number, 
+      domain_name, sub_user_num, sub_user_num_all, 
+      province, city, county, 
+      province_id, city_id, county_id, 
+      front_image, reverse_image, apply_time, 
+      face_img, entering_status)
+    values (#{userConfigId,jdbcType=INTEGER}, #{addr,jdbcType=VARCHAR}, #{cardNumber,jdbcType=INTEGER}, 
+      #{domainName,jdbcType=VARCHAR}, #{subUserNum,jdbcType=INTEGER}, #{subUserNumAll,jdbcType=VARCHAR}, 
+      #{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, #{county,jdbcType=VARCHAR}, 
+      #{provinceId,jdbcType=BIGINT}, #{cityId,jdbcType=BIGINT}, #{countyId,jdbcType=BIGINT}, 
+      #{frontImage,jdbcType=VARCHAR}, #{reverseImage,jdbcType=VARCHAR}, #{applyTime,jdbcType=TIMESTAMP}, 
+      #{faceImg,jdbcType=VARCHAR}, #{enteringStatus,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zj.auction.common.model.UserConfig">
+    update zj_user_config
+    set addr = #{addr,jdbcType=VARCHAR},
+      card_number = #{cardNumber,jdbcType=INTEGER},
+      domain_name = #{domainName,jdbcType=VARCHAR},
+      sub_user_num = #{subUserNum,jdbcType=INTEGER},
+      sub_user_num_all = #{subUserNumAll,jdbcType=VARCHAR},
+      province = #{province,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      county = #{county,jdbcType=VARCHAR},
+      province_id = #{provinceId,jdbcType=BIGINT},
+      city_id = #{cityId,jdbcType=BIGINT},
+      county_id = #{countyId,jdbcType=BIGINT},
+      front_image = #{frontImage,jdbcType=VARCHAR},
+      reverse_image = #{reverseImage,jdbcType=VARCHAR},
+      apply_time = #{applyTime,jdbcType=TIMESTAMP},
+      face_img = #{faceImg,jdbcType=VARCHAR},
+      entering_status = #{enteringStatus,jdbcType=VARCHAR}
+    where user_config_id = #{userConfigId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select user_config_id, addr, card_number, domain_name, sub_user_num, sub_user_num_all, 
+    province, city, county, province_id, city_id, county_id, front_image, reverse_image, 
+    apply_time, face_img, entering_status
+    from zj_user_config
+    where user_config_id = #{userConfigId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select user_config_id, addr, card_number, domain_name, sub_user_num, sub_user_num_all, 
+    province, city, county, province_id, city_id, county_id, front_image, reverse_image, 
+    apply_time, face_img, entering_status
+    from zj_user_config
+  </select>
+</mapper>

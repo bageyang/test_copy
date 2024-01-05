@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zj.auction.common.mapper.SystemCnfMapper">
+  <resultMap id="BaseResultMap" type="com.zj.auction.common.model.SystemCnf">
+    <id column="key_id" jdbcType="BIGINT" property="keyId" />
+    <result column="key_name" jdbcType="VARCHAR" property="keyName" />
+    <result column="key_value" jdbcType="VARCHAR" property="keyValue" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from zj_system_cnf
+    where key_id = #{keyId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.zj.auction.common.model.SystemCnf">
+    insert into zj_system_cnf (key_id, key_name, key_value, 
+      memo)
+    values (#{keyId,jdbcType=BIGINT}, #{keyName,jdbcType=VARCHAR}, #{keyValue,jdbcType=VARCHAR}, 
+      #{memo,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zj.auction.common.model.SystemCnf">
+    update zj_system_cnf
+    set key_name = #{keyName,jdbcType=VARCHAR},
+      key_value = #{keyValue,jdbcType=VARCHAR},
+      memo = #{memo,jdbcType=VARCHAR}
+    where key_id = #{keyId,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select key_id, key_name, key_value, memo
+    from zj_system_cnf
+    where key_id = #{keyId,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select key_id, key_name, key_value, memo
+    from zj_system_cnf
+  </select>
+</mapper>
