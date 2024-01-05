@@ -13,17 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 public class AuctionTask {
     @Autowired
     private AuctionManagerService auctionManagerService;
-    /**
-     * 处理流拍拍品
-     * 每10 分钟运行一次
-     */
-    @Async("customThreadPool")
-    @Scheduled(cron = "0 0/10 * * * ? ")
-    public void handUnAuctionStock(){
-        log.info("=========处理流拍拍品============");
-        auctionManagerService.handUnAuctionStock();
-        log.info("=========处理流拍完毕============");
-    }
+
 
     @Async("customThreadPool")
     @Scheduled(cron = "0 0 0 * * ? ")
