@@ -13,9 +13,6 @@ public class Goods implements Serializable {
 
     private BigDecimal oldPrice;
 
-    /**
-     * 价格,金高粱区为积分,现金区与cashPrice保持一致
-     */
     private BigDecimal price;
 
     private BigDecimal discountPrices;
@@ -80,9 +77,6 @@ public class Goods implements Serializable {
 
     private Byte subType;
 
-    /**
-     * 现金部分(金高粱商品为现金价格,现金区与price 保持一致)
-     */
     private BigDecimal cashPrice;
 
     private Byte isDeleted;

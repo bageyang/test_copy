@@ -9,9 +9,7 @@ public class Stock implements Serializable {
 
     private Long goodsId;
 
-    private BigDecimal cashPrice;
-
-    private BigDecimal integralPrice;
+    private BigDecimal price;
 
     private Long stockNumber;
 
@@ -45,20 +43,12 @@ public class Stock implements Serializable {
         this.goodsId = goodsId;
     }
 
-    public BigDecimal getCashPrice() {
-        return cashPrice;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setCashPrice(BigDecimal cashPrice) {
-        this.cashPrice = cashPrice;
-    }
-
-    public BigDecimal getIntegralPrice() {
-        return integralPrice;
-    }
-
-    public void setIntegralPrice(BigDecimal integralPrice) {
-        this.integralPrice = integralPrice;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     public Long getStockNumber() {
@@ -119,11 +109,13 @@ public class Stock implements Serializable {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Stock{");
-        sb.append("id=").append(id);
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append(" [");
+        sb.append("Hash = ").append(hashCode());
+        sb.append(", id=").append(id);
         sb.append(", goodsId=").append(goodsId);
-        sb.append(", cashPrice=").append(cashPrice);
-        sb.append(", integralPrice=").append(integralPrice);
+        sb.append(", prices=").append(price);
         sb.append(", stockNumber=").append(stockNumber);
         sb.append(", stockStatus=").append(stockStatus);
         sb.append(", ownerId=").append(ownerId);
@@ -131,7 +123,8 @@ public class Stock implements Serializable {
         sb.append(", createTime=").append(createTime);
         sb.append(", updateTime=").append(updateTime);
         sb.append(", isDeleted=").append(isDeleted);
-        sb.append('}');
+        sb.append(", serialVersionUID=").append(serialVersionUID);
+        sb.append("]");
         return sb.toString();
     }
 }

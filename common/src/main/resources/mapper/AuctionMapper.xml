@@ -5,8 +5,7 @@
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="auction_name" jdbcType="VARCHAR" property="auctionName"/>
         <result column="goods_id" jdbcType="BIGINT" property="goodsId"/>
-        <result column="cash_price" jdbcType="DECIMAL" property="cashPrice"/>
-        <result column="integral_price" jdbcType="DECIMAL" property="integralPrice"/>
+        <result column="price" jdbcType="DECIMAL" property="price"/>
         <result column="stock_quantity" jdbcType="INTEGER" property="stockQuantity"/>
         <result column="auction_status" jdbcType="TINYINT" property="auctionStatus"/>
         <result column="auction_area_id" jdbcType="INTEGER" property="auctionAreaId"/>
@@ -16,7 +15,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, auction_name, goods_id, cash_price,integral_price, stock_quantity, auction_status, auction_area_id,
+        id, auction_name, goods_id, price, stock_quantity, auction_status, auction_area_id,
     create_time, update_time, is_deleted
     </sql>
 
@@ -33,10 +32,10 @@
         <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
             select LAST_INSERT_ID()
         </selectKey>
-        insert into zj_auction (auction_name, goods_id, cash_price,integral_price,
+        insert into zj_auction (auction_name, goods_id, price,
                                 stock_quantity, auction_status, auction_area_id,
                                 create_time, update_time, is_deleted)
-        values (#{auctionName,jdbcType=VARCHAR}, #{goodsId,jdbcType=BIGINT}, #{cashPrice,jdbcType=DECIMAL},#{integralPrice,jdbcType=DECIMAL},
+        values (#{auctionName,jdbcType=VARCHAR}, #{goodsId,jdbcType=BIGINT}, #{price,jdbcType=DECIMAL},
                 #{stockQuantity,jdbcType=INTEGER}, #{auctionStatus,jdbcType=TINYINT}, #{auctionAreaId,jdbcType=INTEGER},
                 #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=TINYINT})
     </insert>
@@ -53,11 +52,8 @@
             <if test="goodsId != null">
                 goods_id,
             </if>
-            <if test="cashPrice != null">
-                cash_price,
-            </if>
-            <if test="integralPrice != null">
-                integral_price,
+            <if test="price != null">
+                price,
             </if>
             <if test="stockQuantity != null">
                 stock_quantity,
@@ -113,8 +109,7 @@
         update zj_auction
         set auction_name    = #{auctionName,jdbcType=VARCHAR},
             goods_id        = #{goodsId,jdbcType=BIGINT},
-            cash_price      = #{cashPrice,jdbcType=DECIMAL},
-            integral_price  = #{integralPrice,jdbcType=DECIMAL},
+            price           = #{price,jdbcType=DECIMAL},
             stock_quantity  = #{stockQuantity,jdbcType=INTEGER},
             auction_status  = #{auctionStatus,jdbcType=TINYINT},
             auction_area_id = #{auctionAreaId,jdbcType=INTEGER},
@@ -133,11 +128,8 @@
       <if test="goodsId != null">
         goods_id = #{goodsId,jdbcType=BIGINT},
       </if>
-      <if test="cashPrice != null">
-        cash_price = #{cashPrice,jdbcType=DECIMAL},
-      </if>
-      <if test="integralPrice != null">
-        integral_price  = #{integralPrice,jdbcType=DECIMAL},
+      <if test="price != null">
+        price = #{price,jdbcType=DECIMAL},
       </if>
       <if test="stockQuantity != null">
         stock_quantity = #{stockQuantity,jdbcType=INTEGER},
@@ -180,11 +172,11 @@
         where auction_area_id = #{areaId}
         <include refid="delete_flag_sql"/>
     </select>
-    <select id="selectAuctionByGoodsIdAndCashPrice" resultMap="BaseResultMap">
+    <select id="selectAuctionByGoodsIdAndPrice" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from zj_auction
-        where goods_id = #{goodsId} and cash_price = #{price}
+        where goods_id = #{goodsId} and price = #{price}
         <include refid="delete_flag_sql"/>
     </select>
     <select id="listAuction" resultMap="BaseResultMap">
