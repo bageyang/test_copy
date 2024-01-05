@@ -1,7 +1,9 @@
 package com.zj.auction.general.pc.service.impl;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.zj.auction.common.dto.OrderNotifyDto;
+import com.zj.auction.common.dto.PageVo;
 import com.zj.auction.common.enums.OrderNotifyEnum;
 import com.zj.auction.common.enums.OrderStatEnum;
 import com.zj.auction.common.enums.StatusEnum;
@@ -16,6 +18,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -33,9 +36,9 @@ public class OrderManagerServiceImpl implements OrderManagerService {
     }
 
     @Override
-    public List<Order> listOrder(OrderQuery query) {
+    public PageVo<Order> listOrder(OrderQuery query) {
         PageHelper.startPage(query.getPageNum(),query.getPageSize());
-        return orderMapper.listOrderByCondition(query);
+        return PageVo.of((Page<Order>) orderMapper.listOrderByCondition(query));
     }
 
     @Override

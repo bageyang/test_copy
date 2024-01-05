@@ -20,8 +20,9 @@ import com.zj.auction.common.util.QrCodeUtils;
 import com.zj.auction.common.util.SnowFlake;
 import com.zj.auction.common.vo.UserWalletVo;
 import com.zj.auction.general.app.service.WalletService;
+import com.zj.auction.general.shiro.SecurityUtils;
+import javafx.concurrent.Worker;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -208,6 +209,7 @@ public class WalletServiceImpl implements WalletService {
         walletRecord.setWalletType(param.getFundType().getCode());
         walletRecord.setChangeBalance(param.getChangeNum());
         walletRecord.setRemark(param.getRemark());
+        walletRecord.setTransactionSn(param.getTransactionSn());
         return walletRecord;
     }
 
@@ -239,8 +241,7 @@ public class WalletServiceImpl implements WalletService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean rebateTransfer(RebateTransferDto transferDto) {
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
-        Long userId = user.getUserId();
+        Long userId = getUserId();
         Wallet rebateWallet = getUserWallet(userId, FundTypeEnum.REBATE);
         Wallet cashWallet = getUserWallet(userId, FundTypeEnum.CASH);
         BigDecimal transferNum = transferDto.getNum().abs();
@@ -276,11 +277,15 @@ public class WalletServiceImpl implements WalletService {
         return true;
     }
 
+    private Long getUserId() {
+        return 202L;
+    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean cashTransfer(RebateTransferDto transferDto) {
-        User user = (User)SecurityUtils.getSubject().getPrincipal();
-        Long userId = user.getUserId();
+        User user = SecurityUtils.getPrincipal();
+        Long userId = getUserId();
         String userName = user.getUserName();
         Long toUserId = transferDto.getToUserId();
         BigDecimal num = transferDto.getNum().abs();
@@ -326,8 +331,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public Boolean cashWithdraw(RebateTransferDto transferDto) {
-        User user = (User)SecurityUtils.getSubject().getPrincipal();
-        Long userId = user.getUserId();
+        Long userId = getUserId();
         BigDecimal num = transferDto.getNum().abs();
         Wallet cashWallet = getUserWallet(userId, FundTypeEnum.CASH);
         BigDecimal balance = cashWallet.getBalance();
@@ -375,7 +379,7 @@ public class WalletServiceImpl implements WalletService {
         WalletRecord record = WalletRecord.builder()
                 .userId(userId)
                 .walletType(FundTypeEnum.CASH.getCode())
-                .changeBalance(num.negate())
+                .changeBalance(num)
                 .balanceBefore(balance)
                 .balanceAfter(after)
                 .remark("提现拒绝返还保证金")
@@ -408,7 +412,7 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public List<Withdraw> listWithdrawRecord( PageQuery pageQuery) {
         // todo
-        Long userId = 2L;
+        Long userId = getUserId();
         PageHelper.startPage(pageQuery.getPageNum(),pageQuery.getPageSize());
         return withdrawMapper.listWithdrawRecord(userId);
     }

@@ -164,4 +164,11 @@ public class AuctionServiceImpl implements AuctionService {
         }
         return auctionMapper.selectByPrimaryKey(auctionId);
     }
+
+    @Override
+    public boolean decrementQuantity(Long id, Long stockNumber) {
+        int r1 = auctionMapper.decrementQuantity(id);
+        int r2 = auctionMapper.exclusiveStockNumber(id, stockNumber);
+        return r1 > 0 && r2 > 0;
+    }
 }

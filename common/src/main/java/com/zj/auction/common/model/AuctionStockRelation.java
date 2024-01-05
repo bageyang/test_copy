@@ -12,6 +12,8 @@ public class AuctionStockRelation implements Serializable {
 
     private Long stockId;
 
+    private Byte exclusiveStatus;
+
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;
@@ -34,6 +36,14 @@ public class AuctionStockRelation implements Serializable {
 
     public void setAuctionId(Long auctionId) {
         this.auctionId = auctionId;
+    }
+
+    public Byte getExclusiveStatus() {
+        return exclusiveStatus;
+    }
+
+    public void setExclusiveStatus(Byte exclusiveStatus) {
+        this.exclusiveStatus = exclusiveStatus;
     }
 
     public Long getStockNumber() {

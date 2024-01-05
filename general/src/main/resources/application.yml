@@ -3,8 +3,6 @@ server:
     context-path: /general
   port: 9090
 spring:
-  main:
-    allow-circular-references: true
   application:
     name: general-server
   cloud:

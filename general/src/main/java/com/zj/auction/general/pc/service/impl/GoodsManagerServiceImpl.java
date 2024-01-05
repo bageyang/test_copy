@@ -1,6 +1,8 @@
 package com.zj.auction.general.pc.service.impl;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.zj.auction.common.dto.PageVo;
 import com.zj.auction.common.enums.StatusEnum;
 import com.zj.auction.common.exception.CustomException;
 import com.zj.auction.common.mapper.GoodsCategoryMapper;
@@ -43,9 +45,9 @@ public class GoodsManagerServiceImpl implements GoodsManagerService {
     }
 
     @Override
-    public List<Goods> listGoods(GoodsQuery goodsQuery) {
+    public PageVo<Goods> listGoods(GoodsQuery goodsQuery) {
         PageHelper.startPage(goodsQuery.getPageNum(), goodsQuery.getPageSize());
-        return goodsMapper.listGoodsInfo(goodsQuery);
+        return PageVo.of((Page<Goods>) goodsMapper.listGoodsInfo(goodsQuery));
     }
 
     @Override

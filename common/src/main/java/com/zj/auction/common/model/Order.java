@@ -35,8 +35,6 @@ public class Order implements Serializable {
 
     private Byte orderType;
 
-    private Integer deleteStatus;
-
     private Byte orderStatus;
 
     private LocalDateTime deliveryTime;
@@ -157,14 +155,6 @@ public class Order implements Serializable {
         this.orderType = orderType;
     }
 
-    public Integer getDeleteStatus() {
-        return deleteStatus;
-    }
-
-    public void setDeleteStatus(Integer deleteStatus) {
-        this.deleteStatus = deleteStatus;
-    }
-
     public Byte getOrderStatus() {
         return orderStatus;
     }
@@ -237,7 +227,6 @@ public class Order implements Serializable {
                 ", handFee=" + handFee +
                 ", freightAmount=" + freightAmount +
                 ", orderType=" + orderType +
-                ", deleteStatus=" + deleteStatus +
                 ", orderStatus=" + orderStatus +
                 ", deliveryTime=" + deliveryTime +
                 ", receiveTime=" + receiveTime +

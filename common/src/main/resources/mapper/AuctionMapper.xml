@@ -85,8 +85,11 @@
             <if test="goodsId != null">
                 #{goodsId,jdbcType=BIGINT},
             </if>
-            <if test="price != null">
-                #{price,jdbcType=DECIMAL},
+            <if test="cashPrice != null">
+                #{cashPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="integralPrice != null">
+                #{integralPrice,jdbcType=DECIMAL},
             </if>
             <if test="stockQuantity != null">
                 #{stockQuantity,jdbcType=INTEGER},
@@ -160,6 +163,16 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+    <update id="decrementQuantity">
+        update zj_auction
+        set stock_quantity = stock_quantity - 1
+        where id = #{auctionId} and stock_quantity <![CDATA[ > ]]> 0
+    </update>
+    <update id="exclusiveStockNumber">
+        update zj_auction_stock_relation
+        set exclusive_status = 2
+        where auction_id = #{auctionId} and stock_number = #{stockNumber}
+    </update>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select <include refid="Base_Column_List"/>
@@ -202,5 +215,15 @@
                 and goods_id = #{goodsId}
             </if>
         </where>
+    </select>
+    <select id="listUnAuctionOrderByAreaId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from zj_auction
+        where auction_area_id in
+        <foreach collection="areaIds" item="areaId" separator="," open="(" close=")">
+            #{areaId}
+        </foreach>
+        and stock_quantity <![CDATA[ > ]]> 0
     </select>
 </mapper>

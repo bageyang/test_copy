@@ -18,6 +18,7 @@ import com.zj.auction.general.app.service.AuctionService;
 import com.zj.auction.general.pc.service.StockManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.net.Socket;
@@ -55,6 +56,7 @@ public class StockManagerServiceImpl implements StockManagerService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean addAndTransfer2Auction(AuctionStockNumDto auctionStockNumDto) {
         Integer num = auctionStockNumDto.getNum();
         Long goodsId = auctionStockNumDto.getGoodsId();

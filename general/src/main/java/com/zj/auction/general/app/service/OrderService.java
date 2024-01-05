@@ -1,9 +1,6 @@
 package com.zj.auction.general.app.service;
 
-import com.zj.auction.common.dto.BaseOrderDto;
-import com.zj.auction.common.dto.PaymentVoucher;
-import com.zj.auction.common.dto.PickUpDto;
-import com.zj.auction.common.dto.Ret;
+import com.zj.auction.common.dto.*;
 import com.zj.auction.common.model.Order;
 import com.zj.auction.common.query.OrderQuery;
 
@@ -45,7 +42,7 @@ public interface OrderService {
      * @param query
      * @return
      */
-    List<Order> listUserOrder(OrderQuery query);
+    PageVo<Order> listUserOrder(OrderQuery query);
 
 
     Boolean existSkillOrder(Long orderSn);
@@ -56,4 +53,6 @@ public interface OrderService {
 
 
     void generatorOrder(BaseOrderDto orderInfo);
+
+    void handNotify(OrderNotifyDto notifyDto);
 }
