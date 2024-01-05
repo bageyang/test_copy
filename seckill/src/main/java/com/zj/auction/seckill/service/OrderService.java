@@ -5,5 +5,5 @@ public interface OrderService {
      * 根据库存号生产订单
      * @param sn
      */
-    void generatorOrder(String sn,Long userId);
+    void generatorOrder(Long orderId,String sn,Long userId);
 }

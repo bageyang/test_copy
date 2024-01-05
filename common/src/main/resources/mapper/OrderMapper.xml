@@ -3,7 +3,7 @@
 <mapper namespace="com.zj.auction.common.mapper.OrderMapper">
   <resultMap id="BaseResultMap" type="com.zj.auction.common.model.Order">
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="order_sn" jdbcType="VARCHAR" property="orderSn" />
+    <result column="order_sn" jdbcType="BIGINT" property="orderSn" />
     <result column="goods_id" jdbcType="BIGINT" property="goodsId" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
     <result column="total_amount" jdbcType="DECIMAL" property="totalAmount" />
@@ -37,7 +37,7 @@
       delivery_time, receive_time, item_id, 
       create_time, update_time, is_deleted
       )
-    values (#{orderSn,jdbcType=VARCHAR}, #{goodsId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, 
+    values (#{orderSn,jdbcType=BIGINT}, #{goodsId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT},
       #{totalAmount,jdbcType=DECIMAL}, #{payAmount,jdbcType=DECIMAL}, #{orderFee,jdbcType=DECIMAL}, 
       #{freightAmount,jdbcType=DECIMAL}, #{payType,jdbcType=INTEGER}, #{paymentTime,jdbcType=TIMESTAMP}, 
       #{orderType,jdbcType=INTEGER}, #{deleteStatus,jdbcType=INTEGER}, #{orderStatus,jdbcType=INTEGER}, 
@@ -47,7 +47,7 @@
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.zj.auction.common.model.Order">
     update zj_order
-    set order_sn = #{orderSn,jdbcType=VARCHAR},
+    set order_sn = #{orderSn,jdbcType=BIGINT},
       goods_id = #{goodsId,jdbcType=BIGINT},
       user_id = #{userId,jdbcType=BIGINT},
       total_amount = #{totalAmount,jdbcType=DECIMAL},

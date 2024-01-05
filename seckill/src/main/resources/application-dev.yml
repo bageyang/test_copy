@@ -23,6 +23,10 @@ spring:
         min-idle: 16
         max-idle: 64
         max-wait: -1
+  rabbitmq:
+    addresses: 127.0.0.1:5672
+    username: guest
+    password: guest
 
 mybatis:
   mapper-locations:
