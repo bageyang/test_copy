@@ -129,9 +129,11 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
             User oldUser = userMapper.findByUserName(dto.getTel());
             if (Objects.nonNull(oldUser)) throw new ServiceException(514, "此手机号已经注册,请更换手机号!");
             User user = new User();// 创建用户
-            String[] md5 = MD5Utils.encryption(dto.getPassWord());//密码处理
-            user.setPassWord(md5[0]);
-            user.setSalt(md5[1]);
+            //String[] md5 = MD5Utils.encryption(dto.getPassWord());//密码处理
+            //String salt = dto.getUserName();
+            Md5Hash md5Hash = new Md5Hash(dto.getPassWord(), dto.getUserName(), 1024);
+            user.setPassWord(md5Hash.toString());
+            //user.setSalt(md5[1]);
 
             if (Objects.isNull(dto.getPid())) {
                 PubFun.check(dto.getPUserName());
