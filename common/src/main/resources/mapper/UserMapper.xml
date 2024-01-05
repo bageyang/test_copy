@@ -81,57 +81,61 @@
         from zj_user
         where user_id = #{userId,jdbcType=BIGINT}
     </delete>
-    <insert id="insert" parameterType="com.zj.auction.common.model.User">
-        insert into zj_user (user_id, role_id, user_name,
-                             pass_word, real_name, salt,
-                             sex, status, audit,
-                             audit_explain, pid, p_user_name,
-                             pid_str, level_num, tel,
-                             email, login_ip, login_time,
-                             current_user_type, pay_password, department_id,
-                             add_time, add_user_id, update_time,
-                             update_user_id, frozen_explain, delete_flag,
-                             nick_name, share_img, user_img,
-                             background_img, is_first_login, share_type,
-                             shop_id, wx_union_id, last_login_time,
-                             transaction_id, birth_time, device_number,
-                             unique_num, role_shop_id, role_range,
-                             line_status, consulting_fee, comment_total,
-                             like_total, lucky_draw_num,
-                             alipay_num, wx_tel, wx_account,
-                             ali_name, ali_account, seal_expiration_time,
-                             rob_order_limit, withdrawal_limit, finish_auction,
-                             come_up_num, vip_type, tag_id,
-                             subordinate_level, subordinate_num, seal_num,
-                             diamond_order_limit, common_name, common_tel,
-                             memo, user_type, card_number)
-        values (#{userId,jdbcType=BIGINT}, #{roleId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR},
-                #{passWord,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR}, #{salt,jdbcType=VARCHAR},
-                #{sex,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{audit,jdbcType=INTEGER},
-                #{auditExplain,jdbcType=VARCHAR}, #{pid,jdbcType=BIGINT}, #{pUserName,jdbcType=VARCHAR},
-                #{pidStr,jdbcType=VARCHAR}, #{levelNum,jdbcType=INTEGER}, #{tel,jdbcType=VARCHAR},
-                #{email,jdbcType=VARCHAR}, #{loginIp,jdbcType=VARCHAR}, #{loginTime,jdbcType=TIMESTAMP},
-                #{currentUserType,jdbcType=INTEGER}, #{payPassword,jdbcType=VARCHAR}, #{departmentId,jdbcType=INTEGER},
-                #{addTime,jdbcType=TIMESTAMP}, #{addUserId,jdbcType=BIGINT}, #{updateTime,jdbcType=TIMESTAMP},
-                #{updateUserId,jdbcType=BIGINT}, #{frozenExplain,jdbcType=VARCHAR}, #{deleteFlag,jdbcType=INTEGER},
-                #{nickName,jdbcType=VARCHAR}, #{shareImg,jdbcType=VARCHAR}, #{userImg,jdbcType=VARCHAR},
-                #{backgroundImg,jdbcType=VARCHAR}, #{isFirstLogin,jdbcType=INTEGER}, #{shareType,jdbcType=INTEGER},
-                #{shopId,jdbcType=BIGINT}, #{wxUnionId,jdbcType=VARCHAR}, #{lastLoginTime,jdbcType=TIMESTAMP},
-                #{transactionId,jdbcType=VARCHAR}, #{birthTime,jdbcType=TIMESTAMP}, #{deviceNumber,jdbcType=VARCHAR},
-                #{uniqueNum,jdbcType=VARCHAR}, #{roleShopId,jdbcType=BIGINT}, #{roleRange,jdbcType=INTEGER},
-                #{lineStatus,jdbcType=INTEGER}, #{consultingFee,jdbcType=DECIMAL}, #{commentTotal,jdbcType=INTEGER},
-                #{likeTotal,jdbcType=INTEGER}, #{luckyDrawNum,jdbcType=INTEGER}, #{pcSalt,jdbcType=VARCHAR},
-                #{alipayNum,jdbcType=VARCHAR}, #{wxTel,jdbcType=VARCHAR}, #{wxAccount,jdbcType=VARCHAR},
-                #{aliName,jdbcType=VARCHAR}, #{aliAccount,jdbcType=VARCHAR}, #{sealExpirationTime,jdbcType=TIMESTAMP},
-                #{robOrderLimit,jdbcType=INTEGER}, #{withdrawalLimit,jdbcType=DECIMAL},
-                #{finishAuction,jdbcType=INTEGER},
-                #{comeUpNum,jdbcType=INTEGER}, #{vipType,jdbcType=INTEGER}, #{tagId,jdbcType=BIGINT},
-                #{subordinateLevel,jdbcType=INTEGER}, #{subordinateNum,jdbcType=BIGINT}, #{sealNum,jdbcType=INTEGER},
-                #{diamondOrderLimit,jdbcType=INTEGER}, #{commonName,jdbcType=VARCHAR}, #{commonTel,jdbcType=VARCHAR},
-                #{memo,jdbcType=VARCHAR}, #{userType,jdbcType=INTEGER})
+    <insert id="insert" keyColumn="user_id" keyProperty="userId" parameterType="com.zj.auction.common.model.User" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into zj_user (role_id, user_name, pass_word,
+        real_name, salt, sex,
+        `status`, `audit`, audit_explain,
+        pid, p_user_name, pid_str,
+        level_num, tel, email,
+        login_ip, login_time, current_user_type,
+        pay_password, department_id, add_time,
+        add_user_id, update_time, update_user_id,
+        frozen_explain, delete_flag, nick_name,
+        share_img, user_img, background_img,
+        is_first_login, share_type, shop_id,
+        wx_union_id, last_login_time, transaction_id,
+        birth_time, device_number, unique_num,
+        role_shop_id, role_range, line_status,
+        consulting_fee, comment_total, like_total,
+        lucky_draw_num, alipay_num, wx_tel,
+        wx_account, ali_name, ali_account,
+        seal_expiration_time, rob_order_limit, withdrawal_limit,
+        finish_auction, come_up_num, vip_type,
+        tag_id, subordinate_level, subordinate_num,
+        seal_num, diamond_order_limit, common_name,
+        common_tel, memo, user_type,
+        card_number, memo1, memo2,
+        memo3, sub_user_num, sub_user_num_all
+        )
+        values (#{roleId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{passWord,jdbcType=VARCHAR},
+        #{realName,jdbcType=VARCHAR}, #{salt,jdbcType=VARCHAR}, #{sex,jdbcType=INTEGER},
+        #{status,jdbcType=INTEGER}, #{audit,jdbcType=INTEGER}, #{auditExplain,jdbcType=VARCHAR},
+        #{pid,jdbcType=BIGINT}, #{pUserName,jdbcType=VARCHAR}, #{pidStr,jdbcType=VARCHAR},
+        #{levelNum,jdbcType=INTEGER}, #{tel,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR},
+        #{loginIp,jdbcType=VARCHAR}, #{loginTime,jdbcType=TIMESTAMP}, #{currentUserType,jdbcType=INTEGER},
+        #{payPassword,jdbcType=VARCHAR}, #{departmentId,jdbcType=INTEGER}, #{addTime,jdbcType=TIMESTAMP},
+        #{addUserId,jdbcType=BIGINT}, #{updateTime,jdbcType=TIMESTAMP}, #{updateUserId,jdbcType=BIGINT},
+        #{frozenExplain,jdbcType=VARCHAR}, #{deleteFlag,jdbcType=INTEGER}, #{nickName,jdbcType=VARCHAR},
+        #{shareImg,jdbcType=VARCHAR}, #{userImg,jdbcType=VARCHAR}, #{backgroundImg,jdbcType=VARCHAR},
+        #{isFirstLogin,jdbcType=INTEGER}, #{shareType,jdbcType=INTEGER}, #{shopId,jdbcType=BIGINT},
+        #{wxUnionId,jdbcType=VARCHAR}, #{lastLoginTime,jdbcType=TIMESTAMP}, #{transactionId,jdbcType=VARCHAR},
+        #{birthTime,jdbcType=TIMESTAMP}, #{deviceNumber,jdbcType=VARCHAR}, #{uniqueNum,jdbcType=VARCHAR},
+        #{roleShopId,jdbcType=BIGINT}, #{roleRange,jdbcType=INTEGER}, #{lineStatus,jdbcType=INTEGER},
+        #{consultingFee,jdbcType=DECIMAL}, #{commentTotal,jdbcType=INTEGER}, #{likeTotal,jdbcType=INTEGER},
+        #{luckyDrawNum,jdbcType=INTEGER}, #{alipayNum,jdbcType=VARCHAR}, #{wxTel,jdbcType=VARCHAR},
+        #{wxAccount,jdbcType=VARCHAR}, #{aliName,jdbcType=VARCHAR}, #{aliAccount,jdbcType=VARCHAR},
+        #{sealExpirationTime,jdbcType=TIMESTAMP}, #{robOrderLimit,jdbcType=INTEGER}, #{withdrawalLimit,jdbcType=DECIMAL},
+        #{finishAuction,jdbcType=INTEGER}, #{comeUpNum,jdbcType=INTEGER}, #{vipType,jdbcType=INTEGER},
+        #{tagId,jdbcType=BIGINT}, #{subordinateLevel,jdbcType=INTEGER}, #{subordinateNum,jdbcType=BIGINT},
+        #{sealNum,jdbcType=INTEGER}, #{diamondOrderLimit,jdbcType=INTEGER}, #{commonName,jdbcType=VARCHAR},
+        #{commonTel,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, #{userType,jdbcType=INTEGER},
+        #{cardNumber,jdbcType=VARCHAR}, #{memo1,jdbcType=VARCHAR}, #{memo2,jdbcType=VARCHAR},
+        #{memo3,jdbcType=VARCHAR}, #{subUserNum,jdbcType=INTEGER}, #{subUserNumAll,jdbcType=INTEGER}
+        )
     </insert>
     <update id="updateByPrimaryKey" parameterType="com.zj.auction.common.model.User">
-        update zj_user
+        update zj.zj_user
         set role_id              = #{roleId,jdbcType=INTEGER},
             user_name            = #{userName,jdbcType=VARCHAR},
             pass_word            = #{passWord,jdbcType=VARCHAR},
@@ -303,7 +307,6 @@
         from zj_user
         where user_name = #{userName}
           and delete_flag = 0
-          and user_type = 0
     </select>
     <select id="findByTel" resultType="com.zj.auction.common.model.User">
         select *
@@ -777,7 +780,7 @@
     </insert>
 
     <update id="updateByPrimaryKeySelective" parameterType="com.zj.auction.common.model.User">
-        update zj_user
+        update zj.zj_user
         <set>
             <if test="roleId != null">
                 role_id = #{roleId,jdbcType=INTEGER},

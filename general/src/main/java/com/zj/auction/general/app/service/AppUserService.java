@@ -1,8 +1,10 @@
 package com.zj.auction.general.app.service;
 
 import com.github.pagehelper.PageInfo;
+import com.zj.auction.common.dto.PassWordDTO;
 import com.zj.auction.common.dto.UserDTO;
 import com.zj.auction.common.model.Address;
+import com.zj.auction.common.model.Role;
 import com.zj.auction.common.model.User;
 import com.zj.auction.common.vo.GeneralResult;
 import com.zj.auction.common.vo.LoginResp;
@@ -27,17 +29,13 @@ public interface AppUserService {
 
 
     /**
-     * @Description 实名认证
-     * @Title authIdentity
-     * @Author Mao Qi
-     * @Date 2020/4/3 17:47
-     * @param realName       真实姓名
-     * @param cardNum		 身份证号
-     * @param frontImage	 身份证正面
-     * @param reverseImage	 身份证反面
-     * @return	java.lang.Boolean
+     * 身份验证身份
+     *
+     * @param dto dto
+     * @return {@link Boolean}
      */
-    Boolean authIdentity(String realName, String cardNum, String frontImage, String reverseImage);
+    Boolean authIdentity(UserDTO dto);
+
 
 
     /**
@@ -79,21 +77,20 @@ public interface AppUserService {
     /**
      * @Description 登录
      * @Title login
-     * @Author Mao Qi
-     * @Date 2019/9/8 11:52
-     * @param userName 账户/手机号
-     * @param code
-     * @return	com.duoqio.boot.business.entity.UserInfoTbl
      */
-    LoginResp login(String userName, String password, String code);
+    LoginResp login(UserDTO dto);
+
+    /**
+     * 根据用户名查询用户信息
+     */
+    User getUserByName(String name);
 
 
     /**
      * 发送短信
-     * @param tel
      * @return
      */
-    Map<String, Object> sendMessages(HttpServletRequest request, String tel);
+    Map<String, Object> sendMessages(HttpServletRequest request,String tel);
 
 
     /**
@@ -161,14 +158,9 @@ public interface AppUserService {
 
 
     /**
-     * @Description 根据id查询单个地址
-     * @Title getAddrById
-     * @Author Mao Qi
-     * @Date 2019/9/6 16:31
-     * @param addrId
-     * @return	com.duoqio.boot.business.entity.AddrInfoTbl
+
      */
-    Address getAddrById(Long addrId);
+    Address getAddrById(UserDTO dto);
 
     /**
      * @Title: deleteAddr
@@ -215,25 +207,21 @@ public interface AppUserService {
     /**
      * @Description 修改密码
      */
-    Boolean updatePassWord(String oldPassWord, String newPassWord);
+    Boolean updatePassWord(PassWordDTO dto);
 
 
     /**
      * @Description 修改手机号/用户名
      */
-    User updateUserName(String tel, String code);
+    User updateUserName(UserDTO dto);
+
 
     /**
-     * @Description 设置/忘记密码
-     * @Title addPassWord
-     * @Author Mao Qi
-     * @Date 2020/10/8 19:49
-     * @param tel
-     * @param code
-     * @param password
-     * @return	java.lang.Boolean
+     * 添加密码
+     *
+     * @return {@link Boolean}
      */
-    Boolean addPassword(String tel,String code, String password);
+    Boolean addPassword(PassWordDTO dto);
 
     /**
      * @Description 是否有支付密码
@@ -320,7 +308,7 @@ public interface AppUserService {
    */
     PageInfo<User> findCustomerByUserId(PageAction pageAction);
 
-    User addOrUpdateAliNum(String realName, String alipayNum);
+    User addOrUpdateAliNum(UserDTO dto);
     /**
      * @Description 查询所有上级
      */
@@ -363,7 +351,7 @@ public interface AppUserService {
                             String tel, String passWord, String salt, String userImg, String backgroundImg) {
         User userCfgEntity = new User();
         userCfgEntity.setPid(pid);
-        userCfgEntity.setPUserName(pUserName);
+        userCfgEntity.setpUserName(pUserName);
         userCfgEntity.setPidStr(pidStr);
         userCfgEntity.setLevelNum(levelNum);
         userCfgEntity.setShareType(1);//推荐方式，默认0,1通过二维码分享推荐，2通过合伙人添加推荐
@@ -402,13 +390,11 @@ public interface AppUserService {
 
 
     /**
-     * @param tel      电话
-     * @param code     代码
-     * @param password 密码
+
      * @Description 忘记密码
      * @return java.lang.Boolean
      */
-    Boolean forgetPassword(String tel, String code, String password);
+    Boolean forgetPassword(PassWordDTO dto);
 
     User addOrUpdateAliOrWx(String tel,String name, String account,Integer type);
 
@@ -448,11 +434,8 @@ public interface AppUserService {
 
     /**
      * 执行 - 实名信息认证
-     * @param realName
-     * @param cardNo
-     * @return
      */
-    GeneralResult runRealAutheInfo(String realName, String cardNo);
+    GeneralResult runRealAutheInfo(UserDTO dto);
 
     /**
      * @Description 根据是否是新用户
@@ -462,4 +445,27 @@ public interface AppUserService {
      * @return	java.lang.Boolean
      */
     Boolean whetherNewUser(String time);
+
+    LoginResp refreshToken();
+
+    /**
+     * 查询所有角色
+     * @return
+     */
+    List<Role> geRole();
+
+    /**
+     * 添加角色
+     * @param role
+     * @return
+     */
+    int addRole(Role role);
+
+    /**
+     * 修改角色
+     * @param role
+     * @return
+     */
+    int updateRole(Role role);
+
 }

@@ -16,6 +16,7 @@ import com.zj.auction.general.app.service.OrderMqService;
 import com.zj.auction.general.app.service.OrderService;
 import com.zj.auction.general.app.service.RebateService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -79,14 +80,14 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public boolean uploadPaymentVoucher(PaymentVoucher paymentVoucher) {
-        Long userId = getUserId();
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
         String orderVoucher = paymentVoucher.getOrderVoucher();
         Long orderSn = paymentVoucher.getOrderSn();
         Order buyerOrder = orderMapper.selectOrderByOrderNumber(orderSn);
         if (!buyerOrderUnPaid(buyerOrder)) {
             throw new CustomException(StatusEnum.ORDER_STATUS_ERROR);
         }
-        if(Objects.equals(buyerOrder.getUserId(),userId)){
+        if(Objects.equals(buyerOrder.getUserId(),user.getUserId())){
             throw new CustomException(StatusEnum.OWNER_ORDER_MISS_ERROR);
         }
         if (StringUtils.isBlank(orderVoucher)) {
@@ -117,10 +118,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Boolean transfer2Auction(Long orderSn) {
-        Long userId = getUserId();
-        if(Objects.isNull(userId)){
-            throw new CustomException(StatusEnum.USER_TOKEN_ERROR);
-        }
+//        User user = SecurityUtils.getPrincipal();
+//        if(Objects.isNull(user)){
+//            throw new CustomException(StatusEnum.USER_TOKEN_ERROR);
+//        }
+        Long userId = 2L;
         Order order = orderCheck(userId, orderSn);
         if(OrderStatEnum.WAIT_MARGIN.isEqual(order.getOrderStatus())){
             return true;
@@ -233,7 +235,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public boolean finishOrder(Long orderSn) {
-        Long userId = getUserId();
+//        User user = SecurityUtils.getPrincipal();
+//        if(Objects.isNull(user)){
+//            throw new CustomException(StatusEnum.USER_TOKEN_ERROR);
+//        }
         if (Objects.isNull(orderSn)) {
             throw new CustomException(StatusEnum.PARAM_ERROR);
         }
@@ -242,7 +247,7 @@ public class OrderServiceImpl implements OrderService {
         if (!OrderStatEnum.UN_CONFIRM.isEqual(orderStatus)) {
             throw new CustomException(StatusEnum.ORDER_STATUS_ERROR);
         }
-        if(!Objects.equals(sellerOrder.getUserId(), userId)){
+        if(!Objects.equals(sellerOrder.getUserId(), 2L)){
             throw new CustomException(StatusEnum.ORDER_STATUS_ERROR);
         }
         Long stockNumber = sellerOrder.getStockNumber();
@@ -288,7 +293,8 @@ public class OrderServiceImpl implements OrderService {
         if (Objects.isNull(query)) {
             throw new CustomException(StatusEnum.PARAM_ERROR);
         }
-        Long userId = getUserId();
+        User user = com.zj.auction.general.shiro.SecurityUtils.getPrincipal();
+        Long userId = user.getUserId();
         if(Objects.isNull(userId)){
             throw new CustomException(StatusEnum.USER_TOKEN_ERROR);
         }
@@ -394,10 +400,11 @@ public class OrderServiceImpl implements OrderService {
         if (Objects.isNull(pickUpDto) || Objects.isNull(pickUpDto.getOrderId()) || Objects.isNull(pickUpDto.getAddressId())) {
             throw new CustomException(StatusEnum.PARAM_ERROR);
         }
-        Long userId =  getUserId();
-        if(Objects.isNull(userId)){
-            throw new CustomException(StatusEnum.USER_TOKEN_ERROR);
-        }
+//        User user = SecurityUtils.getPrincipal();
+//        if(Objects.isNull(user)){
+//            throw new CustomException(StatusEnum.USER_TOKEN_ERROR);
+//        }
+        Long userId =  2L;
         Long orderId = pickUpDto.getOrderId();
         Long addressId = pickUpDto.getAddressId();
         Order order = orderMapper.selectByPrimaryKey(orderId);
@@ -470,10 +477,5 @@ public class OrderServiceImpl implements OrderService {
 
     private boolean canPickUp(Byte statCode){
        return OrderStatEnum.AUCTION_SUCCESS.isEqual(statCode)||OrderStatEnum.WAIT_MARGIN.isEqual(statCode);
-    }
-
-    private Long getUserId(){
-        // todo
-        return 202L;
     }
 }
