@@ -12,6 +12,7 @@ public class AppointmentController {
     @Autowired
     AppointmentService appointmentService;
     @PostMapping(value = "appoint")
+
     public Ret<AuctionAppointment> Appointment(@RequestParam("userId") Long userId, @RequestParam("areaId")Long areaId){
         return Ret.ok(appointmentService.Appointment(userId,areaId));
     }
