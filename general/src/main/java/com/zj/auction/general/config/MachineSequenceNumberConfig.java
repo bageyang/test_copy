@@ -1,32 +1,25 @@
-package com.zj.auction.seckill.config;
+package com.zj.auction.general.config;
 
-import com.alibaba.fastjson2.JSONObject;
 import com.zj.auction.common.constant.RedisConstant;
 import com.zj.auction.common.dto.MachineSnDto;
 import com.zj.auction.common.util.IPUtils;
 import com.zj.auction.common.util.SnowFlake;
-import com.zj.auction.seckill.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.Redisson;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -37,8 +30,8 @@ import java.util.stream.Collectors;
 @EnableScheduling
 @Slf4j
 public class MachineSequenceNumberConfig implements ApplicationRunner {
-    @Autowired
-    private RedisService redisService;
+    @Resource
+    private RedisTemplate<String,Object> redisTemplate;
     @Autowired
     private RedissonClient redisson;
     @Autowired
@@ -54,7 +47,7 @@ public class MachineSequenceNumberConfig implements ApplicationRunner {
         RLock lock = redisson.getLock(RedisConstant.MACHINE_SEQUENCE_LOCK_KEY);
         try {
             if (lock.tryLock()) {
-                Set<String> snObjSet = redisService.getTemplate().keys(RedisConstant.MACHINE_SEQUENCE_KEY+"*");
+                Set<String> snObjSet = redisTemplate.keys(RedisConstant.MACHINE_SEQUENCE_KEY+"*");
                 if(Objects.isNull(snObjSet)){
                     machineNumber = 1;
                 }else {
@@ -77,7 +70,7 @@ public class MachineSequenceNumberConfig implements ApplicationRunner {
                 System.exit(exitCode);
             }else {
                 MachineSnDto machineSnDto = getMachineSnDto();
-                redisService.set(RedisConstant.MACHINE_SEQUENCE_KEY+machineNumber,machineSnDto,MACHINE_SEQUENCE_EXPRESS_TIME);
+                redisTemplate.opsForValue().set(RedisConstant.MACHINE_SEQUENCE_KEY+machineNumber,machineSnDto,MACHINE_SEQUENCE_EXPRESS_TIME);
                 log.info("全局ID机器码已初始化,初始时间:{},机器码:{}",System.currentTimeMillis(),machineNumber);
                 SnowFlake.init(0,machineNumber);
             }
@@ -111,7 +104,7 @@ public class MachineSequenceNumberConfig implements ApplicationRunner {
                 RLock lock = redisson.getLock(RedisConstant.MACHINE_SEQUENCE_LOCK_KEY);
                 try {
                     if (lock.tryLock()) {
-                        redisService.expire(RedisConstant.MACHINE_SEQUENCE_KEY+machineId,MACHINE_SEQUENCE_EXPRESS_TIME);
+                        redisTemplate.expire(RedisConstant.MACHINE_SEQUENCE_KEY+machineId,MACHINE_SEQUENCE_EXPRESS_TIME, TimeUnit.SECONDS);
                         SnowFlake.setInitFLag(now);
                     }
                 }finally {

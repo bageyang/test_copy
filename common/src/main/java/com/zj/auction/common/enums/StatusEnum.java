@@ -33,7 +33,8 @@ public enum StatusEnum {
     ADDRESS_MISS_ERROR(1014,"地址不存在"),
     USER_TOKEN_ERROR(1015,"用户登录失效"),
     OPERATION_FAIL_ERROR(1016,"操作失败"),
-    BALANCE_NOT_ENOUGH_ERROR(1016,"金额不足"),
+    BALANCE_NOT_ENOUGH_ERROR(1016,"余额不足"),
+    WITHDRAW_MISS_ERROR(1016,"提现单不存在"),
     ;
 
     private Integer code;

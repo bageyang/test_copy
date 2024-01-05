@@ -2,6 +2,8 @@ package com.zj.auction.general.app.service;
 
 
 import com.zj.auction.common.dto.BalanceChangeDto;
+import com.zj.auction.common.dto.RebateTransferDto;
+import com.zj.auction.common.vo.UserWalletVo;
 
 
 public interface WalletService {
@@ -34,4 +36,28 @@ public interface WalletService {
      */
     void unfreezeUserBalance(BalanceChangeDto changeDto);
 
+    UserWalletVo getUserWallet();
+
+    /**
+     * 绩效提现
+     * @param transferDto
+     * @return
+     */
+    Boolean rebateTransfer(RebateTransferDto transferDto);
+
+    /**
+     * 保证金转账
+     * @param transferDto
+     * @return
+     */
+    Boolean cashTransfer(RebateTransferDto transferDto);
+
+    /**
+     * 保证金申请提现
+     * @param transferDto
+     * @return
+     */
+    Boolean cashWithdraw(RebateTransferDto transferDto);
+    Boolean rejectCashWithdraw(Long withDrawId);
+    Boolean successCashWithdraw(Long withDrawId);
 }

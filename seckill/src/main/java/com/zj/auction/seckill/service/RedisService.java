@@ -1,5 +1,7 @@
 package com.zj.auction.seckill.service;
 
+import org.springframework.data.redis.core.RedisTemplate;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -179,4 +181,6 @@ public interface RedisService {
      * 从List结构中移除属性
      */
     Long lRemove(String key, long count, Object value);
+
+    RedisTemplate<String,Object> getTemplate();
 }
