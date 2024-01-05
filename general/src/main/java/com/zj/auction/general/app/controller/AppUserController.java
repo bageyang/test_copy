@@ -2,6 +2,7 @@ package com.zj.auction.general.app.controller;
 import com.zj.auction.common.dto.PassWordDTO;
 import com.zj.auction.common.dto.Ret;
 import com.zj.auction.common.dto.UserDTO;
+import com.zj.auction.common.model.Role;
 import com.zj.auction.common.model.User;
 import com.zj.auction.common.util.PubFun;
 import com.zj.auction.common.vo.PageAction;
@@ -12,6 +13,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -355,7 +357,12 @@ public class AppUserController {
     @ApiOperation(value = "注销")
     @PostMapping(value = "/delUser")
     public GeneralResult delUser() {
-        return GeneralResult.success(appUserService.delUser());
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        System.out.println("退出前-->"+user);
+        SecurityUtils.getSubject().logout();
+        System.out.println("退出后-->"+user);
+        //return GeneralResult.success(appUserService.delUser());
+        return GeneralResult.success("注销成功");
     }
 
 
@@ -387,6 +394,7 @@ public class AppUserController {
     public GeneralResult parentUser() {
         return appUserService.parentUser();
     }
+
 
 
     /**
@@ -422,6 +430,33 @@ public class AppUserController {
     @PostMapping(value = "/whetherNewUser")
     public GeneralResult whetherNewUser(String time) {
         return GeneralResult.success(appUserService.whetherNewUser(time));
+    }
+
+    /**
+     * @Description 查询所有角色
+     */
+    @ApiOperation(value = "查询所有角色")
+    @PostMapping(value = "/getRole")
+    public GeneralResult getRole(){
+        return GeneralResult.success(appUserService.geRole());
+    }
+
+    /**
+     * @Description 添加角色
+     */
+    @ApiOperation(value = "添加角色")
+    @PostMapping(value = "/addRole")
+    public GeneralResult addRole(@RequestBody Role role){
+        return GeneralResult.success(appUserService.addRole(role));
+    }
+
+    /**
+     * @Description 修改角色
+     */
+    @ApiOperation(value = "修改角色")
+    @PostMapping(value = "/updateRole")
+    public GeneralResult updateRole(@RequestBody Role role){
+        return GeneralResult.success(appUserService.updateRole(role));
     }
 
 }

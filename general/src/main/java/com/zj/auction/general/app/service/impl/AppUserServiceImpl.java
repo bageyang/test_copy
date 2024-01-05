@@ -2,9 +2,8 @@ package com.zj.auction.general.app.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zj.auction.common.base.BaseServiceImpl;
@@ -13,13 +12,14 @@ import com.zj.auction.common.constant.SystemConfig;
 import com.zj.auction.common.constant.SystemConstant;
 import com.zj.auction.common.date.DateUtil;
 import com.zj.auction.common.dto.PassWordDTO;
-import com.zj.auction.common.dto.Ret;
 import com.zj.auction.common.dto.UserDTO;
 import com.zj.auction.common.exception.ServiceException;
 import com.zj.auction.common.mapper.AddressMapper;
+import com.zj.auction.common.mapper.RoleMapper;
 import com.zj.auction.common.mapper.UserConfigMapper;
 import com.zj.auction.common.mapper.UserMapper;
 import com.zj.auction.common.model.Address;
+import com.zj.auction.common.model.Role;
 import com.zj.auction.common.model.User;
 import com.zj.auction.common.model.UserConfig;
 import com.zj.auction.common.oss.OssUpload;
@@ -42,7 +42,6 @@ import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -55,9 +54,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -90,14 +87,16 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     private final UserMapper userMapper;
     private final UserConfigMapper userConfigMapper;
     private final AddressMapper addressMapper;
+    private final RoleMapper roleMapper;
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    public AppUserServiceImpl(UserMapper userMapper, UserConfigMapper userConfigMapper, AddressMapper addressMapper) {
+    public AppUserServiceImpl(UserMapper userMapper, UserConfigMapper userConfigMapper, AddressMapper addressMapper, RoleMapper roleMapper) {
         this.userMapper = userMapper;
         this.userConfigMapper = userConfigMapper;
         this.addressMapper = addressMapper;
+        this.roleMapper = roleMapper;
     }
 
 
@@ -748,7 +747,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         addr.setName(name);
         addr.setTel1(tel1);
         addr.setStatus(0);
-        addr.setAddUserId(user.getUserId());
+        addr.setAddUserid(user.getUserId());
         addressMapper.insert(addr);
         return true;
     }
@@ -1020,6 +1019,9 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     @Transactional(rollbackFor = Exception.class)
     public Boolean delUser() {
         User user = (User) SecurityUtils.getSubject().getPrincipal();
+
+        System.out.println("delUser--->"+user);
+
         user.setDeleteFlag(1);
         user.setUpdateUserId(user.getUserId());
         userMapper.updateByPrimaryKeySelective(user);
@@ -1290,6 +1292,35 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     @Override
     public LoginResp refreshToken() {
         return null;
+    }
+
+    /**
+     * 查询所有角色
+     * @return
+     */
+    @Override
+    public List<Role> geRole() {
+        return roleMapper.selectList(new QueryWrapper<Role>());
+    }
+
+    /**
+     * 添加角色
+     * @param role
+     * @return
+     */
+    @Override
+    public int addRole(Role role) {
+        return roleMapper.insert(role);
+    }
+
+    /**
+     * 修改角色
+     * @param role
+     * @return
+     */
+    @Override
+    public int updateRole(Role role) {
+        return roleMapper.updateByPrimaryKey(role);
     }
 
 
