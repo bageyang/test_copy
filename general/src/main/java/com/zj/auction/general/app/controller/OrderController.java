@@ -1,5 +1,6 @@
 package com.zj.auction.general.app.controller;
 
+import com.zj.auction.common.dto.PageVo;
 import com.zj.auction.common.dto.PaymentVoucher;
 import com.zj.auction.common.dto.PickUpDto;
 import com.zj.auction.common.dto.Ret;
@@ -18,7 +19,7 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/list")
-    public Ret<List<Order>> listUserOrder(@RequestBody OrderQuery query){
+    public Ret<PageVo<Order>> listUserOrder(@RequestBody OrderQuery query){
         return Ret.ok(orderService.listUserOrder(query));
     }
 

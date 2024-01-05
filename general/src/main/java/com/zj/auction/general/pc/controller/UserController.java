@@ -3,14 +3,15 @@ package com.zj.auction.general.pc.controller;
 import com.github.pagehelper.PageInfo;
 import com.zj.auction.common.constant.RedisConstant;
 import com.zj.auction.common.constant.SystemConfig;
+import com.zj.auction.common.dto.Ret;
 import com.zj.auction.common.dto.UserDTO;
 import com.zj.auction.common.model.Permis;
 import com.zj.auction.common.model.User;
+import com.zj.auction.general.shiro.SecurityUtils;
 import com.zj.auction.general.pc.service.UserService;
 import com.zj.auction.common.vo.GeneralResult;
 import com.zj.auction.common.vo.PageAction;
 import io.swagger.annotations.Api;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -53,7 +54,7 @@ public class UserController{
      * @param password 密码
      * @return {@link GeneralResult}
      *///    @ReqLimit(rateSecond =4)
-    @PostMapping("/userLogin")
+    @PostMapping(value="/userLogin")
     public GeneralResult getPcLogin(@RequestParam String username, @RequestParam String password) {
         return GeneralResult.success(pcUserServer.getPcLogin(username,password));
     }
@@ -71,7 +72,7 @@ public class UserController{
      */
     @PostMapping(value="/getUserAuthority")
     public GeneralResult getUserAuthority() {
-        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        User user = SecurityUtils.getPrincipal();
         List<Permis> listResult = pcUserServer.findByMenuId(user.getUserId());
         return GeneralResult.success(listResult);
     }
@@ -94,13 +95,16 @@ public class UserController{
      * @Title: saveManager
      * @Description: 添加管理员
      * @author： YW
+     * @date： 2022年6月7日16:41:10
+     * @param userCfg
+     * @return
      * @return：GeneralResult
      *
      */
 //    @SystemLog
     @PostMapping(value="/createManager")
-    public GeneralResult createManager(@RequestBody UserDTO dto) {
-        return GeneralResult.success(pcUserServer.createManager(dto));
+    public GeneralResult createManager(@RequestBody User userCfg) {
+        return GeneralResult.success(pcUserServer.createManager(userCfg));
     }
 
 
@@ -287,8 +291,8 @@ public class UserController{
      */
     @PostMapping(value="/userLogout")
     public GeneralResult removeSession() {
-        User user = (User)SecurityUtils.getSubject().getPrincipal();
-        SecurityUtils.getSubject().logout();
+        User user =  SecurityUtils.getPrincipal();
+        SecurityUtils.logout();
         redisTemplate.delete(RedisConstant.PC_USER_TOKEN+user.getUserId());
 
         return GeneralResult.success();
@@ -356,7 +360,7 @@ public class UserController{
     @PostMapping(value="/getUserData")
     public GeneralResult getUserData(){
         GeneralResult result = new GeneralResult();
-        User user = (User)SecurityUtils.getSubject().getPrincipal();
+        User user =  SecurityUtils.getPrincipal();
         result.setResult(user);
         result.setToken(SystemConfig.getSysSoftwareName());
         return result;

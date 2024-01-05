@@ -4,7 +4,10 @@
   <resultMap id="BaseResultMap" type="com.zj.auction.common.model.UserConfig">
     <id column="user_config_id" jdbcType="INTEGER" property="userConfigId" />
     <result column="addr" jdbcType="VARCHAR" property="addr" />
+    <result column="card_number" jdbcType="INTEGER" property="cardNumber" />
     <result column="domain_name" jdbcType="VARCHAR" property="domainName" />
+    <result column="sub_user_num" jdbcType="INTEGER" property="subUserNum" />
+    <result column="sub_user_num_all" jdbcType="INTEGER" property="subUserNumAll" />
     <result column="province" jdbcType="VARCHAR" property="province" />
     <result column="city" jdbcType="VARCHAR" property="city" />
     <result column="county" jdbcType="VARCHAR" property="county" />
@@ -22,14 +25,14 @@
     where user_config_id = #{userConfigId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.zj.auction.common.model.UserConfig">
-    insert into zj_user_config (user_config_id, addr,
-      domain_name,
+    insert into zj_user_config (user_config_id, addr, card_number, 
+      domain_name, sub_user_num, sub_user_num_all, 
       province, city, county, 
       province_id, city_id, county_id, 
       front_image, reverse_image, apply_time, 
       face_img, entering_status)
-    values (#{userConfigId,jdbcType=INTEGER}, #{addr,jdbcType=VARCHAR},
-      #{domainName,jdbcType=VARCHAR},
+    values (#{userConfigId,jdbcType=INTEGER}, #{addr,jdbcType=VARCHAR}, #{cardNumber,jdbcType=INTEGER}, 
+      #{domainName,jdbcType=VARCHAR}, #{subUserNum,jdbcType=INTEGER}, #{subUserNumAll,jdbcType=INTEGER},
       #{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, #{county,jdbcType=VARCHAR}, 
       #{provinceId,jdbcType=BIGINT}, #{cityId,jdbcType=BIGINT}, #{countyId,jdbcType=BIGINT}, 
       #{frontImage,jdbcType=VARCHAR}, #{reverseImage,jdbcType=VARCHAR}, #{applyTime,jdbcType=TIMESTAMP}, 
@@ -38,8 +41,10 @@
   <update id="updateByPrimaryKey" parameterType="com.zj.auction.common.model.UserConfig">
     update zj_user_config
     set addr = #{addr,jdbcType=VARCHAR},
-
+      card_number = #{cardNumber,jdbcType=INTEGER},
       domain_name = #{domainName,jdbcType=VARCHAR},
+      sub_user_num = #{subUserNum,jdbcType=INTEGER},
+      sub_user_num_all = #{subUserNumAll,jdbcType=INTEGER},
       province = #{province,jdbcType=VARCHAR},
       city = #{city,jdbcType=VARCHAR},
       county = #{county,jdbcType=VARCHAR},
@@ -54,14 +59,14 @@
     where user_config_id = #{userConfigId,jdbcType=INTEGER}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select user_config_id, addr, domain_name,
+    select user_config_id, addr, card_number, domain_name, sub_user_num, sub_user_num_all, 
     province, city, county, province_id, city_id, county_id, front_image, reverse_image, 
     apply_time, face_img, entering_status
     from zj_user_config
     where user_config_id = #{userConfigId,jdbcType=INTEGER}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
-    select user_config_id, addr, domain_name,
+    select user_config_id, addr, card_number, domain_name, sub_user_num, sub_user_num_all, 
     province, city, county, province_id, city_id, county_id, front_image, reverse_image, 
     apply_time, face_img, entering_status
     from zj_user_config
