@@ -2,6 +2,8 @@ package com.zj.auction.general.app.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -39,6 +41,7 @@ import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,7 +54,9 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -130,7 +135,9 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
             telCheck(dto.getTel());// 判断是否注册
             //查询手机号是否已经注册
             User oldUser = userMapper.findByUserName(dto.getTel());
-            if (Objects.nonNull(oldUser)) throw new ServiceException(514, "此手机号已经注册,请更换手机号!");
+            if (Objects.nonNull(oldUser)) {
+                throw new ServiceException(514, "此手机号已经注册,请更换手机号!");
+            }
             User user = new User();// 创建用户
             //String[] md5 = MD5Utils.encryption(dto.getPassWord());//密码处理
             //String salt = dto.getUserName();
@@ -142,7 +149,9 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
             if (Objects.isNull(dto.getPid())) {
                 PubFun.check(dto.getPUserName());
                 User pidUser = userMapper.findByUserName(dto.getPUserName());
-                if (Objects.isNull(pidUser)) throw new ServiceException(515, "注册失败 ,推荐人不存在");
+                if (Objects.isNull(pidUser)) {
+                    throw new ServiceException(515, "注册失败 ,推荐人不存在");
+                }
                 String pidStr = "";
                 if (StringUtils.isEmpty(pidUser.getPidStr())) {
                     pidStr = "," + pidUser.getUserId() + ",";
@@ -211,13 +220,19 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     public Boolean forgetPassword(String tel, String code, String password) {
         PubFun.check(tel, code, password);
         messagesCheck(tel, code);
-        if (password.length() < 6) throw new RuntimeException("密码必须六位以上!");
+        if (password.length() < 6) {
+            throw new RuntimeException("密码必须六位以上!");
+        }
         String regex = "^(?!([a-zA-Z]+|\\d+)$)[a-zA-Z\\d]{6,20}$";
-        if (!password.matches(regex)) throw new RuntimeException("密码必须又数字和字母组成!");
+        if (!password.matches(regex)) {
+            throw new RuntimeException("密码必须又数字和字母组成!");
+        }
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
         wrapper.eq(User::getUserName, tel).eq(User::getDeleteFlag, 0).eq(User::getUserType, 0);
         User user = userMapper.selectOne(wrapper);
-        if (ObjectUtils.isEmpty(user)) throw new RuntimeException("该手机号还未注册");
+        if (ObjectUtils.isEmpty(user)) {
+            throw new RuntimeException("该手机号还未注册");
+        }
         String[] encryption = MD5Utils.encryption(password);
         user.setPassWord(encryption[0]);
         user.setSalt(encryption[1]);
@@ -388,11 +403,13 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     //手机号校验
     @Override
     public void telCheck(String tel) {
-        if (!super.baseCheck(tel, StringUtils::hasText))
+        if (!super.baseCheck(tel, StringUtils::hasText)) {
             throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, "数据非法");
+        }
         List<User> findByTel = userMapper.findByTel(tel);
-        if (!findByTel.isEmpty())
+        if (!findByTel.isEmpty()) {
             throw new ServiceException(SystemConstant.ALREADY_REGISTERED_CODE, SystemConstant.ALREADY_REGISTERED);
+        }
     }
 
     /**
@@ -463,7 +480,9 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
 
                 }
 
-                if (Objects.isNull(user.getPassWord())) throw new ServiceException(517, "您未设置密码,请用短信验证码登录!");
+                if (Objects.isNull(user.getPassWord())) {
+                    throw new ServiceException(517, "您未设置密码,请用短信验证码登录!");
+                }
                 if (!user.getPassWord().equals(md5Hash.toString())) {
                     throw new ServiceException(518, "您输入的密码错误,请重新输入!");
                 }
@@ -857,9 +876,13 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
 //        AuthToken authToken = AppTokenUtils.getAuthToken();
         PubFun.check(tel, code, password);
         messagesCheck(tel, code);
-        if (password.length() < 8) throw new ServiceException(526, "密码必须八位以上!");
+        if (password.length() < 8) {
+            throw new ServiceException(526, "密码必须八位以上!");
+        }
         String regex = "^(?!([a-zA-Z]+|\\d+)$)[a-zA-Z\\d]{6,20}$";
-        if (!password.matches(regex)) throw new ServiceException(527, "密码必须又数字和字母组成!");
+        if (!password.matches(regex)) {
+            throw new ServiceException(527, "密码必须又数字和字母组成!");
+        }
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
         wrapper.eq(User::getUserName, tel).eq(User::getDeleteFlag, 0).eq(User::getUserType, 0);
         User user = userMapper.selectOne(wrapper);
@@ -901,7 +924,9 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     public boolean addPayPassword(String payPassword, String userName) {
 //        AuthToken authToken = AppTokenUtils.getAuthToken();
         User user = userMapper.findByUserName(userName);
-        if (Objects.isNull(user)) throw new RuntimeException("用户已经不存在,请联系管理员");
+        if (Objects.isNull(user)) {
+            throw new RuntimeException("用户已经不存在,请联系管理员");
+        }
         user.setPayPassword(MD5Utils.isEncryption(payPassword, user.getUserId().toString()));
         userMapper.updateByPrimaryKeySelective(user);
         return true;
@@ -1292,5 +1317,11 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
             return false;
         }
     }
+
+    @Override
+    public LoginResp refreshToken() {
+        return null;
+    }
+
 
 }
