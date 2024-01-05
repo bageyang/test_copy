@@ -1,4 +1,4 @@
-package com.zj.auction.common.vo;
+package com.zj.auction.general.vo;
 import com.zj.auction.common.model.User;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

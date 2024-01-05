@@ -1,10 +1,8 @@
 package com.zj.auction.common.mapper;
 
 import com.zj.auction.common.model.Stock;
-import org.apache.ibatis.annotations.Mapper;
-
 import java.util.List;
-@Mapper
+
 public interface StockMapper {
     int deleteByPrimaryKey(Long id);
 

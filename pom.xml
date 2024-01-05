@@ -10,7 +10,8 @@
 		<module>common</module>
 		<module>gateway</module>
 		<module>seckill</module>
-	</modules>
+        <module>general</module>
+    </modules>
 	<packaging>pom</packaging>
 	<name>auction</name>
 	<description>auction</description>

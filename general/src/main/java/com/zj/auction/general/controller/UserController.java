@@ -1,4 +1,4 @@
-//package com.zj.auction.common.controller;
+//package com.zj.auction.general.controller;
 //
 //import com.duoqio.boot.business.pc.service.user.PcUserService;
 //import com.duoqio.boot.framework.annotation.ReqLimit;
@@ -12,7 +12,7 @@
 //import com.duoqio.entity.pojo.SysPermisTbl;
 //import com.duoqio.entity.pojo.SystemCfgTbl;
 //import com.duoqio.entity.pojo.UserInfoTbl;
-//import com.zj.auction.common.service.UserService;
+//import com.zj.auction.general.service.UserService;
 //import io.swagger.annotations.Api;
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
 //import org.springframework.beans.factory.annotation.Autowired;

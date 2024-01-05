@@ -4,5 +4,4 @@ public interface GlobalException {
     Integer  getCode();
     String getMessage();
 
-    Object getData();
 }

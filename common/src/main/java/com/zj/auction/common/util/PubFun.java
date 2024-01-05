@@ -1,19 +1,15 @@
-package com.zj.auction.common.utils;
+package com.zj.auction.common.util;
 import com.zj.auction.common.constant.SystemConstant;
 import com.zj.auction.common.exception.ServiceException;
 import com.zj.auction.common.exception.SystemExceptionEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

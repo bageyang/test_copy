@@ -1,15 +1,14 @@
-package com.zj.auction.common.service;
+package com.zj.auction.general.service;
 import com.baomidou.mybatisplus.core.mapper.Mapper;
 import com.zj.auction.common.model.Address;
 import com.zj.auction.common.model.Bank;
 import com.zj.auction.common.model.User;
-import com.zj.auction.common.vo.GeneralResult;
-import com.zj.auction.common.vo.LoginResp;
-import com.zj.auction.common.vo.UserVO;
+import com.zj.auction.general.vo.GeneralResult;
+import com.zj.auction.general.vo.LoginResp;
+import com.zj.auction.general.vo.UserVO;
 import org.springframework.data.domain.PageRequest;
 
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
