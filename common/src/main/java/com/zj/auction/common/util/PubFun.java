@@ -67,6 +67,21 @@ public class PubFun {
             return false;
         }
     }
+
+    /**
+     *************************************************
+     *	生成随机数
+     * @author  MengDaNai
+     * @param len 长度 不能大于10
+     * @return
+     * @date    2019年4月1日 创建文件
+     *************************************************
+     */
+    public static String generateRandomNumbersMax10(int len) {
+        PubFun.isNull(len, SystemConstant.DATA_ILLEGALITY_CODE);
+        if(len > 10) throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE,SystemConstant.DATA_ILLEGALITY);
+        return DoubleToString(Math.random()).substring(2,len+2);
+    }
     /**
     * 分组 数据返回Object 并行
     * @Author: Mr.zhao

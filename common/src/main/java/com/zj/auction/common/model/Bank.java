@@ -1,162 +1,60 @@
 package com.zj.auction.common.model;
 
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.zj.auction.common.base.BaseEntity;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-
-public class Bank implements Serializable {
+@Data
+@TableName("zj_bank")
+public class Bank extends BaseEntity implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ApiModelProperty(value = "银行卡编号")
     private Long bankId;
 
+    /**
+     * 用户id
+     */
+    @ApiModelProperty(value = "关联的用户id")
     private Long userId;
 
+    @ApiModelProperty(value = "收款方开户行")
+    @Column(columnDefinition = "comment '收款方开户行'")
     private String bankCode;
 
+    /**
+     * 银行名称
+     */
+    @ApiModelProperty(value = "银行名称")
     private String bankName;
-
+    /**
+     * 银行卡号
+     */
+    @ApiModelProperty(value = "银行卡号")
     private String bankNumber;
-
+    /**
+     * 开户姓名
+     */
+    @ApiModelProperty(value = "开户真实姓名")
     private String accountName;
-
-    private String bankLogo;
-
-    private Long addUserId;
-
-    private LocalDateTime addTime;
-
-    private LocalDateTime updateTime;
-
-    private Integer deleteFlag;
-
-    private Long updateUserId;
-
+    /**
+     * 银行预留手机号
+     */
+    @ApiModelProperty(value = "银行预留手机号")
     private String tel;
+    /**
+     * 银行logo
+     */
+    @ApiModelProperty(value = "银行logo")
+    private String bankLogo;
 
     private static final long serialVersionUID = 1L;
 
-    public Long getBankId() {
-        return bankId;
-    }
-
-    public void setBankId(Long bankId) {
-        this.bankId = bankId;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getBankCode() {
-        return bankCode;
-    }
-
-    public void setBankCode(String bankCode) {
-        this.bankCode = bankCode;
-    }
-
-    public String getBankName() {
-        return bankName;
-    }
-
-    public void setBankName(String bankName) {
-        this.bankName = bankName;
-    }
-
-    public String getBankNumber() {
-        return bankNumber;
-    }
-
-    public void setBankNumber(String bankNumber) {
-        this.bankNumber = bankNumber;
-    }
-
-    public String getAccountName() {
-        return accountName;
-    }
-
-    public void setAccountName(String accountName) {
-        this.accountName = accountName;
-    }
-
-    public String getBankLogo() {
-        return bankLogo;
-    }
-
-    public void setBankLogo(String bankLogo) {
-        this.bankLogo = bankLogo;
-    }
-
-    public Long getAddUserId() {
-        return addUserId;
-    }
-
-    public void setAddUserId(Long addUserId) {
-        this.addUserId = addUserId;
-    }
-
-    public LocalDateTime getAddTime() {
-        return addTime;
-    }
-
-    public void setAddTime(LocalDateTime addTime) {
-        this.addTime = addTime;
-    }
-
-    public LocalDateTime getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(LocalDateTime updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Integer getDeleteFlag() {
-        return deleteFlag;
-    }
-
-    public void setDeleteFlag(Integer deleteFlag) {
-        this.deleteFlag = deleteFlag;
-    }
-
-    public Long getUpdateUserId() {
-        return updateUserId;
-    }
-
-    public void setUpdateUserId(Long updateUserId) {
-        this.updateUserId = updateUserId;
-    }
-
-    public String getTel() {
-        return tel;
-    }
-
-    public void setTel(String tel) {
-        this.tel = tel;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", bankId=").append(bankId);
-        sb.append(", userId=").append(userId);
-        sb.append(", bankCode=").append(bankCode);
-        sb.append(", bankName=").append(bankName);
-        sb.append(", bankNumber=").append(bankNumber);
-        sb.append(", accountName=").append(accountName);
-        sb.append(", bankLogo=").append(bankLogo);
-        sb.append(", addUserId=").append(addUserId);
-        sb.append(", addTime=").append(addTime);
-        sb.append(", updateTime=").append(updateTime);
-        sb.append(", deleteFlag=").append(deleteFlag);
-        sb.append(", updateUserId=").append(updateUserId);
-        sb.append(", tel=").append(tel);
-        sb.append(", serialVersionUID=").append(serialVersionUID);
-        sb.append("]");
-        return sb.toString();
-    }
 }
