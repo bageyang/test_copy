@@ -550,15 +550,15 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
      * @Date 2019/9/8 15:35
      */
     @Override
-    public Map<String, Object> sendMessages(HttpServletRequest request,UserDTO dto) {
-        if (!StringUtils.hasText(dto.getTel())) {
+    public Map<String, Object> sendMessages(HttpServletRequest request,String tel) {
+        if (!StringUtils.hasText(tel)) {
             throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, SystemConstant.DATA_ILLEGALITY);
         }
         Function<String, Map<String, Object>> deal = param -> {
-            Map<String, Object> map = sendMessages("1755231367", dto.getTel(), PubFun.generateRandomNumbersMax10(4), request);
+            Map<String, Object> map = sendMessages("1755231367", tel, PubFun.generateRandomNumbersMax10(4), request);
             return map;
         };
-        return super.base(dto.getTel(), deal);
+        return super.base(tel, deal);
     }
 
     public Map<String, Object> sendMessages(String template, String phone, String code, HttpServletRequest request) {
@@ -596,14 +596,14 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     //修改常用手机号
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public User updateCommonTel(UserDTO dto) {
+    public User updateCommonTel(String commonTel,String commonName) {
         User user = (User) SecurityUtils.getSubject().getPrincipal();
-        PubFun.check(dto.getCommonTel(), dto.getCommonName());
-        if (dto.getCommonTel().trim().length() != 11) {
+        PubFun.check(commonTel, commonName);
+        if (commonTel.trim().length() != 11) {
             throw new ServiceException(523, "请输入正确手机号");
         }
-        user.setCommonTel(dto.getCommonTel());
-        user.setCommonName(dto.getCommonName());
+        user.setCommonTel(commonTel);
+        user.setCommonName(commonName);
         user.setUpdateUserId(user.getUserId());
         userMapper.updateByPrimaryKeySelective(user);
         redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, user.getUserId()), JSON.toJSONString(user));
@@ -684,10 +684,10 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Boolean updateDefaultAddrById(UserDTO dto) {
+    public Boolean updateDefaultAddrById(Long addrId) {
         User user = (User) SecurityUtils.getSubject().getPrincipal();
-        PubFun.check(dto.getAddrId());
-        Address oldAddr = Optional.ofNullable(addressMapper.selectByPrimaryKey(dto.getAddrId())).orElseThrow(() -> PubFun.throwException("未查询到地址信息"));
+        PubFun.check(addrId);
+        Address oldAddr = Optional.ofNullable(addressMapper.selectByPrimaryKey(addrId)).orElseThrow(() -> PubFun.throwException("未查询到地址信息"));
         oldAddr.setDefaultFlag(1);
         addressMapper.updateByPrimaryKey(oldAddr);
         //	将非当前地址id默认的取消
@@ -702,10 +702,10 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
      */
     @Transactional
     @Override
-    public Boolean deleteAddr(UserDTO dto) {
+    public Boolean deleteAddr(Long addrId) {
         User user = SecurityUtils.getPrincipal();
-        PubFun.check(dto.getAddrId());
-        Address oldAddr = Optional.ofNullable(addressMapper.selectByPrimaryKey(dto.getAddrId())).orElseThrow(() -> PubFun.throwException("未查询到地址信息"));
+        PubFun.check(addrId);
+        Address oldAddr = Optional.ofNullable(addressMapper.selectByPrimaryKey(addrId)).orElseThrow(() -> PubFun.throwException("未查询到地址信息"));
         oldAddr.setDeleteFlag(1);
         addressMapper.updateByPrimaryKey(oldAddr);
         return true;
