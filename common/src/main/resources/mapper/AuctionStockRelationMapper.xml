@@ -134,21 +134,8 @@
     <select id="listUnExclusiveStock" resultMap="BaseResultMap">
         select auction_id
         from zj_auction_stock_relation
-        <where>
-            <if test="auctionId != null">
-             and auction_id  = #{auctionId}
-            </if>
-            and exclusive_status = 1
-        </where>
-        <include refid="delete_flag_sql"/>
-    </select>
-    <select id="listRelationByStockIds" resultMap="BaseResultMap">
-        select <include refid="Base_Column_List"/>
-        from zj_auction_stock_relation
-        where stock_id in
-        <foreach collection="ids" item="id" open="(" separator="," close=")">
-            #{id}
-        </foreach>
+        where auction_id  = #{auctionId}
+        and exclusive_status = 1
         <include refid="delete_flag_sql"/>
     </select>
 
@@ -178,10 +165,5 @@
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
-    </update>
-    <update id="regroupAuctionRelation">
-        update zj_auction_stock_relation
-        set auction_id = #{actionId} , exclusive_status = 1
-        where id = #{id}
     </update>
 </mapper>

@@ -177,29 +177,10 @@
     from zj_stock
   </select>
 
-  <select id="selectOneBySn" resultMap="BaseResultMap">
+  <select id="selectOneBySn" resultType="com.zj.auction.common.model.Stock">
     select <include refid="Base_Column_List" />
     from zj_stock
     where stock_number = #{sn}
-    <include refid="delete_flag_sql"/>
-  </select>
-
-    <select id="listStockBySnList" resultMap="BaseResultMap">
-      select <include refid="Base_Column_List" />
-      from zj_stock
-      where stock_number in
-      <foreach collection="snList" item="sn" open="(" separator="," close=")">
-        #{sn}
-      </foreach>
-      <include refid="delete_flag_sql"/>
-    </select>
-  <select id="listStockByIds" resultMap="BaseResultMap">
-    select <include refid="Base_Column_List" />
-    from zj_stock
-    where id in
-    <foreach collection="ids" item="sn" open="(" separator="," close=")">
-      #{id}
-    </foreach>
     <include refid="delete_flag_sql"/>
   </select>
 

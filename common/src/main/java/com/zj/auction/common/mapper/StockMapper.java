@@ -22,8 +22,4 @@ public interface StockMapper {
     int updateByPrimaryKeySelective(Stock record);
 
     Stock selectOneBySn(@Param("sn")Long sn);
-
-    List<Stock> listStockBySnList(@Param("snList")List<Long> sn);
-
-    List<Stock> listStockByIds(@Param("ids")List<Long> sn);
 }

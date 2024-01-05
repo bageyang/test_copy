@@ -197,7 +197,7 @@
         select
         <include refid="Base_Column_List"/>
         from zj_auction
-        where goods_id = #{goodsId} and cash_price = #{price} and auction_status = 0
+        where goods_id = #{goodsId} and cash_price = #{price}
         <include refid="delete_flag_sql"/>
     </select>
     <select id="listAuction" resultMap="BaseResultMap">
