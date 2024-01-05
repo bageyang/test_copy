@@ -1,9 +1,13 @@
 package com.zj.auction.common.enums;
 
+import com.google.common.collect.Lists;
+
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /**
- * 订单状态枚举
+ * 订单状态枚举 todo 提货状态
  *  -3 转拍次数达到上限
  *  -2 流拍 => 4
  *  -1 抢拍成功未支付 => -2,1
@@ -60,11 +64,30 @@ public enum OrderStatEnum {
      * finish
      */
     FINISH( (byte) 8),
+
     ;
     private byte code;
 
     OrderStatEnum(byte code) {
         this.code = code;
+    }
+
+    public static List<Byte> getDirectStatList(Byte orderDirection) {
+        if(OrderDirectionEnum.BUY.isEqual(orderDirection)){
+            return Lists.newArrayList(AUCTION_UPPER_LIMIT.getCode(),
+                    UN_PAYMENT.getCode(),
+                    WAIT_SELLER_CONFIRM.getCode(),
+                    SELLER_REJECT.getCode(),
+                    AUCTION_SUCCESS.getCode());
+        }
+        if(OrderDirectionEnum.SELL.isEqual(orderDirection)){
+            return Lists.newArrayList(WAIT_MARGIN.getCode(),
+                    ON_AUCTION.getCode(),
+                    WAIT_BUYER_PAYMENT.getCode(),
+                    UN_CONFIRM.getCode(),
+                    FINISH.getCode());
+        }
+        return Collections.emptyList();
     }
 
     public byte getCode() {

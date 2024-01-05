@@ -1,10 +1,11 @@
 package com.zj.auction.common.mapper;
 
 import com.zj.auction.common.model.Goods;
+import java.util.List;
+
+import com.zj.auction.common.query.GoodsQuery;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 @Mapper
 public interface GoodsMapper {
     int deleteByPrimaryKey(Long id);
@@ -15,11 +16,9 @@ public interface GoodsMapper {
 
     Goods selectByPrimaryKey(Long id);
 
-    List<Goods> selectAll();
-
-    int updateByPrimaryKey(Goods record);
-
     int updateByPrimaryKeySelective(Goods record);
 
     List<Goods> listGoodsInfoByIds(@Param("goodIds") List<Long> goodIds);
+
+    List<Goods> listGoodsInfo(GoodsQuery goodsQuery);
 }

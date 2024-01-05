@@ -1,12 +1,15 @@
-package com.zj.auction.common.util;
+package com.zj.auction.general.auth;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zj.auction.common.exception.ServiceException;
+import com.zj.auction.common.util.JwtUtils;
 import io.jsonwebtoken.Claims;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 
@@ -17,6 +20,8 @@ public class PcTokenUtils {
     private static final String AUTH_HEADER_NAME = "Authorization";
     private static final String USER_ID = "userId";
     public static final String CODE_FILE = "telCode:";
+    @Resource
+    private RedisTemplate<String,Object> redisTemplate;
     //验证码过期时间
     private static Long code = 5*60L;
 
@@ -67,8 +72,6 @@ public class PcTokenUtils {
      * @return java.lang.String
      * @describe 获取openId
      * @title getUserIdFromToken
-     * @author Mao Qi
-     * @date 2019/8/2 19:28
      */
     public static String getUserIdFromToken(String token) {
         try {
@@ -98,8 +101,7 @@ public class PcTokenUtils {
 
     /**
      * @describe 生成token
-     * @author Mao Qi
-     * @date 2019/8/2 9:16
+
      */
     public static String createToken(String id, String subject, long ttlMillis) {
         return JwtUtils.createJWT(id, subject, ttlMillis);
@@ -114,8 +116,8 @@ public class PcTokenUtils {
      * @param value
      * @return	boolean
      */
-    public static boolean setMessage(String key,String value){
-        return RedisUtil.set(CODE_FILE+key, value,code);
+    public void setMessage(String key,String value){
+         redisTemplate.opsForValue().set(CODE_FILE+key, value,code);
     }
 
 
@@ -127,9 +129,9 @@ public class PcTokenUtils {
      * @param tel
      * @return	java.lang.String
      */
-    public static String getMassage(String tel){
+    public  String getMassage(String tel){
         try {
-            return String.valueOf(RedisUtil.get(CODE_FILE+tel));
+            return String.valueOf(redisTemplate.opsForValue().get(CODE_FILE+tel));
         }catch (Exception e){
             e.printStackTrace();
         }

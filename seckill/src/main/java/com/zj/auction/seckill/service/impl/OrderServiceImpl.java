@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -38,17 +39,26 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void generatorOrder(BaseOrderDto orderInfo) {
         // todo 挪到 general 服务?
-        logger.info("生成用户订单:{}",orderInfo);
+        logger.info("开始生成用户订单:{}",orderInfo);
         Long sn = orderInfo.getSn();
         Long auctionId = orderInfo.getAuctionId();
         Auction auction = auctionMapper.selectByPrimaryKey(auctionId);
+        // 独占
+        int i = orderMapper.countExclusiveAuctionUserNum(sn,OrderStatEnum.UN_PAYMENT.getCode());
+        if(i>0){
+            logger.error("生成用户订单失败,userId:{},stockNumber:{}",orderInfo.getUserId(),orderInfo.getSn());
+        }
         Order ownerOrder = orderMapper.selectOwnerOrderByStockNumberAndStatus(sn, OrderStatEnum.ON_AUCTION.getCode());
         Stock stock = stockMapper.selectOneBySn(sn);
         checkOrderStatus(ownerOrder,orderInfo,auction);
         Order order = buildOrder(orderInfo, auction, ownerOrder, stock);
-        orderMapper.insert(order);
+        ownerOrder.setOrderStatus(OrderStatEnum.WAIT_BUYER_PAYMENT.getCode());
+        orderMapper.insertSelective(order);
+        orderMapper.updateByPrimaryKeySelective(ownerOrder);
+        logger.info("成功生成用户订单:库存号:{},订单号{}",sn,order.getOrderSn());
         // todo 发送mq 支付超时
 
     }

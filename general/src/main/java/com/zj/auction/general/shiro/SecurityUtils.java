@@ -66,20 +66,13 @@ import org.apache.shiro.subject.Subject;
  *
  * @author Mao Qi
  * @title SecurityUtils
- * @package com.duoqio.boot.framework.util
  * @describe SecurityUtils
- * @date 2019/8/27 17:28
- * @copyright 重庆多企源科技有限公司
- * @website {http://www.duoqio.com/index.asp?source=code}
  */
 public class SecurityUtils extends org.apache.shiro.SecurityUtils {
 
     /**
-     * @return com.duoqio.boot.business.pojo.UserInfoTbl
      * @describe 获取用户信息
      * @title getPrincipal
-     * @author Mao Qi
-     * @date 2019/8/27 17:30
      */
     public static User getPrincipal() {
         Subject subject = getSubject();
@@ -92,8 +85,6 @@ public class SecurityUtils extends org.apache.shiro.SecurityUtils {
     /**
      * @describe 退出登录
      * @title logout
-     * @author Mao Qi
-     * @date 2019/8/27 17:54
      */
     public static void logout() {
         Subject subject = getSubject();

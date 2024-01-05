@@ -1,5 +1,6 @@
 package com.zj.auction.seckill.service;
 
+import com.zj.auction.common.dto.BaseOrderDto;
 import com.zj.auction.common.dto.Ret;
 
 /**
@@ -12,5 +13,5 @@ public interface SeckillService {
      * @param auctionId 拍品id
      * @return fail or 锁定库存id
      */
-    Ret<Object> seckill(Long auctionId);
+    Ret<BaseOrderDto> seckill(Long auctionId);
 }
