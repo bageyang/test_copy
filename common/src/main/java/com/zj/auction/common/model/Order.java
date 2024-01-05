@@ -23,15 +23,17 @@ public class Order implements Serializable {
 
     private BigDecimal payAmount;
 
-    private BigDecimal orderFee;
+    private BigDecimal integralFee;
+
+    /**
+     * 手续费
+     */
+    private BigDecimal handFee;
 
     private BigDecimal freightAmount;
 
-    private Integer payType;
 
-    private LocalDateTime paymentTime;
-
-    private Integer orderType;
+    private Byte orderType;
 
     private Integer deleteStatus;
 
@@ -123,12 +125,20 @@ public class Order implements Serializable {
         this.payAmount = payAmount;
     }
 
-    public BigDecimal getOrderFee() {
-        return orderFee;
+    public BigDecimal getIntegralFee() {
+        return integralFee;
     }
 
-    public void setOrderFee(BigDecimal orderFee) {
-        this.orderFee = orderFee;
+    public void setIntegralFee(BigDecimal integralFee) {
+        this.integralFee = integralFee;
+    }
+
+    public BigDecimal getHandFee() {
+        return handFee;
+    }
+
+    public void setHandFee(BigDecimal handFee) {
+        this.handFee = handFee;
     }
 
     public BigDecimal getFreightAmount() {
@@ -139,27 +149,11 @@ public class Order implements Serializable {
         this.freightAmount = freightAmount;
     }
 
-    public Integer getPayType() {
-        return payType;
-    }
-
-    public void setPayType(Integer payType) {
-        this.payType = payType;
-    }
-
-    public LocalDateTime getPaymentTime() {
-        return paymentTime;
-    }
-
-    public void setPaymentTime(LocalDateTime paymentTime) {
-        this.paymentTime = paymentTime;
-    }
-
-    public Integer getOrderType() {
+    public Byte getOrderType() {
         return orderType;
     }
 
-    public void setOrderType(Integer orderType) {
+    public void setOrderType(Byte orderType) {
         this.orderType = orderType;
     }
 
@@ -229,34 +223,28 @@ public class Order implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", id=").append(id);
-        sb.append(", orderSn=").append(orderSn);
-        sb.append(", goodsId=").append(goodsId);
-        sb.append(", auctionId=").append(auctionId);
-        sb.append(", stockId=").append(stockId);
-        sb.append(", stockNumber=").append(stockNumber);
-        sb.append(", userId=").append(userId);
-        sb.append(", totalAmount=").append(totalAmount);
-        sb.append(", payAmount=").append(payAmount);
-        sb.append(", orderFee=").append(orderFee);
-        sb.append(", freightAmount=").append(freightAmount);
-        sb.append(", payType=").append(payType);
-        sb.append(", paymentTime=").append(paymentTime);
-        sb.append(", orderType=").append(orderType);
-        sb.append(", deleteStatus=").append(deleteStatus);
-        sb.append(", orderStatus=").append(orderStatus);
-        sb.append(", deliveryTime=").append(deliveryTime);
-        sb.append(", receiveTime=").append(receiveTime);
-        sb.append(", itemId=").append(itemId);
-        sb.append(", createTime=").append(createTime);
-        sb.append(", updateTime=").append(updateTime);
-        sb.append(", isDeleted=").append(isDeleted);
-        sb.append(", serialVersionUID=").append(serialVersionUID);
-        sb.append("]");
-        return sb.toString();
+        return "Order{" +
+                "id=" + id +
+                ", orderSn=" + orderSn +
+                ", goodsId=" + goodsId +
+                ", auctionId=" + auctionId +
+                ", stockId=" + stockId +
+                ", stockNumber=" + stockNumber +
+                ", userId=" + userId +
+                ", totalAmount=" + totalAmount +
+                ", payAmount=" + payAmount +
+                ", integralFee=" + integralFee +
+                ", handFee=" + handFee +
+                ", freightAmount=" + freightAmount +
+                ", orderType=" + orderType +
+                ", deleteStatus=" + deleteStatus +
+                ", orderStatus=" + orderStatus +
+                ", deliveryTime=" + deliveryTime +
+                ", receiveTime=" + receiveTime +
+                ", itemId=" + itemId +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", isDeleted=" + isDeleted +
+                '}';
     }
 }

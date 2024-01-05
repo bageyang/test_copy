@@ -21,6 +21,10 @@ spring:
           uri: lb://seckill-server
           predicates:
             - Path=/seckill/**
+        - id: general-server
+          uri: lb://general-server
+          predicates:
+            - Path=/general/**
 
 
 
