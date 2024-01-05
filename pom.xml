@@ -85,6 +85,7 @@
 					<include>application-${env}.yml</include>
 					<include>application.yml</include>
 					<include>**/*.xml</include>
+					<include>**/*.properties</include>
 				</includes>
 			</resource>
 		</resources>
