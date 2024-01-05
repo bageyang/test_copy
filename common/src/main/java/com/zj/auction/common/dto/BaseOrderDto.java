@@ -1,6 +1,7 @@
 package com.zj.auction.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
  * 基础订单信息
  */
 public class BaseOrderDto {
+    @DateTimeFormat
     private LocalDateTime createTime;
     /**
      * 订单编号
@@ -20,6 +22,7 @@ public class BaseOrderDto {
     /**
      * stockNumber
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long sn;
 
     public LocalDateTime getCreateTime() {

@@ -31,6 +31,7 @@ public class RedisConfig {
         FastJsonConfig config = new FastJsonConfig();
         config.setReaderFeatures(JSONReader.Feature.SupportAutoType);
         config.setWriterFeatures(JSONWriter.Feature.WriteClassName);
+        config.setDateFormat("yyyy-MM-dd HH:mm:ss");
         fastJsonRedisSerializer.setFastJsonConfig(config);
         // value值的序列化采用fastJsonRedisSerializer
         template.setValueSerializer(fastJsonRedisSerializer);
