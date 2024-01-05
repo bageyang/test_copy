@@ -6,11 +6,9 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zj.auction.common.dto.PageVo;
 import com.zj.auction.common.mapper.WalletRecordMapper;
-import com.zj.auction.common.model.User;
 import com.zj.auction.common.model.WalletRecord;
 import com.zj.auction.common.query.PageQuery;
 import com.zj.auction.general.app.service.WalletRecordService;
-import com.zj.auction.general.shiro.SecurityUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

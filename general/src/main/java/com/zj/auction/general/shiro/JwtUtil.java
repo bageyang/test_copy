@@ -7,6 +7,7 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 //jwt工具，用来生成、校验token以及提取token中的信息
@@ -14,7 +15,7 @@ import java.util.Date;
 public class JwtUtil {
 
     //指定一个token过期时间（毫秒）
-    private static final long EXPIRE_TIME =  24 * 60 * 60 * 1000; //1天
+    private static long EXPIRE_TIME =  1 * 1 * 60 * 1000; //1天  24 * 60 * 60 * 1000
 
 
     /**
@@ -77,8 +78,17 @@ public class JwtUtil {
      判断是否过期
      */
     public static boolean isExpire(String token){
-        DecodedJWT jwt = JWT.decode(token);
-        return jwt.getExpiresAt().getTime() < System.currentTimeMillis() ;
+        if (null!=token) {
+            DecodedJWT jwt = JWT.decode(token);
+//        if (jwt.getExpiresAt().getTime() > System.currentTimeMillis()){
+//            EXPIRE_TIME=EXPIRE_TIME+1 * 1 * 60 * 1000;
+//        }
+//            Date date = new Date(jwt.getExpiresAt().getTime());
+//            SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//            System.out.println(sd.format(date));
+            return jwt.getExpiresAt().getTime() < System.currentTimeMillis();
+        }
+        return false;
     }
 
 }
