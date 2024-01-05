@@ -52,6 +52,6 @@ public class SeckillServiceImpl implements SeckillService {
     }
 
     private Optional<String> decreStock(Long auctionId) {
-return null;
+        return null;
     }
 }
