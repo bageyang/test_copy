@@ -27,17 +27,13 @@ public interface AppUserService {
 
 
     /**
-     * @Description 实名认证
-     * @Title authIdentity
-     * @Author Mao Qi
-     * @Date 2020/4/3 17:47
-     * @param realName       真实姓名
-     * @param cardNum		 身份证号
-     * @param frontImage	 身份证正面
-     * @param reverseImage	 身份证反面
-     * @return	java.lang.Boolean
+     * 身份验证身份
+     *
+     * @param dto dto
+     * @return {@link Boolean}
      */
-    Boolean authIdentity(String realName, String cardNum, String frontImage, String reverseImage);
+    Boolean authIdentity(UserDTO dto);
+
 
 
     /**
@@ -228,15 +224,13 @@ public interface AppUserService {
      */
     User updateUserName(String tel, String code,String newUserName);
 
+
     /**
-     * @Description 设置/忘记密码
-     * @Title addPassWord
-     * @Author Mao Qi
-     * @Date 2020/10/8 19:49
-     * @param tel
-     * @param code
-     * @param password
-     * @return	java.lang.Boolean
+     * 添加密码
+     *
+     * @param code     代码
+     * @param password 密码
+     * @return {@link Boolean}
      */
     Boolean addPassword(String code, String password);
 
@@ -368,7 +362,7 @@ public interface AppUserService {
                             String tel, String passWord, String salt, String userImg, String backgroundImg) {
         User userCfgEntity = new User();
         userCfgEntity.setPid(pid);
-        userCfgEntity.setPUserName(pUserName);
+        userCfgEntity.setpUserName(pUserName);
         userCfgEntity.setPidStr(pidStr);
         userCfgEntity.setLevelNum(levelNum);
         userCfgEntity.setShareType(1);//推荐方式，默认0,1通过二维码分享推荐，2通过合伙人添加推荐
@@ -453,11 +447,8 @@ public interface AppUserService {
 
     /**
      * 执行 - 实名信息认证
-     * @param realName
-     * @param cardNo
-     * @return
      */
-    GeneralResult runRealAutheInfo(String realName, String cardNo);
+    GeneralResult runRealAutheInfo(UserDTO dto);
 
     /**
      * @Description 根据是否是新用户

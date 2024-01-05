@@ -7,6 +7,7 @@ import java.util.List;
 public interface UserConfigMapper extends BaseMapper<UserConfig> {
     int deleteByPrimaryKey(Integer userConfigId);
 
+    @Override
     int insert(UserConfig record);
 
     UserConfig selectByPrimaryKey(Integer userConfigId);

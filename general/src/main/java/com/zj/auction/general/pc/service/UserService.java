@@ -1,6 +1,5 @@
 package com.zj.auction.general.pc.service;
 import com.github.pagehelper.PageInfo;
-import com.zj.auction.common.dto.Ret;
 import com.zj.auction.common.dto.UserDTO;
 import com.zj.auction.common.model.Permis;
 import com.zj.auction.common.model.User;
@@ -8,7 +7,6 @@ import com.zj.auction.common.vo.GeneralResult;
 import com.zj.auction.common.vo.LoginResp;
 import com.zj.auction.common.vo.PageAction;
 
-import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +46,7 @@ public interface UserService  {
 //     * @return：Boolean
 //     *
 //     */
-    Boolean createManager(User userCfg);
+    int createManager(UserDTO dto);
 //
 //    /**
 //     * @Title: updateManager

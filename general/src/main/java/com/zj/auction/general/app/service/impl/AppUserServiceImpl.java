@@ -71,6 +71,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * app用户服务impl
+ *
+ * @author 胖胖不胖
+ * @date 2022/06/16
+ */
 @Log4j2
 @Service
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
@@ -104,19 +110,21 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
 
     //实名认证
     @Override
-    public Boolean authIdentity(String realName, String cardNum, String frontImage, String reverseImage) {
+    public Boolean authIdentity(UserDTO dto) {
+        System.out.println(">>>>>>>>>>>>>>>>>>>"+dto);
 //        AuthToken appToken = AppTokenUtils.getAuthToken();
         User user=SecurityUtils.getPrincipal();
         //User user = userMapper.selectByPrimaryKey(appToken.getUserId());
-        user.setRealName(realName);//真实姓名
-        user.setCardNumber(cardNum);//身份证号
+        user.setRealName(dto.getRealName());//真实姓名
+        user.setCardNumber(dto.getCardNum());//身份证号
         UserConfig u = userConfigMapper.selectAllByUserId(user.getUserId());
-        u.setFrontImage(frontImage);//正面
-        u.setReverseImage(reverseImage);//反面
+        u.setFrontImage(dto.getFrontImage());//正面
+        u.setReverseImage(dto.getReverseImage());//反面
+        System.out.println(">>>>>>>>>>>>>"+u);
         user.setAudit(1);//：0默认，1待审核，2审核通过，3拒绝审核
         u.setApplyTime(LocalDateTime.now());//申请时间
-        userMapper.updateById(user);
-        userConfigMapper.updateById(u);
+        userMapper.updateByPrimaryKeySelective(user);
+        userConfigMapper.updateByPrimaryKey(u);
         return true;
     }
 
@@ -160,7 +168,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
                     pidStr = pidUser.getPidStr() + "," + pidUser.getUserId() + ",";
                 }
                 user.setPid(pidUser.getUserId());
-                user.setPUserName(pidUser.getUserName());
+                user.setpUserName(pidUser.getUserName());
                 user.setLevelNum(pidUser.getLevelNum() + 1);
                 user.setPidStr(pidStr);
             } else {
@@ -169,7 +177,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
                     String totalPlatformId = SystemConfig.getTotalPlatformId() == null ? "31" : SystemConfig.getTotalPlatformId();
                     User totalPlatformUser = Optional.ofNullable(userMapper.selectByPrimaryKey(Long.parseLong(totalPlatformId))).get();//查询该父级用户
                     user.setPid(totalPlatformUser.getUserId());
-                    user.setPUserName(totalPlatformUser.getUserName());
+                    user.setpUserName(totalPlatformUser.getUserName());
                     user.setLevelNum(2);
                     user.setPidStr("," + totalPlatformUser.getUserId() + ",");
                 } else {
@@ -180,7 +188,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
                         pidStr = pidUser.getPidStr() + "," + pidUser.getUserId() + ",";
                     }
                     user.setPid(pidUser.getUserId());
-                    user.setPUserName(pidUser.getUserName());
+                    user.setpUserName(pidUser.getUserName());
                     user.setLevelNum(pidUser.getLevelNum() + 1);
                     user.setPidStr(pidStr);
                 }
@@ -203,6 +211,10 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
             user.setRoleShopId(0L);
             BigDecimal decimal = SystemConfig.getRegisterWithdrawalLimit() == null ? BigDecimal.valueOf(500) : new BigDecimal(SystemConfig.getRegisterWithdrawalLimit());
             user.setWithdrawalLimit(decimal);//注册送提现额度
+            UserConfig config = new UserConfig();
+            config.setUserId(user.getUserId());
+            config.setCreateTime(new Date());
+            userConfigMapper.insert(config);
             userMapper.insertSelective(user);
             User u = userMapper.findByUserName(user.getUserName());
             String codePath = getAppQrCode(u.getUserId());// 生成app二维码
@@ -388,7 +400,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         }
         //绑定关系
         oldUser.setPid(puser.getUserId());
-        oldUser.setPUserName(puser.getUserName());
+        oldUser.setpUserName(puser.getUserName());
         if (puser.getPidStr() == null) {
             oldUser.setPidStr("," + puser.getUserId() + ",");
         } else {
@@ -425,13 +437,6 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
      */
     @Override
     public LoginResp login(String userName, String password, String code) {
-
-//        if (userName!=null){
-//            //W3zB;P2'"
-//            Md5Hash md5Hash = new Md5Hash(password, "W3zB;P2'\"", 1024);
-//            System.out.println("md5Hash???"+md5Hash);
-//        }
-
         LoginResp data = new LoginResp();
         PubFun.check(userName);
         User user = userMapper.findByUserName(userName);//查询用户
@@ -445,9 +450,6 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
             } else {//密码登录
                 PubFun.check(password);//数据校验
                 //校验密码
-//                String md5 = MD5Utils.isEncryption(password, user.getSalt());
-//                System.out.println("md5------->"+md5);
-
                 String salt = user.getSalt();
                 Md5Hash md5Hash = new Md5Hash(password, salt, 1024);
 
@@ -1258,15 +1260,15 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
      * 执行 - 实名信息认证
      */
     @Override
-    public GeneralResult runRealAutheInfo(String realName, String cardNo) {
+    public GeneralResult runRealAutheInfo(UserDTO dto) {
         User user = SecurityUtils.getPrincipal();
-        JSONObject jsonObject = CardCheckUtils.checkUserCard(realName, cardNo);
+        JSONObject jsonObject = CardCheckUtils.checkUserCard(dto.getRealName(), dto.getCardNum());
         if (jsonObject != null) {
             Boolean isok = jsonObject.getBoolean("isok");
             if (isok) {
                 User one = userMapper.selectByPrimaryKey(user.getUserId());
-                one.setRealName(realName);
-                one.setCardNumber(cardNo);
+                one.setRealName(dto.getRealName());
+                one.setCardNumber(dto.getCardNum());
                 userMapper.updateByPrimaryKey(one);
                 return GeneralResult.success(one);
             }
