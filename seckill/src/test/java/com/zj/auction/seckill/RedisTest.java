@@ -79,13 +79,7 @@ public class RedisTest {
         System.out.println(JSON.toJSONString(o));
     }
 
-    public static void main(String[] args) {
-        String auctionId = "auction01";
-        ByteBuf buf = Unpooled.copiedBuffer(auctionId.getBytes());
-        String s = JSON.parseObject(buf.array(), String.class);
-        System.out.println(s);
-//        String o = JSON.parseObject(new ByteBufInputStream(buf), String.class);
-    }
+
 
     @Test
     public void testIdGenerator(){
@@ -113,9 +107,11 @@ public class RedisTest {
         baseOrderDto.setUserId(201L);
         baseOrderDto.setSn(57608368696590336L);
         try {
-            orderService.generatorOrder(baseOrderDto);
+//            orderService.generatorOrder(baseOrderDto);
         }catch (Exception e){
             log.error("异常",e);
         }
     }
+
+
 }

@@ -16,7 +16,10 @@ import org.redisson.api.RScript;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -48,7 +51,7 @@ public class AuctionServiceImpl implements AuctionService {
             List<Object> keys = new ArrayList<>();
             keys.add(RedisConstant.AUCTION_REMAINDER_KEY);
             keys.add(RedisConstant.AUCTION_STOCK_KEY+ auctionId);
-            return script.evalSha(RScript.Mode.READ_WRITE, RedisConstant.AUCTION_LUA_SCRIPT_SHA, RScript.ReturnType.VALUE,keys, auctionId);
+            return script.eval(RScript.Mode.READ_WRITE, RedisConstant.AUCTION_LUA_SCRIPT, RScript.ReturnType.VALUE,keys, auctionId);
         }catch (Exception e){
             e.printStackTrace();
             return null;
@@ -122,6 +125,7 @@ public class AuctionServiceImpl implements AuctionService {
         vo.setAuctionId(e.getId());
         vo.setAuctionStatus(e.getAuctionStatus());
         vo.setGoodsId(e.getGoodsId());
+        vo.setPrices(e.getPrice());
         String imageUrl = Optional.ofNullable(goodsIdMap.get(e.getGoodsId()))
                 .map(Goods::getImgUrl)
                 .orElse("");

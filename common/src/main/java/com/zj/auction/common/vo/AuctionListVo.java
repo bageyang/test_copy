@@ -1,8 +1,11 @@
 package com.zj.auction.common.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.math.BigDecimal;
 
 public class AuctionListVo {
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long auctionId;
     private Long goodsId;
     private BigDecimal prices;

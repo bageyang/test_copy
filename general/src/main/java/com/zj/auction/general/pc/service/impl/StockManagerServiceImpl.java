@@ -1,5 +1,6 @@
 package com.zj.auction.general.pc.service.impl;
 
+import com.zj.auction.common.dto.AuctionStockNumDto;
 import com.zj.auction.common.enums.OrderStatEnum;
 import com.zj.auction.common.enums.StatusEnum;
 import com.zj.auction.common.exception.CustomException;
@@ -53,7 +54,10 @@ public class StockManagerServiceImpl implements StockManagerService {
     }
 
     @Override
-    public boolean addAndTransfer2Auction(Long goodsId, Integer num,Long ownerId) {
+    public boolean addAndTransfer2Auction(AuctionStockNumDto auctionStockNumDto) {
+        Integer num = auctionStockNumDto.getNum();
+        Long goodsId = auctionStockNumDto.getGoodsId();
+        Long ownerId = auctionStockNumDto.getOwnerId();
         Goods goods = goodsMapper.selectByPrimaryKey(goodsId);
         if(Objects.isNull(goods)){
             throw new CustomException(StatusEnum.GOODS_INFO_BLANK_ERROR);
