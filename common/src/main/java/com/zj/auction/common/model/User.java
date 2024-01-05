@@ -1,12 +1,10 @@
 package com.zj.auction.common.model;
 
-import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
 @Data
 public class User implements Serializable {
     /**

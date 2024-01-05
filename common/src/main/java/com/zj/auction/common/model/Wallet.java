@@ -54,6 +54,10 @@ public class Wallet implements Serializable {
      */
     private BigDecimal updateBalance;
 
+    /**
+     * 更改后资金
+     */
+    private BigDecimal balanceAfter;
 
     /**
      * 备注
@@ -152,6 +156,13 @@ public class Wallet implements Serializable {
         this.updateBalance = updateBalance;
     }
 
+    public BigDecimal getBalanceAfter() {
+        return balanceAfter;
+    }
+
+    public void setBalanceAfter(BigDecimal balanceAfter) {
+        this.balanceAfter = balanceAfter;
+    }
 
     public String getRemark() {
         return remark;
@@ -193,6 +204,7 @@ public class Wallet implements Serializable {
         sb.append(", transactionType=").append(transactionType);
         sb.append(", balanceBefore=").append(balanceBefore);
         sb.append(", updateBalance=").append(updateBalance);
+        sb.append(", balanceAfter=").append(balanceAfter);
         sb.append(", remark=").append(remark);
         sb.append(", walletType=").append(walletType);
         sb.append(", tradeNo=").append(tradeNo);

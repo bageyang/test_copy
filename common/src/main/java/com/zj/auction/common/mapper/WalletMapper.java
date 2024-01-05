@@ -1,12 +1,11 @@
 package com.zj.auction.common.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zj.auction.common.model.Wallet;
 import com.zj.auction.common.model.example.WalletExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
-public interface WalletMapper extends BaseMapper<Wallet> {
+public interface WalletMapper {
     long countByExample(WalletExample example);
 
     int deleteByExample(WalletExample example);
@@ -28,6 +27,4 @@ public interface WalletMapper extends BaseMapper<Wallet> {
     int updateByPrimaryKeySelective(Wallet record);
 
     int updateByPrimaryKey(Wallet record);
-
-    Wallet selectAllByUserId(@Param("userId") Long userId);
 }
