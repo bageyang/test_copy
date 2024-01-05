@@ -30,20 +30,4 @@ public class RabbitMqConfig {
     }
 
 
-    @Bean
-    public FanoutExchange payExchange() {
-        return new FanoutExchange(Constant.PAY_EXCHANGE_KEY);
-    }
-
-
-    @Bean
-    public Queue payQueue() {
-        return new Queue(Constant.PAY_QUEUE_KEY, true);
-    }
-
-    @Bean
-    public Binding payBinding() {
-        return BindingBuilder.bind(payQueue()).to(payExchange());
-    }
-
 }

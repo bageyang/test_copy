@@ -11,8 +11,7 @@ public class AuctionVo {
 
     private Long goodsId;
 
-    private BigDecimal cashPrice;
-    private BigDecimal integralPrice;
+    private BigDecimal prices;
 
     private Integer stockQuantity;
 
@@ -46,20 +45,12 @@ public class AuctionVo {
         this.goodsId = goodsId;
     }
 
-    public BigDecimal getCashPrice() {
-        return cashPrice;
+    public BigDecimal getPrices() {
+        return prices;
     }
 
-    public void setCashPrice(BigDecimal cashPrice) {
-        this.cashPrice = cashPrice;
-    }
-
-    public BigDecimal getIntegralPrice() {
-        return integralPrice;
-    }
-
-    public void setIntegralPrice(BigDecimal integralPrice) {
-        this.integralPrice = integralPrice;
+    public void setPrices(BigDecimal prices) {
+        this.prices = prices;
     }
 
     public Integer getStockQuantity() {

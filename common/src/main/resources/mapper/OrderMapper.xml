@@ -11,10 +11,11 @@
         <result column="user_id" jdbcType="BIGINT" property="userId"/>
         <result column="total_amount" jdbcType="DECIMAL" property="totalAmount"/>
         <result column="pay_amount" jdbcType="DECIMAL" property="payAmount"/>
-        <result column="integral_fee" jdbcType="DECIMAL" property="integralFee"/>
-        <result column="hand_fee" jdbcType="DECIMAL" property="handFee"/>
+        <result column="order_fee" jdbcType="DECIMAL" property="orderFee"/>
         <result column="freight_amount" jdbcType="DECIMAL" property="freightAmount"/>
-        <result column="order_type" jdbcType="TINYINT" property="orderType"/>
+        <result column="pay_type" jdbcType="INTEGER" property="payType"/>
+        <result column="payment_time" jdbcType="TIMESTAMP" property="paymentTime"/>
+        <result column="order_type" jdbcType="INTEGER" property="orderType"/>
         <result column="order_status" jdbcType="TINYINT" property="orderStatus"/>
         <result column="delivery_time" jdbcType="TIMESTAMP" property="deliveryTime"/>
         <result column="receive_time" jdbcType="TIMESTAMP" property="receiveTime"/>
@@ -27,7 +28,7 @@
     <sql id="Base_Column_List">
         id
         , order_sn, goods_id, auction_id, stock_id, stock_number, user_id, total_amount,
-    pay_amount,integral_fee, hand_fee, freight_amount, order_type,
+    pay_amount, order_fee, freight_amount, pay_type, payment_time, order_type,
     order_status, delivery_time, receive_time, item_id, create_time, update_time, is_deleted
     </sql>
 
@@ -44,14 +45,16 @@
     <insert id="insert" parameterType="com.zj.auction.common.model.Order">
         insert into zj_order (order_sn, goods_id, auction_id,
                               stock_id, stock_number, user_id,
-                              total_amount, pay_amount, hand_fee,
-                              freight_amount, order_type, order_status,
+                              total_amount, pay_amount, order_fee,
+                              freight_amount, pay_type, payment_time,
+                              order_type, order_status,
                               delivery_time, receive_time, item_id,
                               create_time, update_time, is_deleted)
         values (#{orderSn,jdbcType=BIGINT}, #{goodsId,jdbcType=BIGINT}, #{auctionId,jdbcType=BIGINT},
                 #{stockId,jdbcType=BIGINT}, #{stockNumber,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT},
-                #{totalAmount,jdbcType=DECIMAL}, #{payAmount,jdbcType=DECIMAL}, #{handFee,jdbcType=DECIMAL},
-                #{freightAmount,jdbcType=DECIMAL}, #{orderType,jdbcType=INTEGER},  #{orderStatus,jdbcType=TINYINT}, #{deliveryTime,jdbcType=TIMESTAMP},
+                #{totalAmount,jdbcType=DECIMAL}, #{payAmount,jdbcType=DECIMAL}, #{orderFee,jdbcType=DECIMAL},
+                #{freightAmount,jdbcType=DECIMAL}, #{payType,jdbcType=INTEGER}, #{paymentTime,jdbcType=TIMESTAMP},
+                #{orderType,jdbcType=INTEGER},  #{orderStatus,jdbcType=TINYINT}, #{deliveryTime,jdbcType=TIMESTAMP},
                 #{receiveTime,jdbcType=TIMESTAMP}, #{itemId,jdbcType=BIGINT},#{createTime,jdbcType=TIMESTAMP},
                 #{updateTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=TINYINT})
     </insert>
@@ -83,11 +86,17 @@
             <if test="payAmount != null">
                 pay_amount,
             </if>
-            <if test="handFee != null">
-                hand_fee,
+            <if test="orderFee != null">
+                order_fee,
             </if>
             <if test="freightAmount != null">
                 freight_amount,
+            </if>
+            <if test="payType != null">
+                pay_type,
+            </if>
+            <if test="paymentTime != null">
+                payment_time,
             </if>
             <if test="orderType != null">
                 order_type,
@@ -139,11 +148,17 @@
             <if test="payAmount != null">
                 #{payAmount,jdbcType=DECIMAL},
             </if>
-            <if test="handFee != null">
-                #{handFee,jdbcType=DECIMAL},
+            <if test="orderFee != null">
+                #{orderFee,jdbcType=DECIMAL},
             </if>
             <if test="freightAmount != null">
                 #{freightAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="payType != null">
+                #{payType,jdbcType=INTEGER},
+            </if>
+            <if test="paymentTime != null">
+                #{paymentTime,jdbcType=TIMESTAMP},
             </if>
             <if test="orderType != null">
                 #{orderType,jdbcType=INTEGER},
@@ -182,8 +197,10 @@
             user_id        = #{userId,jdbcType=BIGINT},
             total_amount   = #{totalAmount,jdbcType=DECIMAL},
             pay_amount     = #{payAmount,jdbcType=DECIMAL},
-            hand_fee       = #{handFee,jdbcType=DECIMAL},
+            order_fee      = #{orderFee,jdbcType=DECIMAL},
             freight_amount = #{freightAmount,jdbcType=DECIMAL},
+            pay_type       = #{payType,jdbcType=INTEGER},
+            payment_time   = #{paymentTime,jdbcType=TIMESTAMP},
             order_type     = #{orderType,jdbcType=INTEGER},
             order_status   = #{orderStatus,jdbcType=TINYINT},
             delivery_time  = #{deliveryTime,jdbcType=TIMESTAMP},
@@ -222,11 +239,17 @@
             <if test="payAmount != null">
                 pay_amount = #{payAmount,jdbcType=DECIMAL},
             </if>
-            <if test="handFee != null">
-                hand_fee = #{handFee,jdbcType=DECIMAL},
+            <if test="orderFee != null">
+                order_fee = #{orderFee,jdbcType=DECIMAL},
             </if>
             <if test="freightAmount != null">
                 freight_amount = #{freightAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="payType != null">
+                pay_type = #{payType,jdbcType=INTEGER},
+            </if>
+            <if test="paymentTime != null">
+                payment_time = #{paymentTime,jdbcType=TIMESTAMP},
             </if>
             <if test="orderType != null">
                 order_type = #{orderType,jdbcType=INTEGER},
