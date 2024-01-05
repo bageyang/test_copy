@@ -1,5 +1,6 @@
 package com.zj.auction.common.model;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
+@TableName("zj_user")
 public class User implements Serializable {
     /**
      * 用户id

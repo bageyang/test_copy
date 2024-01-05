@@ -82,7 +82,7 @@ public class UserController{
      * @return {@link GeneralResult}
      */
     @PostMapping(value="/getManagerPage")
-    public GeneralResult getManagerList(PageAction pageAction) {
+    public GeneralResult getManagerList(@RequestBody PageAction pageAction) {
         return pcUserServer.getManagerList(pageAction);
     }
 

@@ -61,7 +61,6 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
 
     private final UserMapper userMapper;
     private final UserConfigMapper userConfigMapper;
-    private final RedisUtil redisUtil;
     private final AddressMapper addressMapper;
 
 

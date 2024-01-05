@@ -54,10 +54,13 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final UserRoleMapper userRoleMapper;
     private final RoleMapper roleMapper;
+    private final PermisRoleMapper permisRoleMapper;
+    private final PermisMapper permisMapper;
     private final UserConfigMapper userConfigMapper;
     private final AreaMapper areaMapper;
     private final WalletMapper walletMapper;
     private final GoodsMapper goodsMapper;
+
 
 
     /**
@@ -132,7 +135,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             LambdaQueryWrapper<UserRole> wrapper = new LambdaQueryWrapper<>(UserRole.class);
             wrapper.select(UserRole::getRoleId).eq(UserRole::getUserId, userId);
             List<Map<String, Object>> list = userRoleMapper.selectMaps(wrapper);
-            System.out.println(list);
+            System.out.println("角色ID列表==================="+list);
 //			sql.append("select role_id from sys_user_role_md where user_id=:userId ");
 //			map.put("userId", userId);
 //			List<Map<String,Object>> list = shCommonDaoImpl.getSqlList(sql.toString(), map);
@@ -143,13 +146,19 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
 //				List<Role> sysRoleTblList = pcSysRoleTblRepository.findAllByDeleteFlagAndRoleIdIn(0, collect);
                 LambdaQueryWrapper<Role> wrapper1 = new LambdaQueryWrapper<>(Role.class);
-                wrapper1.in(Role::getRoleId, 0 + "," + collect);
+                wrapper1.in(Role::getRoleId,  collect).eq(Role::getDeleteFlag,0);
                 List<Role> sysRoleTblList = roleMapper.selectList(wrapper1);
                 System.out.println("==========角色列表=========" + sysRoleTblList);
-                if (!sysRoleTblList.isEmpty()) {
-                    //获取菜单
-                    collect2 = sysRoleTblList.stream().filter(f -> f.getDeleteFlag() == 0).map(Role::getPermisList).flatMap(fm -> fm.stream().filter(e -> e.getDeleteFlag() == 0)).distinct().collect(Collectors.toList());
-                }
+                LambdaQueryWrapper<PermisRole> wrapper2 = new LambdaQueryWrapper<>(PermisRole.class);
+                wrapper2.in(PermisRole::getRoleId,collect);
+                Set<Long> permiss=permisRoleMapper.selectList(wrapper2).stream().map(PermisRole::getPermisId).collect(Collectors.toSet());
+                LambdaQueryWrapper<Permis> wrapper3 = new LambdaQueryWrapper<>(Permis.class);
+                wrapper3.in(Permis::getPermisId,permiss);
+                collect2 = permisMapper.selectList(wrapper3);
+//                if (!sysRoleTblList.isEmpty()) {
+//                    //获取菜单
+//                    collect2 = sysRoleTblList.stream().filter(f -> f.getDeleteFlag() == 0).map(Role::getPermisList).flatMap(fm -> fm.stream().filter(e -> e.getDeleteFlag() == 0)).distinct().collect(Collectors.toList());
+//                }
             }
             return collect2;
         };
@@ -163,18 +172,22 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     //查询平台管理员
     @Override
     public GeneralResult getManagerList(PageAction pageAction) {
-        User user = SecurityUtils.getPrincipal();
-        PageHelper.startPage(pageAction.getCountPage(), pageAction.getPageSize());
+//        User user = SecurityUtils.getPrincipal();
+        PageHelper.startPage(pageAction.getCurrentPage(), pageAction.getPageSize());
 //		Pageable pageable = PageUtil.getPageable(pageAction.getCurrentPage(), pageAction.getPageSize(), Sort.Direction.DESC, "userId");
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
         wrapper.eq(User::getDeleteFlag, 0)
                 .eq(User::getUserType, 1)
-                .ne(User::getUserId, 1)
+                .ne(User::getUserId, 1);
+        wrapper
                 .or(!StringUtils.isEmpty(pageAction.getKeyword()))
                 .or(StringUtils.isNumeric(pageAction.getKeyword()))
                 .like(User::getUserId, com.zj.auction.common.util.StringUtils.toLong(pageAction.getKeyword()))
+                .or()
                 .like(User::getUserName, pageAction.getKeyword())
+                .or()
                 .like(User::getNickName, pageAction.getKeyword())
+                .or()
                 .like(User::getTel, pageAction.getKeyword());
         List<User> userList = userMapper.selectList(wrapper);
         PageInfo<User> pageInfo = new PageInfo<>(userList);

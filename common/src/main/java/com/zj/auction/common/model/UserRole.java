@@ -1,7 +1,9 @@
 package com.zj.auction.common.model;
 
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableName;
 
+import java.io.Serializable;
+@TableName("zj_user_role")
 public class UserRole implements Serializable {
     private Integer userRoleId;
 
