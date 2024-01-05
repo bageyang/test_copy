@@ -100,7 +100,7 @@ public class UserController{
      */
 //    @SystemLog
     @PostMapping(value="/createManager")
-    public GeneralResult createManager(User userCfg) {
+    public GeneralResult createManager(@RequestBody User userCfg) {
         return GeneralResult.success(pcUserServer.createManager(userCfg));
     }
 
@@ -115,7 +115,7 @@ public class UserController{
      * @return：GeneralResult
      */
     @PostMapping(value="/findManagerByUserId")
-    public GeneralResult findManagerByUserId(User userCfg) {
+    public GeneralResult findManagerByUserId(@RequestBody User userCfg) {
         GeneralResult result = new GeneralResult();
         result.setResult(pcUserServer.findManagerByUserId(userCfg));
         return result;
@@ -133,7 +133,7 @@ public class UserController{
 //    @SystemLog
     @RequiresPermissions("manager:update")
     @PostMapping(value="/updateManager")
-    public GeneralResult updateManager(UserDTO userCfg) {
+    public GeneralResult updateManager(@RequestBody UserDTO userCfg) {
         return GeneralResult.success(pcUserServer.updateManager(userCfg));
     }
 
@@ -151,7 +151,7 @@ public class UserController{
 //    @SystemLog
     @RequiresPermissions(value = {"manager:delete","member:delete"})
     @PostMapping(value="/deleteUser")
-    public GeneralResult deleteUser(User userCfg) {
+    public GeneralResult deleteUser(@RequestBody User userCfg) {
         return GeneralResult.success(pcUserServer.deleteUser(userCfg));
     }
 
@@ -167,7 +167,7 @@ public class UserController{
 //    @SystemLog
     @RequiresPermissions("manager:updateStatus")
     @PostMapping(value="/updateManagerStatus")
-    public GeneralResult updateManagerStatus(User userCfg) {
+    public GeneralResult updateManagerStatus(@RequestBody User userCfg) {
         return GeneralResult.success(pcUserServer.updateManagerStatus(userCfg));
     }
 
@@ -184,7 +184,7 @@ public class UserController{
      * @return	com.duoqio.common.vo.GeneralResult
      */
     @PostMapping(value="/getUserPage")
-    public GeneralResult getUserPage(PageAction pageAction, List<Long> userIds) {
+    public GeneralResult getUserPage(@RequestBody PageAction pageAction, List<Long> userIds) {
         PageInfo<User> page = pcUserServer.getUserPage(pageAction,userIds);
         pageAction.setTotalCount((int)page.getTotal());
         return GeneralResult.success(page.getList(),pageAction);
@@ -201,7 +201,7 @@ public class UserController{
      */
     @RequiresPermissions(value="member:listDirect")
     @PostMapping(value="/getSubUserPage")
-    public GeneralResult getSubUserPage(PageAction pageAction, Long pid) {
+    public GeneralResult getSubUserPage(@RequestBody PageAction pageAction, Long pid) {
         return pcUserServer.getSubUserPage(pageAction,pid);
     }
 
@@ -218,7 +218,7 @@ public class UserController{
 //    @SystemLog
     @RequiresPermissions(value="user:disable")
     @PostMapping(value="/updateUserStatus")
-    public GeneralResult updateUserStatus(Long userId, Integer status,String frozenExplain) {
+    public GeneralResult updateUserStatus(@RequestParam(name = "userId") Long userId, @RequestParam(name = "status") Integer status,@RequestParam(name = "frozenExplain") String frozenExplain) {
         return GeneralResult.success(pcUserServer.updateUserStatus(userId,status,frozenExplain));
     }
 
@@ -238,7 +238,7 @@ public class UserController{
 //    @SystemLog
     @RequiresPermissions(value="member:export")
     @PostMapping("/exportUser")
-    public void exportUser(PageAction pageAction,Integer userType,String userIds, HttpServletResponse httpServletResponse){
+    public void exportUser(@RequestBody PageAction pageAction,Integer userType,String userIds, HttpServletResponse httpServletResponse){
         pcUserServer.exportUser(pageAction,userType,userIds, httpServletResponse);
     }
 
@@ -251,7 +251,7 @@ public class UserController{
      * @return	com.duoqio.boot.framework.result.GeneralResult
      */
     @PostMapping(value="/getUserByUserId")
-    public GeneralResult getUserByUserId(Long userId) {
+    public GeneralResult getUserByUserId(@RequestParam(name = "userId") Long userId) {
         GeneralResult result = new GeneralResult();
         User userCfg = pcUserServer.getUserByUserId(userId);
         result.setResult(userCfg);
@@ -269,7 +269,7 @@ public class UserController{
      */
 //    @SystemLog
     @PostMapping(value="/deleteMember")
-    public GeneralResult deleteMember(Long userId) {
+    public GeneralResult deleteMember(@RequestParam(name = "userId")Long userId) {
         GeneralResult result = new GeneralResult();
         User userCfg = new User();
         pcUserServer.deleteMember(userId);
@@ -342,7 +342,7 @@ public class UserController{
 //    @SystemLog
     @RequiresPermissions(value="member:changeBalance")
     @PostMapping("/changeBalance")
-    public GeneralResult changeBalance(Long userId,Integer moneyType,Integer type,BigDecimal integral,String remark) {
+    public GeneralResult changeBalance(@RequestParam("userId") Long userId,@RequestParam("moneyType")Integer moneyType,@RequestParam("type")Integer type,@RequestParam("integral")BigDecimal integral, @RequestParam("remark")String remark) {
         return GeneralResult.success(pcUserServer.changeBalance(userId,moneyType,type,integral,remark));
     }
 

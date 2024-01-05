@@ -170,7 +170,31 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     /*----------------------------平台管理员-----------------------------*/
 
     //查询平台管理员
-    @Override
+//    @Override
+//    public GeneralResult getManagerList(PageAction pageAction) {
+////        User user = SecurityUtils.getPrincipal();
+//        PageHelper.startPage(pageAction.getCurrentPage(), pageAction.getPageSize());
+////		Pageable pageable = PageUtil.getPageable(pageAction.getCurrentPage(), pageAction.getPageSize(), Sort.Direction.DESC, "userId");
+//        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
+//        wrapper.eq(User::getDeleteFlag, 0)
+//                .eq(User::getUserType, 1)
+//                .ne(User::getUserId, 1);
+//        wrapper
+//                .or(!StringUtils.isEmpty(pageAction.getKeyword()))
+//                .or(StringUtils.isNumeric(pageAction.getKeyword()))
+//                .like(User::getUserId, com.zj.auction.common.util.StringUtils.toLong(pageAction.getKeyword()))
+//                .or()
+//                .like(User::getUserName, pageAction.getKeyword())
+//                .or()
+//                .like(User::getNickName, pageAction.getKeyword())
+//                .or()
+//                .like(User::getTel, pageAction.getKeyword());
+//        List<User> userList = userMapper.selectList(wrapper);
+//        PageInfo<User> pageInfo = new PageInfo<>(userList);
+//        pageAction.setTotalCount(pageInfo.getSize());
+//        pageAction.setTotalPage(pageInfo.getPageNum());
+//        return GeneralResult.success(pageInfo.getList(), pageAction);
+//    }
     public GeneralResult getManagerList(PageAction pageAction) {
 //        User user = SecurityUtils.getPrincipal();
         PageHelper.startPage(pageAction.getCurrentPage(), pageAction.getPageSize());
@@ -239,7 +263,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             throw new RuntimeException("未获取到管理员ID");
         }
         Function<User, User> deal = param -> {
-            User u = Optional.ofNullable(userMapper.selectById(param.getUserId())).orElseThrow(() -> throwException("未查询到管理员信息"));
+            User u = Optional.ofNullable(userMapper.selectByPrimaryKey(param.getUserId())).orElseThrow(() -> throwException("未查询到管理员信息"));
             u.setSalt("");
             u.setPassWord("******");
             return u;
