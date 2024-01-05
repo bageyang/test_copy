@@ -2,7 +2,6 @@ package com.zj.auction.general.app.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.sun.xml.internal.ws.client.HandlerConfiguration;
 import com.zj.auction.common.constant.Constant;
 import com.zj.auction.common.constant.RedisConstant;
 import com.zj.auction.common.dto.*;
@@ -16,7 +15,6 @@ import com.zj.auction.general.app.service.AuctionService;
 import com.zj.auction.general.app.service.OrderMqService;
 import com.zj.auction.general.app.service.OrderService;
 import com.zj.auction.general.app.service.RebateService;
-import com.zj.auction.general.shiro.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;

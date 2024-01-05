@@ -86,7 +86,7 @@ public class RedisTest {
     }
     @Test
     public void warmUpTest(){
-        auctionService.warmUpAuction(1);
+        auctionService.warmUpAuction(2);
         auctionService.getAuctionInfo(3L);
     }
 
