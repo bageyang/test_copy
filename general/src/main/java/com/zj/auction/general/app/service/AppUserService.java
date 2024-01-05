@@ -1,6 +1,7 @@
 package com.zj.auction.general.app.service;
 
 import com.github.pagehelper.PageInfo;
+import com.zj.auction.common.dto.UserDTO;
 import com.zj.auction.common.model.Address;
 import com.zj.auction.common.model.User;
 import com.zj.auction.common.vo.GeneralResult;
@@ -19,8 +20,6 @@ public interface AppUserService {
     /**
      * @Description 查询用户为多少人服务统计
      * @Title customerTotal
-     * @Author Mao Qi
-     * @Date 2020/4/21 17:22
      * @param
      * @return	java.lang.Integer
      */
@@ -41,20 +40,13 @@ public interface AppUserService {
     Boolean authIdentity(String realName, String cardNum, String frontImage, String reverseImage);
 
 
-
-
     /**
-     * @Description TODO
-     * @Title register
-     * @Author Mao Qi
-     * @Date 2019/9/11 13:13
-     * @param tel 电话
-     * @param password 密码
-     * @param pid 父级
-     * @param code 短信验证码
-     * @return	com.duoqio.boot.business.entity.UserInfoTbl
+     * 注册
+     *
+     * @param userDTO 用户dto
+     * @return {@link User}
      */
-    User register(String tel, String password,String code,Long pid,String pUsername);
+    User register(UserDTO userDTO);
 
     /**
      * @Description 二维码分享注册
@@ -229,7 +221,7 @@ public interface AppUserService {
     /**
      * @Description 修改手机号/用户名
      */
-    User updateUserName(String tel, String code);
+    User updateUserName(String tel, String code,String newUserName);
 
     /**
      * @Description 设置/忘记密码
@@ -251,7 +243,7 @@ public interface AppUserService {
      * @param
      * @return	boolean
      */
-    boolean hasPayPassword();
+    boolean hasPayPassword(String userName);
 
 
     /**
@@ -262,7 +254,7 @@ public interface AppUserService {
      * @param payPassword
      * @return	boolean
      */
-    boolean isPayPassword(String payPassword);
+    boolean isPayPassword(String payPassword,String userName);
 
     /**
      * @Description 设置支付密码
@@ -272,7 +264,7 @@ public interface AppUserService {
      * @param payPassword
      * @return	boolean
      */
-    boolean addPayPassword(String payPassword);
+    boolean addPayPassword(String payPassword,String userName);
 
 
     /**

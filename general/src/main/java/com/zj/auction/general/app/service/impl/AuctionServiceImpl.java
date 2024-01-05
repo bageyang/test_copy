@@ -153,4 +153,11 @@ public class AuctionServiceImpl implements AuctionService {
         return String.format("%04d", increment);
     }
 
+    @Override
+    public Auction getAuctionById(Long auctionId) {
+        if(Objects.isNull(auctionId)){
+            throw new CustomException(StatusEnum.PARAM_ERROR);
+        }
+        return auctionMapper.selectByPrimaryKey(auctionId);
+    }
 }

@@ -355,7 +355,14 @@
     <select id="countExclusiveAuctionUserNum" resultType="java.lang.Integer">
         select count(*)
         from zj_order
-        where stock_number = #{stockeNumber} and order_status = #{orderStat}
+        where stock_number = #{stockNumber} and order_status = #{orderStat}
+    </select>
+    <select id="listOrderByStockNumberOrderByCreatTime" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from zj_order
+        where stock_number = #{stockNumber}
+        order by create_time desc
     </select>
 
 </mapper>

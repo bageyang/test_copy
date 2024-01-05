@@ -11,8 +11,7 @@
 		<module>gateway</module>
 		<module>seckill</module>
         <module>general</module>
-		<module>payment</module>
-	</modules>
+    </modules>
 	<packaging>pom</packaging>
 	<name>auction</name>
 	<description>auction</description>

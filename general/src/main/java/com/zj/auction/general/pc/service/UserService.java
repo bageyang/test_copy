@@ -1,5 +1,6 @@
 package com.zj.auction.general.pc.service;
 import com.github.pagehelper.PageInfo;
+import com.zj.auction.common.dto.Ret;
 import com.zj.auction.common.dto.UserDTO;
 import com.zj.auction.common.model.Permis;
 import com.zj.auction.common.model.User;

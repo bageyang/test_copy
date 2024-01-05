@@ -10,8 +10,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,7 +21,6 @@ public class User extends BaseEntity implements Serializable {
     /**
      * 用户id
      */
-    @Id
     @ApiModelProperty("用户ID")
     private Long userId;
     /**
@@ -183,7 +180,6 @@ public class User extends BaseEntity implements Serializable {
      * wx联盟id
      */
     @ApiModelProperty(value = "用户在微信开发平台的唯一标识即openId")
-    @Column(columnDefinition = "varchar(64) comment '用户在微信开发平台的唯一标识'")
     private String wxUnionId;
 
     /**
@@ -220,7 +216,6 @@ public class User extends BaseEntity implements Serializable {
     /**
      * 作用范围
      */
-    @Enumerated(EnumType.ORDINAL)
     private Integer roleRange;
 
     /**
