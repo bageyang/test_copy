@@ -1,7 +1,6 @@
 server:
   port: 8090 #服务端口
-  servlet:
-    context-path: /payment
+
 
 spring:
   application:

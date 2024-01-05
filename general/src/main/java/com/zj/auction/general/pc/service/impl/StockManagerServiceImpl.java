@@ -82,7 +82,7 @@ public class StockManagerServiceImpl implements StockManagerService {
             stock.setTransferNum(0);
             stock.setStockStatus(code);
             stock.setOwnerId(ownerId);
-            stock.setPrice(cashPrice);
+            stock.setCashPrice(cashPrice);
             stockList.add(stock);
             stockMapper.insertSelective(stock);
             Order order = new Order();

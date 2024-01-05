@@ -39,7 +39,7 @@ public class UserBill implements Serializable {
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @ApiModelProperty(value = "创建时间")
+    @ApiModelProperty(value = "更新时间")
     private LocalDateTime createTime;
 
     @LastModifiedDate
