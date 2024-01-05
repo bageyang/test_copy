@@ -16,15 +16,18 @@ import com.zj.auction.common.model.Wallet;
 import com.zj.auction.common.model.WalletRecord;
 import com.zj.auction.common.model.Withdraw;
 import com.zj.auction.common.query.PageQuery;
+import com.zj.auction.common.util.QrCodeUtils;
 import com.zj.auction.common.util.SnowFlake;
 import com.zj.auction.common.vo.UserWalletVo;
 import com.zj.auction.general.app.service.WalletService;
 import com.zj.auction.general.shiro.SecurityUtils;
+import javafx.concurrent.Worker;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

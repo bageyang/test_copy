@@ -6,14 +6,8 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * @author 胖胖不胖
- */
 @Data
 public class UserDTO {
-    private String code;
-    private String newUserName;
-    private Long addrId;
     /**
      * 用户id
      */
@@ -351,6 +345,7 @@ public class UserDTO {
 
     private String address;
 
+    private String code;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime startDate;
@@ -358,12 +353,6 @@ public class UserDTO {
     private LocalDateTime endDate;
 
     private String userIds;
-
-    private String cardNum;
-
-    private String frontImage;
-
-    private String reverseImage;
 
     private Integer page;
     private Integer pageSize;

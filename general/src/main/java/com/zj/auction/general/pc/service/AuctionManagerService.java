@@ -16,7 +16,5 @@ public interface AuctionManagerService {
 
     Auction disAbleAuction(Long auction);
 
-    void handUnAuctionStock();
-
     void reAuctionOrder();
 }

@@ -120,9 +120,4 @@ public class GoodsTest {
         Object test_redis = redisTemplate.opsForValue().get("test_redis");
         System.out.println(test_redis);
     }
-
-    @Test
-    public void Test(){
-        System.out.println(System.currentTimeMillis());
-    }
 }
