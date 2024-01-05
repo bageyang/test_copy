@@ -5,7 +5,9 @@ import com.zj.auction.common.mapper.UserRoleMapper;
 import com.zj.auction.common.model.Role;
 import com.zj.auction.common.model.User;
 import com.zj.auction.common.util.StringUtils;
+import com.zj.auction.general.auth.AppTokenUtils;
 import com.zj.auction.general.auth.AuthToken;
+import com.zj.auction.general.auth.PcTokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.shiro.authc.*;
@@ -57,19 +59,19 @@ public class ShiroRealm extends AuthorizingRealm {
         if (StringUtils.isEmpty(token)) {
             return null;
         }
-        String userId = "PcTokenUtils.getUserIdFromToken(token)";
+        String userId = AppTokenUtils.getUserIdFromToken(token);
         if(StringUtils.isEmpty(userId)){
             throw new ExpiredCredentialsException();//过期
         }
         //加这一步的目的是在Post请求的时候会先进认证，然后在到请求
-        /*if (authenticationToken.getPrincipal() == null) {
+        if (authenticationToken.getPrincipal() == null) {
             return null;
         }
-        String token =  (String) authenticationToken.getPrincipal();
-        String userId = PcTokenUtils.getUserIdFromToken(token);
+//        String token =  (String) authenticationToken.getPrincipal();
+//        String userId = PcTokenUtils.getUserIdFromToken(token);
         if(StringUtils.isEmpty(userId)){
             throw new ExpiredCredentialsException();//过期
-        }*/
+        }
         /*UserInfoTbl user = userService.findByDeleteFlagFalseAndUserName(token.getUsername());*/
         //UserInfoTbl user = pcUserRepository.findByUserNameAndRoleTypeAndDeleteFlagFalse(token.getUsername(), 1);
 //        User user = pcUserRepository.findByDeleteFlagFalseAndUserId(Long.parseLong(userId));
