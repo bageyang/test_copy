@@ -28,12 +28,6 @@ public class LoginResp implements Serializable {
     @ApiModelProperty(value = "登录凭证 token")
     private String token;
 
-    /**
-     * 刷新token
-     */
-    @ApiModelProperty(value = "临时token")
-    private String accessToken;
-
     @ApiModelProperty(value = "用户信息，null表示未注册需调用注册接口")
     private User userInfo;
 

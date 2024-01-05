@@ -484,7 +484,7 @@
       <if test="goodsType != null ">
         and goods_type = #{goodsType}
       </if>
+      <include refid="delete_flag_sql"/>
     </where>
-    <include refid="delete_flag_sql"/>
   </select>
 </mapper>

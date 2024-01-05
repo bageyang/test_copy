@@ -1,11 +1,13 @@
 package com.zj.auction.common.mapper;
 
+import com.zj.auction.common.dto.PageVo;
 import com.zj.auction.common.model.WalletRecord;
 import com.zj.auction.common.model.WalletRecordExample;
 
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.zj.auction.common.query.WalletQuery;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 @Mapper
@@ -23,5 +25,5 @@ public interface WalletRecordMapper {
 
     int updateByPrimaryKey(WalletRecord record);
 
-    List<WalletRecord> listUserWalletRecord(@Param("userId") Long userId);
+    List<WalletRecord> listWalletRecord(WalletQuery query);
 }

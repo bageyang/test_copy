@@ -53,4 +53,6 @@ public interface OrderService {
 
 
     void generatorOrder(BaseOrderDto orderInfo);
+
+    void handNotify(OrderNotifyDto notifyDto);
 }

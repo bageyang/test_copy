@@ -6,6 +6,7 @@ import com.zj.auction.common.dto.Ret;
 import com.zj.auction.common.model.WalletRecord;
 import com.zj.auction.common.model.Withdraw;
 import com.zj.auction.common.query.PageQuery;
+import com.zj.auction.common.query.WalletQuery;
 import com.zj.auction.common.vo.UserWalletVo;
 import com.zj.auction.general.app.service.WalletRecordService;
 import com.zj.auction.general.app.service.WalletService;
@@ -31,7 +32,7 @@ public class WalletController {
     }
 
     @PostMapping("/record")
-    public Ret<PageVo<WalletRecord>> listUserWalletRecord(@RequestBody PageQuery pageQuery){
+    public Ret<PageVo<WalletRecord>> listUserWalletRecord(@RequestBody WalletQuery pageQuery){
         return Ret.ok(walletRecordService.listUserWalletRecord(pageQuery));
     }
 

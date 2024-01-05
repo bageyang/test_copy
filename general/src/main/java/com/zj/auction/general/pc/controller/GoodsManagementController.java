@@ -1,5 +1,6 @@
 package com.zj.auction.general.pc.controller;
 
+import com.zj.auction.common.dto.PageVo;
 import com.zj.auction.common.dto.Ret;
 import com.zj.auction.common.model.Goods;
 import com.zj.auction.common.query.GoodsQuery;
@@ -33,7 +34,7 @@ public class GoodsManagementController {
     }
 
     @PostMapping("/list")
-    public Ret<List<Goods>> list(GoodsQuery query){
+    public Ret<PageVo<Goods>> list(GoodsQuery query){
         return Ret.ok(goodsManagerService.listGoods(query));
     }
 

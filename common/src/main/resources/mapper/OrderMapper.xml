@@ -255,6 +255,14 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
+    <update id="updateOrders2Status">
+        update zj_order
+        set order_status = #{orderStat,jdbcType=TINYINT}
+        where id in
+        <foreach collection="idList" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
@@ -326,20 +334,38 @@
                     #{statItem}
                 </foreach>
             </if>
+            <include refid="delete_flag_sql"/>
         </where>
-        <include refid="delete_flag_sql"/>
     </select>
     <select id="countExclusiveAuctionUserNum" resultType="java.lang.Integer">
         select count(*)
         from zj_order
         where stock_number = #{stockNumber} and order_status = #{orderStat}
+        <include refid="delete_flag_sql"/>
     </select>
     <select id="listOrderByStockNumberOrderByCreatTime" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from zj_order
         where stock_number = #{stockNumber}
+        <include refid="delete_flag_sql"/>
         order by create_time desc
+    </select>
+    <select id="listOrderByStockNumberAndStatus" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from zj_order
+        where stock_number in
+        <foreach collection="snList" item="sn" open="(" separator="," close=")">
+            #{sn}
+        </foreach>
+        and order_status = #{orderStat}
+        <include refid="delete_flag_sql"/>
+    </select>
+    <select id="listOrderByStatus" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from zj_order
+        where order_status = #{orderStat}
+        <include refid="delete_flag_sql"/>
     </select>
 
 </mapper>

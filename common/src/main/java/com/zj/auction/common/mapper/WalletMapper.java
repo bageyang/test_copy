@@ -4,6 +4,8 @@ import com.zj.auction.common.model.Wallet;
 
 import java.math.BigDecimal;
 import java.util.List;
+
+import com.zj.auction.common.query.WalletQuery;
 import org.apache.ibatis.annotations.Param;
 
 public interface WalletMapper {
@@ -29,4 +31,6 @@ public interface WalletMapper {
     int incrementUserBalance(@Param("id") Long id, @Param("changeNum") BigDecimal changeNum,@Param("changeBefore") BigDecimal before);
 
     int decrementUserBalance(@Param("id") Long id, @Param("changeNum") BigDecimal changeNum,@Param("changeBefore") BigDecimal before);
+
+    List<Wallet> listWallet(WalletQuery query);
 }

@@ -75,12 +75,6 @@ public class AppUserController {
         return Ret.ok(appUserService.login(userName,password, code));
     }
 
-    @ApiOperation("refreshToken")
-    @PostMapping(value = "/refreshToken")
-    public Ret login() {
-        return Ret.ok(appUserService.refreshToken());
-    }
-
     /**
      * @param userName
      * @Description 发送手机短信
@@ -103,7 +97,7 @@ public class AppUserController {
             @ApiImplicitParam(name = "alipayNum", value = "支付宝账户", dataType = "String")
     })
     @PostMapping(value = "/addOrUpdateAliNum")
-    public GeneralResult addOrUpdateAliNum(@RequestParam(name = "realName") String realName,@RequestParam(name = "alipayNum") String alipayNum) {
+    public GeneralResult addOrUpdateAliNum(String realName, String alipayNum) {
         return GeneralResult.success(appUserService.addOrUpdateAliNum(realName,alipayNum));
     }
 
@@ -122,8 +116,8 @@ public class AppUserController {
             @ApiImplicitParam(name = "code", value = "短信验证码", dataType = "String")
     })
     @PostMapping(value = "/updateUserName")
-    public GeneralResult updateUserName(@RequestParam(name = "userName") String userName,@RequestParam(name = "code") String code,@RequestParam(name = "newUserName")String newUserName) {
-        return GeneralResult.success(appUserService.updateUserName(userName,code,newUserName));
+    public GeneralResult updateUserName(String userName, String code) {
+        return GeneralResult.success(appUserService.updateUserName(userName,code));
     }
 
 
@@ -138,7 +132,7 @@ public class AppUserController {
             @ApiImplicitParam(name = "commonName", value = "常用联系姓名")
     })
     @PostMapping(value = "/updateCommonTel")
-    public GeneralResult updateCommonTel(@RequestParam(name = "commonTel") String commonTel,@RequestParam(name = "commonName") String commonName) {
+    public GeneralResult updateCommonTel(String commonTel,String commonName) {
         return GeneralResult.success(appUserService.updateCommonTel(commonTel,commonName));
     }
 
@@ -184,7 +178,7 @@ public class AppUserController {
     @ApiOperation(value = "根据id查询单个地址", notes = "addrId:地址id")
     @ApiImplicitParam(name = "addrId", value = "地址id", dataType = "Long")
     @PostMapping(value = "/getAddrById")
-    public GeneralResult getAddrById(@RequestParam(name = "addrId") Long addrId) {
+    public GeneralResult getAddrById(Long addrId) {
         return GeneralResult.success(appUserService.getAddrById(addrId));
     }
 
@@ -268,8 +262,8 @@ public class AppUserController {
             @ApiImplicitParam(name = "password", value = "新密码", dataType = "String")
     })
     @PostMapping(value = "/addPassword")
-        public GeneralResult addPassword(@RequestParam(name = "code") String code,@RequestParam(name = "password") String password) {
-        return GeneralResult.success(appUserService.addPassword(code,password));
+    public GeneralResult addPassword(String tel,String code, String password) {
+        return GeneralResult.success(appUserService.addPassword(tel, code,password));
     }
 
     /**
@@ -306,7 +300,7 @@ public class AppUserController {
      */
     @ApiOperation(value = "验证交易密码")
     @PostMapping("checkPayPassword")
-    public GeneralResult payPassword(@RequestParam(name = "payPassword") String payPassword) {
+    public GeneralResult payPassword(String payPassword) {
         PubFun.check (  payPassword );
         return GeneralResult.success(appUserService.isPayPassword( payPassword ));
     }
@@ -318,9 +312,9 @@ public class AppUserController {
      */
     @ApiOperation(value = "添加支付密码")
     @PostMapping("addPayPassword")
-    public GeneralResult addPayPassword(@RequestParam(name = "payPassword")String payPassword) {
+    public GeneralResult addPayPassword(String payPassword) {
         PubFun.check (  payPassword );
-        return GeneralResult.success(appUserService.addPayPassword( payPassword));
+        return GeneralResult.success(appUserService.addPayPassword( payPassword ));
     }
 
 
@@ -380,8 +374,8 @@ public class AppUserController {
             @ApiImplicitParam(name = "reverseImage", value = "身份证反面", dataType = "String")
     })
     @PostMapping(value = "/authIdentity")
-    public GeneralResult authIdentity(@RequestBody UserDTO dto) {
-        return GeneralResult.success(appUserService.authIdentity(dto));
+    public GeneralResult authIdentity(String realName, String cardNum, String frontImage, String reverseImage) {
+        return GeneralResult.success(appUserService.authIdentity(realName, cardNum, frontImage, reverseImage));
     }
 
 
@@ -420,8 +414,8 @@ public class AppUserController {
             @ApiImplicitParam(name = "realName", value = "姓名", dataType = "string"),
             @ApiImplicitParam(name = "cardNumber", value = "身份证号", dataType = "string"),
     })
-    public GeneralResult runRealAutheInfo(@RequestBody UserDTO dto) {
-        return appUserService.runRealAutheInfo(dto);
+    public GeneralResult runRealAutheInfo(@RequestParam String realName, @RequestParam String cardNumber) {
+        return appUserService.runRealAutheInfo(realName, cardNumber);
     }
 
     /**

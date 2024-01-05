@@ -1,7 +1,5 @@
 package com.zj.auction.gateway.filter;
 
-
-import com.zj.auction.gateway.shiro.JwtUtil;
 import com.zj.auction.gateway.utils.GateWayResponseUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -11,9 +9,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -25,7 +26,7 @@ public class JwtFilter implements GlobalFilter, Ordered {
 
     @Value("${config.whiteUrl:}")
     Set<String> whiteList;
-    private static final String AUTHORIZATION = "accessToken";
+    private static final String AUTHORIZATION = "Authorization";
 
 
     @Override
@@ -38,16 +39,20 @@ public class JwtFilter implements GlobalFilter, Ordered {
         if (pass.isPresent()) {
             return chain.filter(exchange);
         }
+
         HttpHeaders httpHeaders = request.getHeaders();
-        String accessToken = httpHeaders.getFirst(AUTHORIZATION);
-        if (null == accessToken) {
+
+        String token = httpHeaders.getFirst(AUTHORIZATION);
+        if (null == token) {
             return GateWayResponseUtil.doReject(response, "认证信息不能为空");
         }
-        boolean expire = JwtUtil.isExpire(accessToken);
-        if(expire){
-            return GateWayResponseUtil.doReject(response, "登录失效");
+        boolean verify = true; // todo 校验token
+        if (!verify) {
+            return GateWayResponseUtil.doReject(response, "认证信息失败");
         }
-        String userId = JwtUtil.getUserId(accessToken);
+
+        // todo 获取用户id
+        String userId = "202";
         exchange.getRequest().mutate().header("userId", userId).build();
         return chain.filter(exchange);
     }

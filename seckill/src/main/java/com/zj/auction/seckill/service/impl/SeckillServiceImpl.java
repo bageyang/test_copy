@@ -87,6 +87,9 @@ public class SeckillServiceImpl implements SeckillService {
             return Optional.of(Ret.error(StatusEnum.AUCTION_FINISH_ERROR));
         }
         Integer num = (Integer) redisService.hGet(RedisConstant.AUCTION_REMAINDER_KEY, auctionIdStr);
+        if(Objects.isNull(num)){
+            return Optional.of(Ret.error(StatusEnum.AUCTION_MISS_ERROR));
+        }
         if(num<=0){
             SELL_OUT_AUCTION_MAP.put(auctionIdStr,num);
             return Optional.of(Ret.error(StatusEnum.AUCTION_FINISH_ERROR));

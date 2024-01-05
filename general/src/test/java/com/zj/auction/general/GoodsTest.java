@@ -53,12 +53,12 @@ public class GoodsTest {
     public void updateGoods(){
         GoodsQuery goodsQuery = new GoodsQuery();
         goodsQuery.setGoodsName("测试");
-        List<Goods> goods = goodsManagerService.listGoods(goodsQuery);
-        if(!Collections.isEmpty(goods)){
-            Goods goods1 = goods.get(0);
-            goods1.setGoodsName("测试修改01");
-            goodsManagerService.updateGoods(goods1);
-        }
+//        List<Goods> goods = goodsManagerService.listGoods(goodsQuery);
+//        if(!Collections.isEmpty(goods)){
+//            Goods goods1 = goods.get(0);
+//            goods1.setGoodsName("测试修改01");
+//            goodsManagerService.updateGoods(goods1);
+//        }
     }
 
     @Test
@@ -119,10 +119,5 @@ public class GoodsTest {
     public void a(){
         Object test_redis = redisTemplate.opsForValue().get("test_redis");
         System.out.println(test_redis);
-    }
-
-    @Test
-    public void Test(){
-        System.out.println(System.currentTimeMillis());
     }
 }
