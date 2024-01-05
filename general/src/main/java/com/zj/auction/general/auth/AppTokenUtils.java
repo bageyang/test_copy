@@ -13,15 +13,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * @Title WxTokenUtils
- * @Package com.duoqio.boot.business.util.token
- * @Description APP或者微信登录token
- * @Author Mao Qi
- * @Date 2020/3/20 17:20
- * @Copyright 重庆多企源科技有限公司
- * @Website {http://www.duoqio.com/index.asp?source=code}
- */
 @Log4j2
 @Component
 public class AppTokenUtils {
