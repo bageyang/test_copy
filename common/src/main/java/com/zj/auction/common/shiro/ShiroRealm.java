@@ -104,7 +104,8 @@ public class ShiroRealm extends AuthorizingRealm {
         //获取登录用户名
         User usercfg = (User) principalCollection.getPrimaryPrincipal();
         //查询用户名称
-        User user = userService.findByDeleteFlagFalseAndUserName(usercfg.getUserName());
+        List<User> userList=        userService.findUserByName(usercfg.getUserName());
+        User user = userList.get(0);
         //添加角色和权限
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
         //查询当前用户拥有的角色

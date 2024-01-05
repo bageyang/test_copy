@@ -1,5 +1,6 @@
 package com.zj.auction.common.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -261,6 +262,9 @@ public class User implements Serializable {
      * 阿里名字
      */
     private String aliName;
+
+    @ApiModelProperty(value = "身份证")
+    private String cardNumber;
 
     /**
      * 阿里账户
