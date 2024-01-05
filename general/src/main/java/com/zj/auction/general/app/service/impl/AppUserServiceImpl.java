@@ -65,6 +65,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 @Log4j2
 @Service
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
@@ -72,12 +73,13 @@ import java.util.stream.Collectors;
 public class AppUserServiceImpl extends BaseServiceImpl implements AppUserService {
     // 确认收款
     private static final String REGISTER_ONLY_CACHE_KEY = "REGISTER_ONLY_CACHE_KEY";
+    private static final long TMP_TOKEN_EXPIRE_TIME = 5 * 60 * 1000L; //5分钟
 
     private final UserMapper userMapper;
     private final UserConfigMapper userConfigMapper;
     private final AddressMapper addressMapper;
     @Resource
-    private RedisTemplate<String,Object> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
     public AppUserServiceImpl(UserMapper userMapper, UserConfigMapper userConfigMapper, AddressMapper addressMapper) {
@@ -132,8 +134,8 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
             User user = new User();// 创建用户
             //String[] md5 = MD5Utils.encryption(dto.getPassWord());//密码处理
             //String salt = dto.getUserName();
-            String salt= PwdTool.getRandomSalt();
-            Md5Hash md5Hash = new Md5Hash(dto.getPassWord(),salt, 1024);
+            String salt = PwdTool.getRandomSalt();
+            Md5Hash md5Hash = new Md5Hash(dto.getPassWord(), salt, 1024);
             user.setPassWord(md5Hash.toString());
             user.setSalt(salt);
 
@@ -206,16 +208,16 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     //设置/忘记密码
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Boolean forgetPassword(String tel, String code, String password ) {
+    public Boolean forgetPassword(String tel, String code, String password) {
         PubFun.check(tel, code, password);
         messagesCheck(tel, code);
         if (password.length() < 6) throw new RuntimeException("密码必须六位以上!");
         String regex = "^(?!([a-zA-Z]+|\\d+)$)[a-zA-Z\\d]{6,20}$";
         if (!password.matches(regex)) throw new RuntimeException("密码必须又数字和字母组成!");
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
-        wrapper.eq(User::getUserName,tel).eq(User::getDeleteFlag,0).eq(User::getUserType,0);
+        wrapper.eq(User::getUserName, tel).eq(User::getDeleteFlag, 0).eq(User::getUserType, 0);
         User user = userMapper.selectOne(wrapper);
-        if(ObjectUtils.isEmpty(user)) throw new RuntimeException("该手机号还未注册");
+        if (ObjectUtils.isEmpty(user)) throw new RuntimeException("该手机号还未注册");
         String[] encryption = MD5Utils.encryption(password);
         user.setPassWord(encryption[0]);
         user.setSalt(encryption[1]);
@@ -325,13 +327,13 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
      * @Author Mao Qi
      * @Date 2020/4/13 20:04
      */
-    private  void messagesCheck(String tel, String messages) {
+    private void messagesCheck(String tel, String messages) {
         // 验证码校验
         String messagesCheck = (String) redisTemplate.opsForValue().get(AppTokenUtils.CODE_FILE + tel);// 验证码校验
 
         if (Objects.isNull(messagesCheck) || Objects.isNull(messages)) {
-            System.out.println("===================="+messagesCheck);
-            throw new ServiceException(512,"验证码失效!");
+            System.out.println("====================" + messagesCheck);
+            throw new ServiceException(512, "验证码失效!");
         }
         if (!messages.equals(messagesCheck)) {
             throw new ServiceException(SystemConstant.ERROR_MESSAGE_CODE, SystemConstant.ERROR_MESSAGE);
@@ -386,7 +388,8 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     //手机号校验
     @Override
     public void telCheck(String tel) {
-        if (!super.baseCheck(tel, StringUtils::hasText)) throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE,"数据非法");
+        if (!super.baseCheck(tel, StringUtils::hasText))
+            throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, "数据非法");
         List<User> findByTel = userMapper.findByTel(tel);
         if (!findByTel.isEmpty())
             throw new ServiceException(SystemConstant.ALREADY_REGISTERED_CODE, SystemConstant.ALREADY_REGISTERED);
@@ -404,11 +407,11 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
      */
     @Override
     public LoginResp login(String userName, String password, String code) {
-        LoginResp data=new LoginResp();
+        LoginResp data = new LoginResp();
         PubFun.check(userName);
         User user = userMapper.findByUserName(userName);//查询用户
         if (Objects.isNull(user)) {//不存在
-            throw new ServiceException(516,"手机号未注册,请先注册!");
+            throw new ServiceException(516, "手机号未注册,请先注册!");
         } else {
             if (StringUtils.isEmpty(password)) {//验证码登录
                 PubFun.check(code);//数据校验
@@ -423,14 +426,19 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
                 String salt = user.getSalt();
                 Md5Hash md5Hash = new Md5Hash(password, salt, 1024);
 
-                System.out.println("md5Hash---->"+md5Hash);
+                System.out.println("md5Hash---->" + md5Hash);
+                String userId = String.valueOf(user.getUserId());
+                long expressTime = System.currentTimeMillis() + TMP_TOKEN_EXPIRE_TIME;
+                String md5 = MD5Utils.isEncryption(userId, String.valueOf(expressTime));
+                String accessToken = JwtUtil.getTmpJwtToken(userId, md5, expressTime);
                 //生成token字符串
                 String token = JwtUtil.getJwtToken(userName, md5Hash.toHex());   //toHex转换成16进制，32为字符
+                //toHex转换成16进制，32为字符
                 JwtToken jwtToken = new JwtToken(token);
-
+                data.setToken(token);
                 data.setUserId(user.getUserId());
                 data.setUserInfo(user);
-                data.setToken(token);
+                data.setAccessToken(accessToken);
                 data.setMsg("成功!");
                 //拿到Subject对象
                 Subject subject = SecurityUtils.getSubject();
@@ -439,15 +447,15 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
                     subject.login(jwtToken);
                     // return new ResultTemplate().Ok("200","成功","");
                     System.out.println("成功");
-                } catch (UnknownAccountException e){
+                } catch (UnknownAccountException e) {
                     // return new ResultTemplate().Ok("500","无效用户，用户不存在","");
                     System.out.println("无效用户，用户不存在");
                     e.printStackTrace();
-                } catch (IncorrectCredentialsException e){
+                } catch (IncorrectCredentialsException e) {
                     // return new ResultTemplate().Ok("500","密码错误","");
                     System.out.println("密码错误");
                     e.printStackTrace();
-                } catch (ExpiredCredentialsException e){
+                } catch (ExpiredCredentialsException e) {
                     //return new ResultTemplate().Ok("500","token过期","");
                     System.out.println("token过期");
                     e.printStackTrace();
@@ -455,26 +463,26 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
 
                 }
 
-                if (Objects.isNull(user.getPassWord())) throw new ServiceException(517,"您未设置密码,请用短信验证码登录!");
+                if (Objects.isNull(user.getPassWord())) throw new ServiceException(517, "您未设置密码,请用短信验证码登录!");
                 if (!user.getPassWord().equals(md5Hash.toString())) {
-                    throw new ServiceException(518,"您输入的密码错误,请重新输入!");
+                    throw new ServiceException(518, "您输入的密码错误,请重新输入!");
                 }
             }
             if (user.getStatus() == 1) {
-                throw new ServiceException(519,"用户已被冻结,请联系管理员!");
+                throw new ServiceException(519, "用户已被冻结,请联系管理员!");
             }
             if (user.getAudit() == 1) {
-                throw new ServiceException(521,"该账号还在审核中!");
+                throw new ServiceException(521, "该账号还在审核中!");
             }
             if (user.getAudit() == 3) {
-                throw new ServiceException(522,"该账号未通过审核," + user.getAuditExplain());
+                throw new ServiceException(522, "该账号未通过审核," + user.getAuditExplain());
             }
             // 保存最近一次登入时间
             user.setLoginTime(LocalDateTime.now());
             userMapper.updateByPrimaryKeySelective(user);
         }
         //redisTemplate.delete(AppTokenUtils.CODE_FILE + userName);
-       // return getAppLoginResp(user.getUserId(), user);
+        // return getAppLoginResp(user.getUserId(), user);
         return data;
     }
 
@@ -514,7 +522,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     @Override
     public Map<String, Object> sendMessages(HttpServletRequest request, String tel) {
         if (!StringUtils.hasText(tel)) {
-            throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE,SystemConstant.DATA_ILLEGALITY);
+            throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, SystemConstant.DATA_ILLEGALITY);
         }
         Function<String, Map<String, Object>> deal = param -> {
             Map<String, Object> map = sendMessages("1755231367", tel, PubFun.generateRandomNumbersMax10(4), request);
@@ -523,7 +531,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         return super.base(tel, deal);
     }
 
-    public  Map<String, Object> sendMessages(String template, String phone, String code, HttpServletRequest request) {
+    public Map<String, Object> sendMessages(String template, String phone, String code, HttpServletRequest request) {
         Map<String, Object> sendMessage = SendMessage.sendMessage(template, phone, code, IPUtils.getRemoteAddr(request));
         redisTemplate.opsForValue().set(AppTokenUtils.CODE_FILE + phone, sendMessage.get("code").toString().trim(), 5 * 60, TimeUnit.SECONDS);
         return sendMessage;
@@ -544,7 +552,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         AuthToken appToken = AppTokenUtils.getAuthToken();
         PubFun.check(userCfg.getNickName());
         if (userCfg.getNickName().length() > 16) {
-            throw new ServiceException(522,"昵称名过长,请重新设置!");
+            throw new ServiceException(522, "昵称名过长,请重新设置!");
         }
         User user = Optional.ofNullable(userMapper.selectByPrimaryKey(appToken.getUserId())).orElseThrow(() -> PubFun.throwException("未查询到用户信息"));
         user.setNickName(userCfg.getNickName());
@@ -558,11 +566,11 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     //修改常用手机号
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public User  updateCommonTel(String commonTel,String commonName) {
+    public User updateCommonTel(String commonTel, String commonName) {
         AuthToken appToken = AppTokenUtils.getAuthToken();
-        PubFun.check(commonTel,commonName);
-        if (commonTel.trim().length() != 11 ) {
-            throw new ServiceException(523,"请输入正确手机号");
+        PubFun.check(commonTel, commonName);
+        if (commonTel.trim().length() != 11) {
+            throw new ServiceException(523, "请输入正确手机号");
         }
         User user = selectUserGiveCurrService(appToken.getUserId());
         user.setCommonTel(commonTel);
@@ -573,7 +581,8 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, user.getUserId()), JSON.toJSONString(appToken));
         return BeanUtils.copy(user);
     }
-    public User selectUserGiveCurrService(Long userId){
+
+    public User selectUserGiveCurrService(Long userId) {
         return Optional.ofNullable(userMapper.selectByPrimaryKey(userId)).orElseThrow(() -> PubFun.throwException("未查询到用户信息"));
     }
 
@@ -590,7 +599,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     public Boolean updateRealName(User userCfg) {
         AuthToken appToken = AppTokenUtils.getAuthToken();
         if (super.baseCheck(userCfg, param -> Objects.isNull(param) || !StringUtils.hasText(param.getRealName()))) {
-            throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE,SystemConstant.DATA_ILLEGALITY);
+            throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, SystemConstant.DATA_ILLEGALITY);
         }
         User user = selectUserGiveCurrService(appToken.getUserId());
         user.setRealName(userCfg.getRealName());
@@ -628,8 +637,6 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     }
 
 
-
-
     /**
      * 通过id获取addr
      *
@@ -638,11 +645,10 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     @Override
     public Address getAddrById(Long addId) {
         if (super.baseCheck(addId, Objects::isNull)) {
-            throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE,SystemConstant.DATA_ILLEGALITY);
+            throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, SystemConstant.DATA_ILLEGALITY);
         }
         return Optional.ofNullable(addressMapper.selectByPrimaryKey(addId)).orElseThrow(() -> PubFun.throwException("未查询到地址信息"));
     }
-
 
 
     /**
@@ -686,13 +692,13 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     //添加收获地址
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Boolean addAddr(String name, String tel1, String addr2,  String city, String district, String province,
+    public Boolean addAddr(String name, String tel1, String addr2, String city, String district, String province,
                            String cityId, String districtId, String provinceId, Integer defaultFlag) {
         AuthToken authToken = AppTokenUtils.getAuthToken();
         PubFun.check(name, tel1, addr2, defaultFlag);
         Address addr = new Address();
         List<Address> addrs = addressMapper.findByUserId(authToken.getUserId());
-        if(addrs.size()==0){
+        if (addrs.size() == 0) {
             defaultFlag = 1;
         }
         if (defaultFlag == 1) {//设置为默认
@@ -716,7 +722,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         addr.setProvince(province);
         addr.setUserId(authToken.getUserId());
         //addr.setAddr1(province + "," + city + "," + district);
-        addr.setAddr1(province + city  + district);
+        addr.setAddr1(province + city + district);
         addr.setAddr2(addr2);
         //addr.setAddr3(addr3);
         addr.setProvinceId(Integer.parseInt(provinceId.trim()));
@@ -752,7 +758,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         oldAddr.setCity(city);
         oldAddr.setCounty(district);
         oldAddr.setProvince(province);
-        oldAddr.setAddr1(province  + city  + district);
+        oldAddr.setAddr1(province + city + district);
         oldAddr.setAddr2(addr2);
         oldAddr.setProvinceId(Integer.parseInt(provinceId.trim()));
         oldAddr.setCityId(Integer.parseInt(cityId.trim()));
@@ -778,14 +784,14 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     public Boolean updatePassWord(String oldPassWord, String newPassWord) {
         AuthToken authToken = AppTokenUtils.getAuthToken();
         if (!StringUtils.hasText(oldPassWord) || !StringUtils.hasText(newPassWord)) {
-            throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE,SystemConstant.DATA_ILLEGALITY);
+            throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, SystemConstant.DATA_ILLEGALITY);
         }
         // 严格验证登录密码
         User old = Optional.ofNullable(userMapper.selectByPrimaryKey(authToken.getUserId())).get();
         //密码处理
         String md5 = MD5Utils.isEncryption(oldPassWord, old.getSalt());
         if (!old.getPassWord().equals(md5)) {
-            throw new ServiceException(524,"您输入的原密码错误,请重新输入!");
+            throw new ServiceException(524, "您输入的原密码错误,请重新输入!");
         }
         String[] encryption = MD5Utils.encryption(newPassWord);
         old.setPassWord(encryption[0]);
@@ -793,7 +799,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         return true;
     }
 
-//    //修改手机号/用户名
+    //    //修改手机号/用户名
 //    @Override
 //    @Transactional
 //    public User updateUserName(String userName, String code) {
@@ -821,18 +827,18 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     //修改手机号/用户名
     @Override
     @Transactional
-    public User updateUserName(String userName, String code,String newUserName) {
+    public User updateUserName(String userName, String code, String newUserName) {
 //        AuthToken authToken = AppTokenUtils.getAuthToken();
         // 数据校验
         PubFun.check(userName, code);
         //校验手机验证
         messagesCheck(userName, code);
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
-        wrapper.eq(User::getUserName,newUserName).eq(User::getUserType,0).eq(User::getDeleteFlag,0);
+        wrapper.eq(User::getUserName, newUserName).eq(User::getUserType, 0).eq(User::getDeleteFlag, 0);
         Long count = userMapper.selectCount(wrapper);
         User currentUser = userMapper.findByUserName(userName);
         if (count > 0) {//存在
-            throw new ServiceException(525,"手机号已注册,请更换手机号!");
+            throw new ServiceException(525, "手机号已注册,请更换手机号!");
         } else {
             currentUser.setUserName(newUserName);
             currentUser.setTel(newUserName);
@@ -851,11 +857,11 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
 //        AuthToken authToken = AppTokenUtils.getAuthToken();
         PubFun.check(tel, code, password);
         messagesCheck(tel, code);
-        if (password.length() < 8) throw new ServiceException(526,"密码必须八位以上!");
+        if (password.length() < 8) throw new ServiceException(526, "密码必须八位以上!");
         String regex = "^(?!([a-zA-Z]+|\\d+)$)[a-zA-Z\\d]{6,20}$";
-        if (!password.matches(regex)) throw new ServiceException(527,"密码必须又数字和字母组成!");
+        if (!password.matches(regex)) throw new ServiceException(527, "密码必须又数字和字母组成!");
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
-        wrapper.eq(User::getUserName,tel).eq(User::getDeleteFlag,0).eq(User::getUserType,0);
+        wrapper.eq(User::getUserName, tel).eq(User::getDeleteFlag, 0).eq(User::getUserType, 0);
         User user = userMapper.selectOne(wrapper);
         String[] encryption = MD5Utils.encryption(password);
         user.setPassWord(encryption[0]);
@@ -866,8 +872,6 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
 //        redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, user.getUserId()), JSON.toJSONString(authToken));
         return true;
     }
-
-
 
 
     //是否有交易密码
@@ -883,7 +887,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
 
     //交易密码验证
     @Override
-    public boolean isPayPassword(String payPassword,String userName) {
+    public boolean isPayPassword(String payPassword, String userName) {
 //        AuthToken authToken = AppTokenUtils.getAuthToken();
         User data = userMapper.findByUserName(userName);
         if (null == data) {
@@ -894,7 +898,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
 
     //设置支付密码
     @Override
-    public boolean addPayPassword(String payPassword,String userName) {
+    public boolean addPayPassword(String payPassword, String userName) {
 //        AuthToken authToken = AppTokenUtils.getAuthToken();
         User user = userMapper.findByUserName(userName);
         if (Objects.isNull(user)) throw new RuntimeException("用户已经不存在,请联系管理员");
@@ -989,16 +993,15 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     }
 
     /**
-
      * @Description 分页查询下级用户
      * @Title findCustomerByUserId
      */
     @Override
     public PageInfo<User> findCustomerByUserId(PageAction pageAction) {
         AuthToken authToken = AppTokenUtils.getAuthToken();
-        PageHelper.startPage(pageAction.getCurrentPage(),pageAction.getPageSize());
+        PageHelper.startPage(pageAction.getCurrentPage(), pageAction.getPageSize());
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
-        wrapper.eq(User::getPid,authToken.getUserId()).eq(User::getDeleteFlag,0).eq(User::getUserType,0);
+        wrapper.eq(User::getPid, authToken.getUserId()).eq(User::getDeleteFlag, 0).eq(User::getUserType, 0);
         List<User> pidUserList = userMapper.selectList(wrapper);
         return new PageInfo<>(pidUserList);
     }
@@ -1015,24 +1018,22 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean delUser() {
-        User user=(User)SecurityUtils.getSubject().getPrincipal();
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
         user.setDeleteFlag(1);
         user.setUpdateUserId(user.getUserId());
         userMapper.updateByPrimaryKeySelective(user);
         //删除用户评论
         //清空店铺管理员
         return true;
-        }
-
-
+    }
 
 
     //添加或者修改支付宝账户
     @Override
     @Transactional
     public User addOrUpdateAliNum(String realName, String alipayNum) {
-        PubFun.check(realName,alipayNum);
-        User user=(User)SecurityUtils.getSubject().getPrincipal();
+        PubFun.check(realName, alipayNum);
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
         user.setAlipayNum(alipayNum);//支付宝账户
         user.setRealName(realName);//真实姓名
         user.setUpdateUserId(user.getUserId());
@@ -1041,7 +1042,6 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, user.getUserId()), JSON.toJSONString(user));
         return BeanUtils.copy(user);
     }
-
 
 
     /**
@@ -1073,8 +1073,8 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
                 collect = Arrays.asList(pidStr.split(",")).stream().map(m -> Long.parseLong(m.trim())).sorted(Comparator.reverseOrder()).limit(upLevel).collect(Collectors.toList());
             }
             if (!collect.isEmpty()) {
-                LambdaQueryWrapper<User> wrapper =new LambdaQueryWrapper<>(User.class);
-                wrapper.in(User::getUserId,collect).orderByDesc(User::getLevelNum);
+                LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
+                wrapper.in(User::getUserId, collect).orderByDesc(User::getLevelNum);
             }
         }
         return userList;
@@ -1130,7 +1130,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
      * @param pid
      * @param pidStr
      * @param level
-     * @return java.util.HashMap<java.lang.String               ,               java.lang.Object>
+     * @return java.util.HashMap<java.lang.String, java.lang.Object>
      * @Description 查询父级id
      * @Title findParentId
      * @Author Mao Qi
@@ -1169,25 +1169,24 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     @Override
     public User findByWxUnionId(String wxUnionId) {
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
-        wrapper.eq(User::getWxUnionId,wxUnionId).eq(User::getDeleteFlag,0);
+        wrapper.eq(User::getWxUnionId, wxUnionId).eq(User::getDeleteFlag, 0);
         return userMapper.selectOne(wrapper);
     }
-
 
 
     //添加或者修改支付宝或者微信收款账户  type 1 支付宝 2 微信
     @Transactional
     @Override
-    public User addOrUpdateAliOrWx(String tel,String name, String account, Integer type) {
-        PubFun.check(account,type);
+    public User addOrUpdateAliOrWx(String tel, String name, String account, Integer type) {
+        PubFun.check(account, type);
         AuthToken authToken = AppTokenUtils.getAuthToken();
         User user = Optional.ofNullable(userMapper.selectByPrimaryKey(authToken.getUserId())).orElseThrow(() -> PubFun.throwException("未查询到用户信息"));
-        if(type == 1){//支付宝
-            PubFun.check(account,name);
+        if (type == 1) {//支付宝
+            PubFun.check(account, name);
             user.setAliName(name);
             user.setAliAccount(account);
-        }else{
-            PubFun.check(account,tel);
+        } else {
+            PubFun.check(account, tel);
             user.setWxTel(tel);
             user.setWxAccount(account);
         }
@@ -1196,8 +1195,6 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, authToken.getUserId()), JSON.toJSONString(authToken));
         return BeanUtils.copy(user);
     }
-
-
 
 
     //分页查询我的直接和间接下级以及统计
@@ -1210,26 +1207,27 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
 //		List<UserResp> res2 = new ArrayList<>();
         User user = userMapper.selectByPrimaryKey(authToken.getUserId());
         //所有一级二级
-        Page<User> customerList = userMapper.findFirstAndSecondByUserId(user.getUserId(),user.getLevelNum()+1,user.getLevelNum()+2, pageRequest);
-        if(customerList.getContent().size()>0){
-            for (User s:customerList.getContent()) {
+        Page<User> customerList = userMapper.findFirstAndSecondByUserId(user.getUserId(), user.getLevelNum() + 1, user.getLevelNum() + 2, pageRequest);
+        if (customerList.getContent().size() > 0) {
+            for (User s : customerList.getContent()) {
                 Long aLong = userMapper.countUserChildByUserId(s.getUserId());
                 s.setPassWord("");
                 s.setSalt("");
                 s.setSubordinateNum(aLong);//下一级数量
-                s.setSubordinateLevel(s.getLevelNum()-user.getLevelNum());//下级等级
+                s.setSubordinateLevel(s.getLevelNum() - user.getLevelNum());//下级等级
             }
         }
-        map.put("page",customerList);
+        map.put("page", customerList);
         map.put("total", userMapper.countUserChildByUserId(authToken.getUserId()));
         return GeneralResult.success(map);
     }
 
     /**
      * 循环截取某页列表进行分页
-     * @param dataList 分页数据
-     * @param pageSize  页面大小
-     * @param pageNumber   当前页面
+     *
+     * @param dataList   分页数据
+     * @param pageSize   页面大小
+     * @param pageNumber 当前页面
      */
     public static List<UserVO> page(List<UserVO> dataList, int pageSize, int pageNumber) {
         List<UserVO> currentPageList = new ArrayList<>();
@@ -1244,7 +1242,9 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     }
 
 
-    /**查询实名认证信息 */
+    /**
+     * 查询实名认证信息
+     */
     @Override
     public GeneralResult findRealAutheInfo() {
         AuthToken authToken = AppTokenUtils.getAuthToken();
@@ -1252,14 +1252,16 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         return GeneralResult.success(one);
     }
 
-    /** 执行 - 实名信息认证 */
+    /**
+     * 执行 - 实名信息认证
+     */
     @Override
     public GeneralResult runRealAutheInfo(String realName, String cardNo) {
         AuthToken authToken = AppTokenUtils.getAuthToken();
         JSONObject jsonObject = CardCheckUtils.checkUserCard(realName, cardNo);
-        if(jsonObject != null){
+        if (jsonObject != null) {
             Boolean isok = jsonObject.getBoolean("isok");
-            if(isok){
+            if (isok) {
                 User one = userMapper.selectByPrimaryKey(authToken.getUserId());
                 one.setRealName(realName);
                 one.setCardNumber(cardNo);
@@ -1279,14 +1281,14 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         Integer newUserDay = SystemConfig.getNewUserDay() == null ? 30 : Integer.valueOf(SystemConfig.getNewUserDay());
         LocalDateTime addTime = authToken.getUser().getAddTime();
         LocalDateTime now = LocalDateTime.now();
-        Duration duration = Duration.between(addTime,now);
-        if(duration.toDays()>=0 && duration.toDays()<=newUserDay){//如果是新用户
+        Duration duration = Duration.between(addTime, now);
+        if (duration.toDays() >= 0 && duration.toDays() <= newUserDay) {//如果是新用户
             //判断是否五秒
             Integer userEnterInAdvance = SystemConfig.getUserEnterInAdvance() == null ? 5 : Integer.valueOf(SystemConfig.getUserEnterInAdvance());
             LocalTime localTime = now.toLocalTime();
             Long millis = Duration.between(localTime, scheduleTime).toMillis();//毫秒
-            return millis<=userEnterInAdvance*1000 ? true : false;
-        }else{
+            return millis <= userEnterInAdvance * 1000 ? true : false;
+        } else {
             return false;
         }
     }

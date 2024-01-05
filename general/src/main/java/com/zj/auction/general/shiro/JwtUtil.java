@@ -14,7 +14,8 @@ import java.util.Date;
 public class JwtUtil {
 
     //指定一个token过期时间（毫秒）
-    private static final long EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000; //7天
+    private static final long EXPIRE_TIME =  24 * 60 * 60 * 1000; //1天
+
 
     /**
 
@@ -28,6 +29,16 @@ public class JwtUtil {
 // 附带username信息的token
         return JWT.create()
                 .withClaim("username", username)
+                .withExpiresAt(date) //过期时间
+                .sign(algorithm); //签名算法
+    }
+
+    public static String getTmpJwtToken(String value, String secret,long expressTime) {
+        Date date = new Date(expressTime);
+        Algorithm algorithm = Algorithm.HMAC256(secret); //使用密钥进行哈希
+// 附带username信息的token
+        return JWT.create()
+                .withClaim("userId", value)
                 .withExpiresAt(date) //过期时间
                 .sign(algorithm); //签名算法
     }

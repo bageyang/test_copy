@@ -75,6 +75,12 @@ public class AppUserController {
         return Ret.ok(appUserService.login(userName,password, code));
     }
 
+    @ApiOperation("refreshToken")
+    @PostMapping(value = "/refreshToken")
+    public Ret login() {
+        return Ret.ok(appUserService.refreshToken());
+    }
+
     /**
      * @param userName
      * @Description 发送手机短信
