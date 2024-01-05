@@ -120,7 +120,7 @@
                 #{transactionId,jdbcType=VARCHAR}, #{birthTime,jdbcType=TIMESTAMP}, #{deviceNumber,jdbcType=VARCHAR},
                 #{uniqueNum,jdbcType=VARCHAR}, #{roleShopId,jdbcType=BIGINT}, #{roleRange,jdbcType=INTEGER},
                 #{lineStatus,jdbcType=INTEGER}, #{consultingFee,jdbcType=DECIMAL}, #{commentTotal,jdbcType=INTEGER},
-                #{likeTotal,jdbcType=INTEGER}, #{luckyDrawNum,jdbcType=INTEGER}, #{pcSalt,jdbcType=VARCHAR},
+                #{likeTotal,jdbcType=INTEGER}, #{luckyDrawNum,jdbcType=INTEGER},
                 #{alipayNum,jdbcType=VARCHAR}, #{wxTel,jdbcType=VARCHAR}, #{wxAccount,jdbcType=VARCHAR},
                 #{aliName,jdbcType=VARCHAR}, #{aliAccount,jdbcType=VARCHAR}, #{sealExpirationTime,jdbcType=TIMESTAMP},
                 #{robOrderLimit,jdbcType=INTEGER}, #{withdrawalLimit,jdbcType=DECIMAL},

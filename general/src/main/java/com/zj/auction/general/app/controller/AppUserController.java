@@ -75,6 +75,12 @@ public class AppUserController {
         return Ret.ok(appUserService.login(userName,password, code));
     }
 
+    @ApiOperation("refreshToken")
+    @PostMapping(value = "/refreshToken")
+    public Ret login() {
+        return Ret.ok(appUserService.refreshToken());
+    }
+
     /**
      * @param userName
      * @Description 发送手机短信
@@ -97,7 +103,7 @@ public class AppUserController {
             @ApiImplicitParam(name = "alipayNum", value = "支付宝账户", dataType = "String")
     })
     @PostMapping(value = "/addOrUpdateAliNum")
-    public GeneralResult addOrUpdateAliNum(String realName, String alipayNum) {
+    public GeneralResult addOrUpdateAliNum(@RequestParam(name = "realName") String realName,@RequestParam(name = "alipayNum") String alipayNum) {
         return GeneralResult.success(appUserService.addOrUpdateAliNum(realName,alipayNum));
     }
 
@@ -116,8 +122,8 @@ public class AppUserController {
             @ApiImplicitParam(name = "code", value = "短信验证码", dataType = "String")
     })
     @PostMapping(value = "/updateUserName")
-    public GeneralResult updateUserName(String userName, String code) {
-        return GeneralResult.success(appUserService.updateUserName(userName,code));
+    public GeneralResult updateUserName(@RequestParam(name = "userName") String userName,@RequestParam(name = "code") String code,@RequestParam(name = "newUserName")String newUserName) {
+        return GeneralResult.success(appUserService.updateUserName(userName,code,newUserName));
     }
 
 
@@ -132,7 +138,7 @@ public class AppUserController {
             @ApiImplicitParam(name = "commonName", value = "常用联系姓名")
     })
     @PostMapping(value = "/updateCommonTel")
-    public GeneralResult updateCommonTel(String commonTel,String commonName) {
+    public GeneralResult updateCommonTel(@RequestParam(name = "commonTel") String commonTel,@RequestParam(name = "commonName") String commonName) {
         return GeneralResult.success(appUserService.updateCommonTel(commonTel,commonName));
     }
 
@@ -262,8 +268,8 @@ public class AppUserController {
             @ApiImplicitParam(name = "password", value = "新密码", dataType = "String")
     })
     @PostMapping(value = "/addPassword")
-    public GeneralResult addPassword(String tel,String code, String password) {
-        return GeneralResult.success(appUserService.addPassword(tel, code,password));
+        public GeneralResult addPassword(@RequestParam(name = "code") String code,@RequestParam(name = "password") String password) {
+        return GeneralResult.success(appUserService.addPassword(code,password));
     }
 
     /**
@@ -300,7 +306,7 @@ public class AppUserController {
      */
     @ApiOperation(value = "验证交易密码")
     @PostMapping("checkPayPassword")
-    public GeneralResult payPassword(String payPassword) {
+    public GeneralResult payPassword(@RequestParam(name = "payPassword") String payPassword) {
         PubFun.check (  payPassword );
         return GeneralResult.success(appUserService.isPayPassword( payPassword ));
     }
@@ -312,9 +318,9 @@ public class AppUserController {
      */
     @ApiOperation(value = "添加支付密码")
     @PostMapping("addPayPassword")
-    public GeneralResult addPayPassword(String payPassword) {
+    public GeneralResult addPayPassword(@RequestParam(name = "payPassword")String payPassword) {
         PubFun.check (  payPassword );
-        return GeneralResult.success(appUserService.addPayPassword( payPassword ));
+        return GeneralResult.success(appUserService.addPayPassword( payPassword));
     }
 
 

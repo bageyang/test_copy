@@ -87,6 +87,11 @@ public interface AppUserService {
      */
     LoginResp login(String userName, String password, String code);
 
+    /**
+     * 根据用户名查询用户信息
+     */
+    User getUserByName(String name);
+
 
     /**
      * 发送短信
@@ -221,7 +226,7 @@ public interface AppUserService {
     /**
      * @Description 修改手机号/用户名
      */
-    User updateUserName(String tel, String code);
+    User updateUserName(String tel, String code,String newUserName);
 
     /**
      * @Description 设置/忘记密码
@@ -233,7 +238,7 @@ public interface AppUserService {
      * @param password
      * @return	java.lang.Boolean
      */
-    Boolean addPassword(String tel,String code, String password);
+    Boolean addPassword(String code, String password);
 
     /**
      * @Description 是否有支付密码
@@ -462,4 +467,6 @@ public interface AppUserService {
      * @return	java.lang.Boolean
      */
     Boolean whetherNewUser(String time);
+
+    LoginResp refreshToken();
 }
