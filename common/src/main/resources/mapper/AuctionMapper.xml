@@ -13,6 +13,16 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="is_deleted" jdbcType="TINYINT" property="isDeleted" />
   </resultMap>
+  
+  <sql id="Base_column_sql">
+    id, auction_name, goods_id, prices, stock_quantity, auction_status, auction_area_id,
+    create_time, update_time, is_deleted
+  </sql>
+
+  <sql id="delete_flag_sql">
+    and is_deleted = 0
+  </sql>
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from zj_auction
     where id = #{id,jdbcType=BIGINT}
@@ -54,4 +64,12 @@
     create_time, update_time, is_deleted
     from zj_auction
   </select>
+    <select id="listAuctionByAreaId" resultMap="BaseResultMap">
+      select
+          <include refid="Base_column_sql"/>
+      from zj_auction
+      where auction_area_id = #{areaId}
+      <include refid="delete_flag_sql"/>
+      limit 1
+    </select>
 </mapper>
