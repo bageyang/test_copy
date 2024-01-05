@@ -214,7 +214,8 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public UserWalletVo getUserWallet() {
-        Long userId = 202L;
+        User user = SecurityUtils.getPrincipal();
+        Long userId = user.getUserId();
         List<Wallet> wallets = walletMapper.selectAllByUserId(userId);
         Map<FundTypeEnum, Wallet> walletGroup = wallets.stream()
                 .collect(Collectors.toMap(this::fundTypeGroup, Function.identity()));
@@ -223,12 +224,12 @@ public class WalletServiceImpl implements WalletService {
             cashWallet = createUserWallet(userId, FundTypeEnum.CASH);
         }
         Wallet integralWallet = walletGroup.get(FundTypeEnum.INTEGRAL);
-        if (Objects.isNull(integralWallet)) {
-            integralWallet = createUserWallet(userId, FundTypeEnum.INTEGRAL);
+        if (Objects.isNull(cashWallet)) {
+            cashWallet = createUserWallet(userId, FundTypeEnum.INTEGRAL);
         }
         Wallet rebateWallet = walletGroup.get(FundTypeEnum.REBATE);
-        if (Objects.isNull(rebateWallet)) {
-            rebateWallet = createUserWallet(userId, FundTypeEnum.REBATE);
+        if (Objects.isNull(cashWallet)) {
+            cashWallet = createUserWallet(userId, FundTypeEnum.REBATE);
         }
         UserWalletVo userWalletVo = new UserWalletVo();
         userWalletVo.setCashBalance(cashWallet.getBalance());
@@ -417,7 +418,6 @@ public class WalletServiceImpl implements WalletService {
     private Wallet createUserWallet(Long userId, FundTypeEnum fundType) {
         Wallet wallet = Wallet.builder()
                 .userId(userId)
-                .balance(BigDecimal.ZERO)
                 .fundType(fundType.getCode())
                 .build();
         walletMapper.insertSelective(wallet);

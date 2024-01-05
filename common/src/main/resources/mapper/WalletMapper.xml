@@ -119,12 +119,12 @@
   </update>
   <update id="incrementUserBalance">
     update zj_wallet
-    set balance = balance + #{changeNum,jdbcType=DECIMAL}
+    set balance = balance + {changeNum,jdbcType=DECIMAL}
     where id = #{id} and balance = #{changeBefore}
   </update>
   <update id="decrementUserBalance">
     update zj_wallet
-    set balance = balance - #{changeNum,jdbcType=DECIMAL}
+    set balance = balance - {changeNum,jdbcType=DECIMAL}
     where id = #{id} and balance = #{changeBefore}
   </update>
   <select id="selectAllByUserId" parameterType="long" resultMap="BaseResultMap">
