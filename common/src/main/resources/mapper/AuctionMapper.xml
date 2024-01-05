@@ -171,6 +171,7 @@
         from zj_auction
         where auction_area_id = #{areaId}
         <include refid="delete_flag_sql"/>
+        limit 1
     </select>
     <select id="selectAuctionByGoodsIdAndPrice" resultMap="BaseResultMap">
         select
@@ -178,21 +179,5 @@
         from zj_auction
         where goods_id = #{goodsId} and price = #{price}
         <include refid="delete_flag_sql"/>
-    </select>
-    <select id="listAuction" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from zj_auction
-        <where>
-            <if test="stockNumber != null">
-                and id = #{auctionId}
-            </if>
-            <if test="auctionName != null and auctionName != ''">
-                auction_name = #{auctionName}
-            </if>
-            <if test="goodsId != null">
-                and goods_id = #{goodsId}
-            </if>
-        </where>
     </select>
 </mapper>

@@ -28,9 +28,8 @@ public class BaseEntity implements Serializable {
     @Column(name = "`id`")
     private String id;
 
-    @ApiModelProperty(value = "删除标志  默认false")
-    @Column(columnDefinition = "tinyint(1) UNSIGNED DEFAULT 0 COMMENT '删除标识，0正常,1删除'", nullable = false)
-    private Boolean deleteFlag = false;
+    @ApiModelProperty(value = "删除标志  默认0")
+    private Integer deleteFlag;
 
 
     @ApiModelProperty(value = "添加时间")

@@ -3,20 +3,15 @@ package com.zj.auction.seckill;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.zj.auction.common.constant.RedisConstant;
-import com.zj.auction.common.dto.BaseOrderDto;
 import com.zj.auction.common.enums.AuctionStatEnum;
-import com.zj.auction.common.exception.CustomException;
 import com.zj.auction.common.mapper.GoodsMapper;
 import com.zj.auction.common.model.Auction;
 import com.zj.auction.common.model.Goods;
 import com.zj.auction.common.util.SnowFlake;
-import com.zj.auction.seckill.service.AuctionService;
-import com.zj.auction.seckill.service.OrderService;
 import com.zj.auction.seckill.service.RedisService;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.Unpooled;
-import lombok.extern.slf4j.Slf4j;
 import netscape.javascript.JSObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +34,6 @@ import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@Slf4j
 public class RedisTest {
     @Autowired
     private RedisService redisService;
@@ -47,10 +41,6 @@ public class RedisTest {
     private RedissonClient redissonClient;
     @Autowired
     private GoodsMapper goodsMapper;
-    @Autowired
-    private AuctionService auctionService;
-    @Autowired
-    private OrderService orderService;
 
     @Test
     public void inserRedisList() throws InterruptedException {
@@ -60,6 +50,9 @@ public class RedisTest {
 //        }
 //        redissonClient.getLock("auction:test_lock").tryLock(60, TimeUnit.SECONDS);
         RScript script = redissonClient.getScript();
+        RLock lock = redissonClient.getLock();
+        lock.tryLock();
+        lock.lock(1);
         List<Object> keys = new ArrayList<>();
         keys.add("auction:volume");
         keys.add("auction:stock");
@@ -70,6 +63,8 @@ public class RedisTest {
 
     @Test
     public void testGoods(){
+        List<Goods> goods = goodsMapper.selectAll();
+        goods.stream().forEach(e-> System.out.println(e.getGoodsName()));
     }
 
     @Test
@@ -91,31 +86,6 @@ public class RedisTest {
     public void testIdGenerator(){
         for (int i = 0; i < 10; i++) {
             System.out.println(SnowFlake.nextId());
-        }
-    }
-    @Test
-    public void warmUpTest(){
-        auctionService.warmUpAuction(1);
-        auctionService.getAuctionInfo(3L);
-    }
-
-    @Test
-    public void testSkill(){
-        String s = auctionService.deductAuctionStock(2L);
-        System.out.println("返回库存号:"+s);
-    }
-
-    @Test
-    public void generaorOrder(){
-        BaseOrderDto baseOrderDto = new BaseOrderDto();
-        baseOrderDto.setOrderSn(SnowFlake.nextId());
-        baseOrderDto.setAuctionId(2L);
-        baseOrderDto.setUserId(201L);
-        baseOrderDto.setSn(57608368696590336L);
-        try {
-            orderService.generatorOrder(baseOrderDto);
-        }catch (Exception e){
-            log.error("异常",e);
         }
     }
 }

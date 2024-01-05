@@ -32,6 +32,9 @@ public class Address extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "市对应的编号")
     private Integer cityId;
 
+    @ApiModelProperty(value = "省对应的编号")
+    private Integer provinceId;
+
     @ApiModelProperty(value = "区/县对应的编号")
     private Integer countyId;
 

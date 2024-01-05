@@ -40,5 +40,4 @@ public class RedisConstant {
             "return nil; " +
             "end; " +
             "return nil;";
-    public static final String AUCTION_LUA_SCRIPT_SHA = "636c1465770b16cd5f70e6b3bc50aa05ac29dfc9";
 }

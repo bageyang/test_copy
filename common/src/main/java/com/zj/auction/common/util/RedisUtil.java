@@ -1,10 +1,13 @@
 package com.zj.auction.common.util;
 
+import javafx.application.Application;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -16,16 +19,20 @@ public class RedisUtil {
 
     private static RedisTemplate<String, String> redisTemplate;
 
+
+//    public void setRedisTemplate(RedisTemplate<String, String> redisTemplate) {
+//        RedisUtil.redisTemplate = redisTemplate;
+//    }
     @Autowired
-    public void setRedisTemplate(RedisTemplate<String, String> redisTemplate) {
-        RedisUtil.redisTemplate = redisTemplate;
-    }
-
     public RedisUtil(RedisTemplate<String, String> redisTemplate) {
-        this.redisTemplate = redisTemplate;
+        RedisUtil.redisTemplate= redisTemplate;
     }
 
-    /**  
+    @PostConstruct
+    public void init() {
+    }
+
+    /**
      * @Title 指定缓存失效时间
      * @Description expire
      * @author huangJun
@@ -59,8 +66,6 @@ public class RedisUtil {
     /**
      * @Title 判断key是否存在
      * @Description hasKey
-     * @author huangJun
-     * @date 2019/11/18 16:06
      * @param key
      * @return: boolean
     */
@@ -144,15 +149,8 @@ public class RedisUtil {
             return false;
         }
     }
-   /**  
-    * @Title 递增
-    * @Description incr
-    * @author huangJun
-    * @date 2019/11/18 16:10 
-    * @param key
-    * @param delta 大于0
-    * @return: long
-   */
+
+
     public long incr(String key, long delta){
         if(delta<0){
             throw new RuntimeException("递增因子必须大于0");

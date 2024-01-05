@@ -44,7 +44,11 @@ public class AppUserController {
             @ApiImplicitParam(name = "pid", value = "父级id", dataType = "Long"),
     })
     @PostMapping(value = "/register")
-    public GeneralResult register(String tel, String password, String code, Long pid, String pUsername) {
+    public GeneralResult register(@RequestParam(name = "tel") String tel,
+                                  @RequestParam(name = "password") String password,
+                                  @RequestParam(name = "code") String code,
+                                  @RequestParam(name = "pid")Long pid,
+                                  @RequestParam(name = "pUsername")String pUsername) {
         return GeneralResult.success(appUserService.register(tel,password, code,pid,pUsername));
     }
 
@@ -69,7 +73,7 @@ public class AppUserController {
      * @param code  短信验证码
      * @Description 登录
      */
-    @ApiOperation("单点登录")
+    @ApiOperation("登录")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userName", value = "账户", dataType = "String"),
             @ApiImplicitParam(name = "password", value = "密码", dataType = "String"),
@@ -88,7 +92,7 @@ public class AppUserController {
     @ApiOperation(value = "发送短信")
     @ApiImplicitParam(name = "userName", value = "电话")
     @PostMapping(value = "/sendMessages")
-    public GeneralResult sendMessages(HttpServletRequest request, String userName) {
+    public GeneralResult sendMessages(HttpServletRequest request,@RequestParam(name = "userName") String userName) {
         return GeneralResult.success(appUserService.sendMessages(request,userName));
     }
 
