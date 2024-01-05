@@ -1,4 +1,4 @@
-package com.zj.auction.general.shiro;
+package com.zj.auction.gateway.shiro;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.ShiroException;
 import org.apache.shiro.authc.ExpiredCredentialsException;
-
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
