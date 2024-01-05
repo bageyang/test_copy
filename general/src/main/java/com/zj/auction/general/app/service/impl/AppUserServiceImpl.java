@@ -14,10 +14,7 @@ import com.zj.auction.common.date.DateUtil;
 import com.zj.auction.common.dto.PassWordDTO;
 import com.zj.auction.common.dto.UserDTO;
 import com.zj.auction.common.exception.ServiceException;
-import com.zj.auction.common.mapper.AddressMapper;
-import com.zj.auction.common.mapper.RoleMapper;
-import com.zj.auction.common.mapper.UserConfigMapper;
-import com.zj.auction.common.mapper.UserMapper;
+import com.zj.auction.common.mapper.*;
 import com.zj.auction.common.model.Address;
 import com.zj.auction.common.model.Role;
 import com.zj.auction.common.model.User;
@@ -88,15 +85,17 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     private final UserConfigMapper userConfigMapper;
     private final AddressMapper addressMapper;
     private final RoleMapper roleMapper;
+    private final UserRoleMapper userRoleMapper;
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    public AppUserServiceImpl(UserMapper userMapper, UserConfigMapper userConfigMapper, AddressMapper addressMapper, RoleMapper roleMapper) {
+    public AppUserServiceImpl(UserMapper userMapper, UserConfigMapper userConfigMapper, AddressMapper addressMapper, RoleMapper roleMapper, UserRoleMapper userRoleMapper) {
         this.userMapper = userMapper;
         this.userConfigMapper = userConfigMapper;
         this.addressMapper = addressMapper;
         this.roleMapper = roleMapper;
+        this.userRoleMapper = userRoleMapper;
     }
 
 
@@ -1321,6 +1320,25 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     @Override
     public int updateRole(Role role) {
         return roleMapper.updateByPrimaryKey(role);
+    }
+
+    /**
+     * 查询当前用户角色
+     * @return
+     */
+    @Override
+    public List<String> getUserRole() {
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
+        return userRoleMapper.selectRolesByUserId(user.getUserId());
+    }
+
+    /**
+     * 根据用户查询角色
+     * @return
+     */
+    @Override
+    public List<String> getRoleByUser(Long userId) {
+        return userRoleMapper.selectRolesByUserId(userId);
     }
 
 

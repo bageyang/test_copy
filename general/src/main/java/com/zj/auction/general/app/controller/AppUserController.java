@@ -459,4 +459,22 @@ public class AppUserController {
         return GeneralResult.success(appUserService.updateRole(role));
     }
 
+    /**
+     * @Description 查询当前用户角色
+     */
+    @ApiOperation(value = "查询当前用户角色")
+    @PostMapping(value = "/getUserRole")
+    public GeneralResult getUserRole(){
+        return GeneralResult.success(appUserService.getUserRole());
+    }
+
+    /**
+     * @Description 根据用户查询角色
+     */
+    @ApiOperation(value = "根据用户查询角色")
+    @GetMapping(value = "/getRoleByUser")
+    public GeneralResult getRoleByUser(Long userId){
+        return GeneralResult.success(appUserService.getRoleByUser(userId));
+    }
+
 }

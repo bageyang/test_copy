@@ -43,4 +43,18 @@ public interface UserRoleMapper extends BaseMapper<UserRole> {
      */
     @Select(value="select count(*) from zj_user_role where user_id=#{userId} and role_id=#{roleId} ")
     Integer rolecount(Long userId, Integer roleId);
+
+    /**
+     * 查询用户角色
+     * @param userId
+     * @return
+     */
+    @Select("SELECT\n" +
+            "\tr.role_name \n" +
+            "FROM\n" +
+            "\t`zj_user_role` ur\n" +
+            "\tLEFT JOIN zj_role r ON r.role_id = ur.role_id \n" +
+            "WHERE\n" +
+            "\tur.user_id = #{userId}")
+    List<String> selectRolesByUserId(Long userId);
 }

@@ -10,6 +10,7 @@ import com.zj.auction.common.vo.GeneralResult;
 import com.zj.auction.common.vo.LoginResp;
 import com.zj.auction.common.vo.PageAction;
 import com.zj.auction.common.vo.UserVO;
+import org.apache.poi.ss.usermodel.Row;
 import org.springframework.data.domain.PageRequest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -467,5 +468,17 @@ public interface AppUserService {
      * @return
      */
     int updateRole(Role role);
+
+    /**
+     * 获取当前用户角色
+     * @return
+     */
+    List<String> getUserRole();
+
+    /**
+     * 根据用户查询角色
+     * @return
+     */
+    List<String> getRoleByUser(Long userId);
 
 }
