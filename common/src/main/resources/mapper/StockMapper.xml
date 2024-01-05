@@ -4,7 +4,8 @@
   <resultMap id="BaseResultMap" type="com.zj.auction.common.model.Stock">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="goods_id" jdbcType="BIGINT" property="goodsId" />
-    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="cash_price" jdbcType="DECIMAL" property="cashPrice" />
+    <result column="integral_price" jdbcType="DECIMAL" property="integralPrice" />
     <result column="stock_number" jdbcType="BIGINT" property="stockNumber" />
     <result column="stock_status" jdbcType="TINYINT" property="stockStatus" />
     <result column="owner_id" jdbcType="BIGINT" property="ownerId" />
@@ -15,7 +16,7 @@
   </resultMap>
 
   <sql id="Base_Column_List">
-    id, goods_id, price, stock_number, stock_status, owner_id, transfer_num, create_time,
+    id, goods_id, cash_price,integral_price, stock_number, stock_status, owner_id, transfer_num, create_time,
     update_time, is_deleted
   </sql>
 
@@ -32,11 +33,11 @@
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into zj_stock (goods_id, price, stock_number,
+    insert into zj_stock (goods_id,  cash_price,integral_price, stock_number,
       stock_status, owner_id, transfer_num, 
       create_time, update_time, is_deleted
       )
-    values (#{goodsId,jdbcType=BIGINT}, #{price,jdbcType=DECIMAL}, #{stockNumber,jdbcType=BIGINT},
+    values (#{goodsId,jdbcType=BIGINT}, #{cashPrice,jdbcType=DECIMAL}, #{integralPrice,jdbcType=DECIMAL}, #{stockNumber,jdbcType=BIGINT},
       #{stockStatus,jdbcType=TINYINT}, #{ownerId,jdbcType=BIGINT}, #{transferNum,jdbcType=INTEGER}, 
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=TINYINT}
       )
@@ -51,8 +52,11 @@
       <if test="goodsId != null">
         goods_id,
       </if>
-      <if test="price != null">
-        price,
+      <if test="cashPrice != null">
+        cash_price,
+      </if>
+      <if test="integralPrice != null">
+        integral_price,
       </if>
       <if test="stockNumber != null">
         stock_number,
@@ -80,8 +84,11 @@
       <if test="goodsId != null">
         #{goodsId,jdbcType=BIGINT},
       </if>
-      <if test="price != null">
-        #{price,jdbcType=DECIMAL},
+      <if test="cashPrice != null">
+        #{cashPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="integralPrice != null">
+        #{integralPrice,jdbcType=DECIMAL},
       </if>
       <if test="stockNumber != null">
         #{stockNumber,jdbcType=BIGINT},
@@ -110,7 +117,8 @@
   <update id="updateByPrimaryKey" parameterType="com.zj.auction.common.model.Stock">
     update zj_stock
     set goods_id = #{goodsId,jdbcType=BIGINT},
-      price = #{price,jdbcType=DECIMAL},
+      cash_price = #{cashPrice,jdbcType=DECIMAL},
+      integral_price = #{integralPrice,jdbcType=DECIMAL},
       stock_number = #{stockNumber,jdbcType=BIGINT},
       stock_status = #{stockStatus,jdbcType=TINYINT},
       owner_id = #{ownerId,jdbcType=BIGINT},
@@ -127,8 +135,11 @@
       <if test="goodsId != null">
         goods_id = #{goodsId,jdbcType=BIGINT},
       </if>
-      <if test="price != null">
-        price = #{price,jdbcType=DECIMAL},
+      <if test="cashPrice != null">
+        cash_price = #{cashPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="integralPrice != null">
+        integral_price = #{integralPrice,jdbcType=DECIMAL},
       </if>
       <if test="stockNumber != null">
         stock_number = #{stockNumber,jdbcType=BIGINT},

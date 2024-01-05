@@ -25,7 +25,7 @@ public interface AuctionMapper {
 
     List<Auction> listAuctionByAreaId(@Param("areaId") Integer areaId);
 
-    Auction selectAuctionByGoodsIdAndPrice(@Param("goodsId") Long goodsId, @Param("price")BigDecimal price);
+    Auction selectAuctionByGoodsIdAndCashPrice(@Param("goodsId") Long goodsId, @Param("price")BigDecimal price);
 
     List<Auction> listAuction(AuctionQuery queryCondition);
 }

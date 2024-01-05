@@ -11,7 +11,9 @@ public class Auction implements Serializable {
 
     private Long goodsId;
 
-    private BigDecimal price;
+    private BigDecimal cashPrice;
+
+    private BigDecimal integralPrice;
 
     private Integer stockQuantity;
 
@@ -51,12 +53,20 @@ public class Auction implements Serializable {
         this.goodsId = goodsId;
     }
 
-    public BigDecimal getPrice() {
-        return price;
+    public BigDecimal getCashPrice() {
+        return cashPrice;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setCashPrice(BigDecimal cashPrice) {
+        this.cashPrice = cashPrice;
+    }
+
+    public BigDecimal getIntegralPrice() {
+        return integralPrice;
+    }
+
+    public void setIntegralPrice(BigDecimal integralPrice) {
+        this.integralPrice = integralPrice;
     }
 
     public Integer getStockQuantity() {
@@ -109,22 +119,19 @@ public class Auction implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", id=").append(id);
-        sb.append(", auctionName=").append(auctionName);
+        final StringBuilder sb = new StringBuilder("Auction{");
+        sb.append("id=").append(id);
+        sb.append(", auctionName='").append(auctionName).append('\'');
         sb.append(", goodsId=").append(goodsId);
-        sb.append(", prices=").append(price);
+        sb.append(", cashPrice=").append(cashPrice);
+        sb.append(", integralPrice=").append(integralPrice);
         sb.append(", stockQuantity=").append(stockQuantity);
         sb.append(", auctionStatus=").append(auctionStatus);
         sb.append(", auctionAreaId=").append(auctionAreaId);
         sb.append(", createTime=").append(createTime);
         sb.append(", updateTime=").append(updateTime);
         sb.append(", isDeleted=").append(isDeleted);
-        sb.append(", serialVersionUID=").append(serialVersionUID);
-        sb.append("]");
+        sb.append('}');
         return sb.toString();
     }
 }
