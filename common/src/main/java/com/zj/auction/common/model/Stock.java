@@ -115,7 +115,7 @@ public class Stock implements Serializable {
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
         sb.append(", goodsId=").append(goodsId);
-        sb.append(", prices=").append(price);
+        sb.append(", prices=").append(prices);
         sb.append(", stockNumber=").append(stockNumber);
         sb.append(", stockStatus=").append(stockStatus);
         sb.append(", ownerId=").append(ownerId);
