@@ -9,13 +9,11 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 @TableName("zj_user_bill")
 @Data
-@Entity
 public class UserBill implements Serializable {
     private Long id;
 

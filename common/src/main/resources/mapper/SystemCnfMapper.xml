@@ -33,4 +33,9 @@
     select key_id, key_name, key_value, memo
     from zj_system_cnf
   </select>
+  <select id="selectValueByKeyName" resultType="java.lang.String">
+    select key_value
+    from zj_system_cnf
+    where key_name = #{keyName}
+  </select>
 </mapper>

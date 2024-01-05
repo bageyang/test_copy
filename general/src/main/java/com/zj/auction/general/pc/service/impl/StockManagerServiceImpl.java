@@ -2,6 +2,7 @@ package com.zj.auction.general.pc.service.impl;
 
 import com.zj.auction.common.dto.AuctionStockNumDto;
 import com.zj.auction.common.enums.OrderStatEnum;
+import com.zj.auction.common.enums.OrderTypeEnum;
 import com.zj.auction.common.enums.StatusEnum;
 import com.zj.auction.common.exception.CustomException;
 import com.zj.auction.common.mapper.AuctionStockRelationMapper;
@@ -62,7 +63,15 @@ public class StockManagerServiceImpl implements StockManagerService {
         if(Objects.isNull(goods)){
             throw new CustomException(StatusEnum.GOODS_INFO_BLANK_ERROR);
         }
-        BigDecimal price = goods.getPrice();
+
+        Byte auctionType = auctionStockNumDto.getAuctionType();
+        if(!OrderTypeEnum.isValid(auctionType)){
+            throw new CustomException(StatusEnum.PARAM_ERROR);
+        }
+        // 现金价格
+        BigDecimal cashPrice = goods.getCashPrice();
+        // 积分价格
+        BigDecimal integralPrice = goods.getPrice();
         List<Stock> stockList = new ArrayList<>(num);
         List<Order> orderList = new ArrayList<>(num);
         for (int i = 0; i < num; i++) {
@@ -73,7 +82,7 @@ public class StockManagerServiceImpl implements StockManagerService {
             stock.setTransferNum(0);
             stock.setStockStatus(code);
             stock.setOwnerId(ownerId);
-            stock.setPrice(price);
+            stock.setPrice(cashPrice);
             stockList.add(stock);
             stockMapper.insertSelective(stock);
             Order order = new Order();
@@ -81,8 +90,11 @@ public class StockManagerServiceImpl implements StockManagerService {
             order.setOrderStatus(code);
             order.setStockId(stock.getId());
             order.setGoodsId(goodsId);
+            order.setOrderType(auctionType);
             order.setStockNumber(stock.getStockNumber());
-            order.setPayAmount(price);
+            order.setTotalAmount(cashPrice);
+            order.setPayAmount(cashPrice);
+            order.setIntegralFee(integralPrice);
             order.setUserId(ownerId);
             orderList.add(order);
         }

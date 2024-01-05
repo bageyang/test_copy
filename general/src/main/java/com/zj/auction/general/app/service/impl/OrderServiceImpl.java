@@ -1,28 +1,23 @@
 package com.zj.auction.general.app.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.zj.auction.common.constant.Constant;
 import com.zj.auction.common.constant.RedisConstant;
 import com.zj.auction.common.dto.BaseOrderDto;
 import com.zj.auction.common.dto.OrderNotifyDto;
 import com.zj.auction.common.dto.PaymentVoucher;
 import com.zj.auction.common.dto.PickUpDto;
-import com.zj.auction.common.enums.OrderDirectionEnum;
-import com.zj.auction.common.enums.OrderNotifyEnum;
-import com.zj.auction.common.enums.OrderStatEnum;
-import com.zj.auction.common.enums.StatusEnum;
+import com.zj.auction.common.enums.*;
 import com.zj.auction.common.exception.CustomException;
-import com.zj.auction.common.mapper.GoodsMapper;
-import com.zj.auction.common.mapper.OrderMapper;
-import com.zj.auction.common.mapper.StockMapper;
-import com.zj.auction.common.model.Auction;
-import com.zj.auction.common.model.Goods;
-import com.zj.auction.common.model.Order;
-import com.zj.auction.common.model.Stock;
+import com.zj.auction.common.mapper.*;
+import com.zj.auction.common.model.*;
 import com.zj.auction.common.query.OrderQuery;
 import com.zj.auction.common.util.StringUtils;
 import com.zj.auction.general.app.service.AuctionService;
 import com.zj.auction.general.app.service.OrderMqService;
 import com.zj.auction.general.app.service.OrderService;
+import com.zj.auction.general.app.service.RebateService;
+import com.zj.auction.general.shiro.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -30,9 +25,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -43,16 +40,24 @@ public class OrderServiceImpl implements OrderService {
     private final GoodsMapper goodsMapper;
     private final AuctionService auctionService;
     private final OrderMqService orderMqService;
+    private final AddressMapper addressMapper;
+    private final ExpressOrderMapper expressOrderMapper;
+    private final SystemCnfMapper systemCnfMapper;
+    private final RebateService rebateService;
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    public OrderServiceImpl(OrderMapper orderMapper, StockMapper stockMapper, GoodsMapper goodsMapper, AuctionService auctionService,  OrderMqService orderMqService) {
+    public OrderServiceImpl(OrderMapper orderMapper, StockMapper stockMapper, GoodsMapper goodsMapper, AuctionService auctionService, OrderMqService orderMqService, AddressMapper addressMapper, ExpressOrderMapper expressOrderMapper, SystemCnfMapper systemCnfMapper, RebateService rebateService) {
         this.orderMapper = orderMapper;
         this.stockMapper = stockMapper;
         this.goodsMapper = goodsMapper;
         this.auctionService = auctionService;
         this.orderMqService = orderMqService;
+        this.addressMapper = addressMapper;
+        this.expressOrderMapper = expressOrderMapper;
+        this.systemCnfMapper = systemCnfMapper;
+        this.rebateService = rebateService;
     }
 
     @Override
@@ -72,16 +77,19 @@ public class OrderServiceImpl implements OrderService {
         sellerOrder.setOrderStatus(OrderStatEnum.UN_CONFIRM.getCode());
         orderMapper.updateByPrimaryKeySelective(buyerOrder);
         orderMapper.updateByPrimaryKeySelective(sellerOrder);
-        // todo 发送延迟队列 卖家完成支付,卖家
     }
 
     @Override
     public boolean uploadPaymentVoucher(PaymentVoucher paymentVoucher) {
+        User user = SecurityUtils.getPrincipal();
         String orderVoucher = paymentVoucher.getOrderVoucher();
         Long orderSn = paymentVoucher.getOrderSn();
         Order buyerOrder = orderMapper.selectOrderByOrderNumber(orderSn);
         if (!buyerOrderUnPaid(buyerOrder)) {
             throw new CustomException(StatusEnum.ORDER_STATUS_ERROR);
+        }
+        if(Objects.equals(buyerOrder.getUserId(),user.getUserId())){
+            throw new CustomException(StatusEnum.OWNER_ORDER_MISS_ERROR);
         }
         if (StringUtils.isBlank(orderVoucher)) {
             throw new CustomException(StatusEnum.PAYMENT_VOUCHER_BLANK_ERROR);
@@ -111,7 +119,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Boolean transfer2Auction(Long orderSn) {
-        // todo 获取用户id
+//        User user = SecurityUtils.getPrincipal();
+//        if(Objects.isNull(user)){
+//            throw new CustomException(StatusEnum.USER_TOKEN_ERROR);
+//        }
         Long userId = 2L;
         Order order = orderCheck(userId, orderSn);
         if(OrderStatEnum.WAIT_MARGIN.isEqual(order.getOrderStatus())){
@@ -152,25 +163,44 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void transferPaymentCallBack(Long stockSn) {
-        Order order = orderMapper.selectOwnerOrderByStockNumberAndStatus(stockSn, OrderStatEnum.WAIT_MARGIN.getCode());
-        Stock stock = stockMapper.selectOneBySn(stockSn);
+    public void transferPaymentCallBack(Long orderSn) {
+        Order order = orderMapper.selectOrderByOrderNumber(orderSn);
+        if(Objects.isNull(order)){
+            log.error("转拍支付回调,订单不存在:{}",orderSn);
+            return;
+        }
+        if (!OrderStatEnum.WAIT_MARGIN.isEqual(order.getOrderStatus())) {
+            log.error("转拍支付回调,订单状态异常:{}",order);
+            return;
+        }
+        Long stockNumber = order.getStockNumber();
+        Stock stock = stockMapper.selectOneBySn(stockNumber);
+        byte statCode = OrderStatEnum.ON_AUCTION.getCode();
+        int transferNum = stock.getTransferNum() + 1;
+        Byte orderTypeCode = order.getOrderType();
+        OrderTypeEnum orderType = OrderTypeEnum.codeOf(orderTypeCode);
+        String cashPremium = systemCnfMapper.selectValueByKeyName(Constant.CASH_PREMIUM_KEY);
+        String integralPremium = systemCnfMapper.selectValueByKeyName(Constant.INTEGRAL_PREMIUM_KEY);
+        // 现金
+        BigDecimal cashPrice = order.getTotalAmount();
+        // 积分
+        BigDecimal integralPrice = order.getIntegralFee();
+
+        BigDecimal cashPremiumPrice = cashPrice.multiply(new BigDecimal(cashPremium).add(BigDecimal.ONE));
+        BigDecimal integralPremiumPrice = integralPrice.multiply(new BigDecimal(integralPremium).add(BigDecimal.ONE));
+        stock.setStockStatus(statCode);
+        stock.setTransferNum(transferNum);
+        stock.setCashPrice(cashPremiumPrice);
+        stock.setIntegralPrice(integralPremiumPrice);
 
         Order updateOrder = new Order();
         updateOrder.setId(order.getId());
-        byte statCode = OrderStatEnum.ON_AUCTION.getCode();
         updateOrder.setOrderStatus(statCode);
-        stock.setStockStatus(statCode);
-        int transferNum = stock.getTransferNum() + 1;
-        stock.setTransferNum(transferNum);
-        // todo 设置价格
-        stock.setPrice(stock.getPrice());
 
         orderMapper.updateByPrimaryKeySelective(updateOrder);
         stockMapper.updateByPrimaryKeySelective(stock);
-        auctionService.addAuction(stock);
-        // todo 计算业绩
-
+        auctionService.addAuction(stock,orderType);
+        rebateService.rebateOrder(order);
     }
 
     /**
@@ -206,6 +236,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public boolean finishOrder(Long orderSn) {
+//        User user = SecurityUtils.getPrincipal();
+//        if(Objects.isNull(user)){
+//            throw new CustomException(StatusEnum.USER_TOKEN_ERROR);
+//        }
         if (Objects.isNull(orderSn)) {
             throw new CustomException(StatusEnum.PARAM_ERROR);
         }
@@ -214,7 +248,9 @@ public class OrderServiceImpl implements OrderService {
         if (!OrderStatEnum.UN_CONFIRM.isEqual(orderStatus)) {
             throw new CustomException(StatusEnum.ORDER_STATUS_ERROR);
         }
-        // todo 订单用户检查
+        if(!Objects.equals(sellerOrder.getUserId(), 2L)){
+            throw new CustomException(StatusEnum.ORDER_STATUS_ERROR);
+        }
         Long stockNumber = sellerOrder.getStockNumber();
         Order buyerOrder = orderMapper.selectOwnerOrderByStockNumberAndStatus(stockNumber, OrderStatEnum.WAIT_SELLER_CONFIRM.getCode());
         if (Objects.isNull(buyerOrder)) {
@@ -258,6 +294,11 @@ public class OrderServiceImpl implements OrderService {
         if (Objects.isNull(query)) {
             throw new CustomException(StatusEnum.PARAM_ERROR);
         }
+        User user = SecurityUtils.getPrincipal();
+        if(Objects.isNull(user)){
+            throw new CustomException(StatusEnum.USER_TOKEN_ERROR);
+        }
+        query.setUserId(user.getUserId());
         Byte orderDirection = query.getOrderDirection();
         if (Objects.nonNull(orderDirection) && Objects.isNull(query.getOrderStat())) {
             if (OrderDirectionEnum.check(orderDirection)) {
@@ -331,10 +372,11 @@ public class OrderServiceImpl implements OrderService {
         order.setAuctionId(orderInfo.getAuctionId());
         order.setOrderSn(orderInfo.getOrderSn());
         order.setStockId(stock.getId());
+        order.setOrderType(ownerOrder.getOrderType());
         order.setStockNumber(stock.getStockNumber());
         order.setUserId(orderInfo.getUserId());
-        order.setTotalAmount(auction.getPrice());
-        order.setPayAmount(auction.getPrice());
+        order.setTotalAmount(auction.getCashPrice());
+        order.setPayAmount(auction.getCashPrice());
         order.setItemId(ownerOrder.getId());
         order.setCreateTime(LocalDateTime.now());
         order.setOrderStatus(OrderStatEnum.UN_PAYMENT.getCode());
@@ -343,8 +385,56 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Boolean pickUpOrder(PickUpDto pickUpDto) {
-        // todo 提货限制
+        if (Objects.isNull(pickUpDto) || Objects.isNull(pickUpDto.getOrderId()) || Objects.isNull(pickUpDto.getAddressId())) {
+            throw new CustomException(StatusEnum.PARAM_ERROR);
+        }
+//        User user = SecurityUtils.getPrincipal();
+//        if(Objects.isNull(user)){
+//            throw new CustomException(StatusEnum.USER_TOKEN_ERROR);
+//        }
+        Long userId =  2L;
+        Long orderId = pickUpDto.getOrderId();
+        Long addressId = pickUpDto.getAddressId();
+        Order order = orderMapper.selectByPrimaryKey(orderId);
+        Byte orderStatus = order.getOrderStatus();
+        if(!canPickUp(orderStatus)){
+            throw new CustomException(StatusEnum.ORDER_STATUS_ERROR);
+        }
 
-        return null;
+        if(!Objects.equals(order.getUserId(), userId)){
+            throw new CustomException(StatusEnum.ORDER_STATUS_ERROR);
+        }
+        Address address = addressMapper.selectByPrimaryKey(addressId);
+        if(Objects.isNull(address)){
+            throw new CustomException(StatusEnum.ADDRESS_MISS_ERROR);
+        }
+        order.setOrderStatus(OrderStatEnum.PICKUP.getCode());
+        orderMapper.updateByPrimaryKeySelective(order);
+        ExpressOrder expressOrder =  buildExpressOrder(order,address);
+        expressOrderMapper.insertSelective(expressOrder);
+        return true;
+    }
+
+    private ExpressOrder buildExpressOrder(Order order,Address address) {
+        ExpressOrder expressOrder = new ExpressOrder();
+        expressOrder.setOrderSn(order.getOrderSn());
+        expressOrder.setOrderId(order.getId());
+        expressOrder.setUserId(order.getUserId());
+        expressOrder.setAddrId(address.getAddrId());
+        expressOrder.setExpressStatus(ExpressStatEnum.WAIT_DELIVER.getCode());
+        String addressStr = new StringJoiner("\n")
+                .add(address.getAddr1())
+                .add(address.getAddr2())
+                .add(address.getAddr3())
+                .toString();
+        expressOrder.setAddr(addressStr);
+        // todo
+//        expressOrder.setReceiveUserName("");
+//        expressOrder.setUserId();
+        return expressOrder;
+    }
+
+    private boolean canPickUp(Byte statCode){
+       return OrderStatEnum.AUCTION_SUCCESS.isEqual(statCode)||OrderStatEnum.WAIT_MARGIN.isEqual(statCode);
     }
 }
