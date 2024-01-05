@@ -265,7 +265,7 @@ public interface UserService  {
 //     * @Date 2020/10/21 9:18
 //     * @return void
 //     */
-    void exportUser(PageAction pageAction,Integer userType,String userIds, HttpServletResponse httpServletResponse);
+//    void exportUser(PageAction pageAction,Integer userType,String userIds, HttpServletResponse httpServletResponse);
 //
 //
 //    /**

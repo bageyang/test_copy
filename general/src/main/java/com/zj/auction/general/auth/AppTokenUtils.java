@@ -1,13 +1,16 @@
-package com.zj.auction.common.util;
+package com.zj.auction.general.auth;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zj.auction.common.exception.ServiceException;
 import com.zj.auction.common.exception.SystemExceptionEnum;
+import com.zj.auction.common.util.JwtUtils;
 import io.jsonwebtoken.Claims;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -27,6 +30,9 @@ public class AppTokenUtils {
     private static final String USER_ID = "userId";
     private static final String OPEN_ID = "openId";
     public static final String CODE_FILE = "telCode:";
+
+    @Resource
+    private RedisTemplate<String,Object> redisTemplate;
     //验证码过期时间
     private static Long code = 5*60L;
 
@@ -142,8 +148,8 @@ public class AppTokenUtils {
      * @param value
      * @return	boolean
      */
-    public static boolean setMessage(String key,String value){
-        return RedisUtil.set(CODE_FILE+key, value,code);
+    public  void setMessage(String key,String value){
+         redisTemplate.opsForValue().set(CODE_FILE+key, value,code);
     }
 
 
@@ -155,9 +161,10 @@ public class AppTokenUtils {
      * @param tel
      * @return	java.lang.String
      */
-    public static String getMassage(String tel){
+    public  String getMassage(String tel){
         try {
-            return String.valueOf(RedisUtil.get(CODE_FILE+tel));
+
+            return String.valueOf(redisTemplate.opsForValue().get(CODE_FILE+tel));
         }catch (Exception e){
             e.printStackTrace();
         }

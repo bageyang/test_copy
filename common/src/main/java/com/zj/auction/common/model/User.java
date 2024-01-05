@@ -202,15 +202,15 @@ public class User extends BaseEntity implements Serializable {
      */
     private LocalDateTime birthTime;
 
-//    /**
-//     * 设备号
-//     */
-//    private String deviceNumber;
+    /**
+     * 设备号
+     */
+    private String deviceNumber;
 
-//    /**
-//     * 独特num
-//     */
-//    private String uniqueNum;
+    /**
+     * 独特num
+     */
+    private String uniqueNum;
 
     /**
      * 角色商店id
@@ -223,25 +223,25 @@ public class User extends BaseEntity implements Serializable {
     @Enumerated(EnumType.ORDINAL)
     private Integer roleRange;
 
-//    /**
-//     * 在线状态
-//     */
-//    private Integer lineStatus;
-//
-//    /**
-//     * 咨询费用
-//     */
-//    private BigDecimal consultingFee;
-//
-//    /**
-//     * 评论总数
-//     */
-//    private Integer commentTotal;
-//
-//    /**
-//     * 喜欢总数
-//     */
-//    private Integer likeTotal;
+    /**
+     * 在线状态
+     */
+    private Integer lineStatus;
+
+    /**
+     * 咨询费用
+     */
+    private BigDecimal consultingFee;
+
+    /**
+     * 评论总数
+     */
+    private Integer commentTotal;
+
+    /**
+     * 喜欢总数
+     */
+    private Integer likeTotal;
 
 
     @ApiModelProperty(value = "抽奖次数")

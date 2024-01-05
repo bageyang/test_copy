@@ -19,8 +19,7 @@ import java.time.LocalDateTime;
 public class BaseEntity implements Serializable {
 
 
-    @ApiModelProperty(value = "主键")
-    private String id;
+
 
     @ApiModelProperty(value = "删除标志  默认0")
     private Integer deleteFlag;

@@ -25,7 +25,7 @@ public class OssUpload {
             SimpleDateFormat smp = new SimpleDateFormat("yyy/MM/dd/HH/mm");
             fileNewName = "fy/"+smp.format(new Date()) + "/" + fileNewName;
             OSSClient ossClient = new OSSClient("oss-cn-beijing.aliyuncs.com", new DefaultCredentialProvider("qMRnWbBy2dUYya8G", "nPFFJkiw5DNawg1KpUINwQ1oeN2u2H"), null);
-            PutObjectResult result = ossClient.putObject("zhongjiu-2022-06-08", fileNewName, input);
+            PutObjectResult result = ossClient.putObject("duoqio20180105", fileNewName, input);
             ossClient.shutdown();
             String aliyunFullFilePath = "https://duoqio20180105.oss-cn-beijing.aliyuncs.com/" + fileNewName;
             res.put("error_code", "1");

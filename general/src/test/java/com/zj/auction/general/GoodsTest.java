@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -25,6 +26,9 @@ public class GoodsTest {
     private GoodsManagerService goodsManagerService;
     @Autowired
     private StockManagerService stockManagerService;
+    @Resource
+    private RedisTemplate<String,Object> redisTemplate;
+
     @Resource
     private RedisTemplate<String,Object> redisTemplate;
 
@@ -57,6 +61,14 @@ public class GoodsTest {
             goods1.setGoodsName("测试修改01");
             goodsManagerService.updateGoods(goods1);
         }
+    }
+
+    @Test
+    public void setRedisTemplate(){
+        redisTemplate.opsForValue().set("qq",555,60, TimeUnit.MINUTES);
+        System.out.println(redisTemplate.opsForValue().get("qq"));
+
+
     }
 
     @Test

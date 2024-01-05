@@ -80,7 +80,9 @@ public class AppUserController {
             @ApiImplicitParam(name = "code", value = "短信验证码", dataType = "String"),
     })
     @PostMapping(value = "/login")
-    public GeneralResult login(String userName, String password,String code) {
+    public GeneralResult login(@RequestParam(name = "userName") String userName,
+                               @RequestParam(name = "password") String password,
+                               @RequestParam(name = "code") String code) {
         return GeneralResult.success(appUserService.login(userName,password, code));
     }
 
