@@ -10,6 +10,7 @@ import com.zj.auction.common.enums.StatusEnum;
 import com.zj.auction.common.exception.CustomException;
 import com.zj.auction.common.model.Auction;
 import com.zj.auction.common.util.SnowFlake;
+import com.zj.auction.common.vo.AuctionVo;
 import com.zj.auction.seckill.service.AuctionService;
 import com.zj.auction.seckill.service.RedisService;
 import com.zj.auction.seckill.service.SeckillService;
@@ -63,8 +64,12 @@ public class SeckillServiceImpl implements SeckillService {
         if(Objects.isNull(auctionId)){
             throw new CustomException(StatusEnum.PARAM_ERROR);
         }
+        Integer num = (Integer) redisService.hGet(RedisConstant.AUCTION_REMAINDER_KEY, String.valueOf(auctionId));
+        if(num<=0){
+            throw new CustomException(StatusEnum.AUCTION_FINISH_ERROR);
+        }
         // 获取拍品信息
-        Auction auction =  (Auction) redisService.hGet(RedisConstant.AUCTION_INFO_KEY,String.valueOf(auctionId));
+        AuctionVo auction =  (AuctionVo) redisService.hGet(RedisConstant.AUCTION_INFO_KEY,String.valueOf(auctionId));
         Integer auctionAreaId = auction.getAuctionAreaId();
         // 状态判断
         Byte auctionStatus = auction.getAuctionStatus();

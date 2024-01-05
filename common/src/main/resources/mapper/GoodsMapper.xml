@@ -45,6 +45,17 @@
     <result column="is_deleted" jdbcType="TINYINT" property="isDeleted" />
     <result column="content" jdbcType="LONGVARCHAR" property="content" />
   </resultMap>
+  <sql id="Base_column_sql">
+    id, post_id, user_id, old_price, price, discount_prices, acquire_integral,
+    rebate_transaction_id, hot_flag, discount_flag, new_flag, goods_name, img_url, video_url,
+    type_id, status, transaction_id, remarks, create_time, update_time, add_user_id,
+    weight, volume, rebate_ratio, service_tel, sort, update_user_id, sell_total, recommend,
+    frozen_explain, ship_address, buckle_point_ratio, specification, tag_id, auction_id,
+    auction_status, hand_num, delivery_money, sub_type, cash_price, is_deleted, content
+    </sql>
+  <sql id="delete_flag_sql">
+    and is_deleted = 0
+  </sql>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from zj_goods
     where id = #{id,jdbcType=BIGINT}
@@ -128,22 +139,22 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select id, post_id, user_id, old_price, price, discount_prices, acquire_integral, 
-    rebate_transaction_id, hot_flag, discount_flag, new_flag, goods_name, img_url, video_url, 
-    type_id, status, transaction_id, remarks, create_time, update_time, add_user_id, 
-    weight, volume, rebate_ratio, service_tel, sort, update_user_id, sell_total, recommend, 
-    frozen_explain, ship_address, buckle_point_ratio, specification, tag_id, auction_id, 
-    auction_status, hand_num, delivery_money, sub_type, cash_price, is_deleted, content
+    select
+        <include refid="Base_column_sql"/>
     from zj_goods
     where id = #{id,jdbcType=BIGINT}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
-    select id, post_id, user_id, old_price, price, discount_prices, acquire_integral, 
-    rebate_transaction_id, hot_flag, discount_flag, new_flag, goods_name, img_url, video_url, 
-    type_id, status, transaction_id, remarks, create_time, update_time, add_user_id, 
-    weight, volume, rebate_ratio, service_tel, sort, update_user_id, sell_total, recommend, 
-    frozen_explain, ship_address, buckle_point_ratio, specification, tag_id, auction_id, 
-    auction_status, hand_num, delivery_money, sub_type, cash_price, is_deleted, content
+    select <include refid="Base_column_sql"/>
     from zj_goods
   </select>
+    <select id="listGoodsInfoByIds" resultMap="BaseResultMap">
+      select <include refid="Base_column_sql"/>
+      from zj_goods
+      where id in
+      <foreach collection="ids" item="id" separator="," open="(" close=")">
+        #{id}
+      </foreach>
+      <include refid="delete_flag_sql"/>
+    </select>
 </mapper>

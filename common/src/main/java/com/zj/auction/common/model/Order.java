@@ -11,6 +11,12 @@ public class Order implements Serializable {
 
     private Long goodsId;
 
+    private Long auctionId;
+
+    private Long stockId;
+
+    private Long stockNumber;
+
     private Long userId;
 
     private BigDecimal totalAmount;
@@ -67,6 +73,30 @@ public class Order implements Serializable {
 
     public void setGoodsId(Long goodsId) {
         this.goodsId = goodsId;
+    }
+
+    public Long getAuctionId() {
+        return auctionId;
+    }
+
+    public void setAuctionId(Long auctionId) {
+        this.auctionId = auctionId;
+    }
+
+    public Long getStockId() {
+        return stockId;
+    }
+
+    public void setStockId(Long stockId) {
+        this.stockId = stockId;
+    }
+
+    public Long getStockNumber() {
+        return stockNumber;
+    }
+
+    public void setStockNumber(Long stockNumber) {
+        this.stockNumber = stockNumber;
     }
 
     public Long getUserId() {
@@ -206,6 +236,9 @@ public class Order implements Serializable {
         sb.append(", id=").append(id);
         sb.append(", orderSn=").append(orderSn);
         sb.append(", goodsId=").append(goodsId);
+        sb.append(", auctionId=").append(auctionId);
+        sb.append(", stockId=").append(stockId);
+        sb.append(", stockNumber=").append(stockNumber);
         sb.append(", userId=").append(userId);
         sb.append(", totalAmount=").append(totalAmount);
         sb.append(", payAmount=").append(payAmount);

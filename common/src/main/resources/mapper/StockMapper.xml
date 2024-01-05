@@ -13,6 +13,10 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="is_deleted" jdbcType="TINYINT" property="isDeleted" />
   </resultMap>
+
+  <sql id="delete_flag_sql">
+    and is_deleted = 0
+  </sql>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from zj_stock
     where id = #{id,jdbcType=BIGINT}
@@ -53,5 +57,12 @@
     select id, goods_id, prices, stock_number, stock_status, owner_id, transfer_num, 
     create_time, update_time, is_deleted
     from zj_stock
+  </select>
+  <select id="selectOneBySn" resultType="com.zj.auction.common.model.Stock">
+    select id, goods_id, prices, stock_number, stock_status, owner_id, transfer_num,
+           create_time, update_time, is_deleted
+    from zj_stock
+    where stock_number = #{sn}
+    <include refid="delete_flag_sql"/>
   </select>
 </mapper>

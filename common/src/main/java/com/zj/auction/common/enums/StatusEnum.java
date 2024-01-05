@@ -19,7 +19,11 @@ public enum StatusEnum {
      */
     AUCTION_FINISH_ERROR(1001,"拍品已结束"),
     PARAM_ERROR(1002,"参数缺失"),
-    SECKILL_FAIL_ERROR(1003,"抢单失败,请稍后再试！")
+    SECKILL_FAIL_ERROR(1003,"抢单失败,请稍后再试！"),
+    OWNER_ORDER_MISS_ERROR(1004,"无法找到原始订单信息"),
+    AUCTION_MISS_ERROR(1005,"无法找到拍品信息"),
+    STOCK_NOT_MATCH_ERROR(1006,"库存信息不像符"),
+    AUCTION_NOT_MATCH_ERROR(1007,"无法找到拍品信息"),
     ;
 
     private Integer code;

@@ -11,9 +11,6 @@ public class RedisConstant {
      */
     public static final String AUCTION_STOCK_KEY = "auction:stock:";
 
-
-    public static final String PC_USER_TOKEN = "PcToken:%s";
-
     /**
      * 拍品库存量(hashmap)
      */

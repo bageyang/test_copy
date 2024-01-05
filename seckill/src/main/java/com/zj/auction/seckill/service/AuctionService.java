@@ -1,6 +1,8 @@
 package com.zj.auction.seckill.service;
 
 import com.zj.auction.common.model.Auction;
+import com.zj.auction.common.vo.AuctionListVo;
+import com.zj.auction.common.vo.AuctionVo;
 
 import java.util.List;
 
@@ -29,13 +31,13 @@ public interface AuctionService {
      * @param auctionId 拍品id
      * @return 拍品信息
      */
-    Auction getAuctionInfo(Long auctionId);
+    AuctionVo getAuctionInfo(Long auctionId);
 
     /**
      * 获取当前场次拍品列表
      * @param areaId 场次id
      * @return 拍品列表
      */
-    List<Auction> listAuctionByAreaId(Integer areaId);
+    List<AuctionListVo> listAuctionByAreaId(Integer areaId);
 
 }
