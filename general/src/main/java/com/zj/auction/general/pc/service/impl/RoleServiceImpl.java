@@ -45,43 +45,16 @@
 //    public GeneralResult findRoleAll() {
 //        User user =SecurityUtils.getPrincipal();
 //        List<Integer> roleByUserId = findUserRoles(user.getUserId());
-//		/*Specification<SysRoleTbl> params = Specifications.<SysRoleTbl>and()
-//				.eq("deleteFlag", 0)
-//				.predicate(authToken.getUserId()!=1 && !roleByUserId.isEmpty(), Specifications.or()
-//						.like("pidStr", )
-//						.like("memo", "%"+pageAction.getKeyword()+"%")
-//						.build())
-//				.build();*/
-//        StringBuffer wheres = new StringBuffer();
-//        HashMap<String, Object> sqMap = new HashMap<>();
-//        if(user.getUserId()!=1 && roleByUserId.size()>0) {
-//            wheres.append(" and  ( ");
-//            for (int i = 0; i <roleByUserId.size() ; i++) {
-//                wheres.append("pid_str like " ).append("'%"+roleByUserId.get(i)+"%'");
-//                if(i !=roleByUserId.size() -1) {
-//                    wheres.append(" or ");
-//                }
+//        List<Role> roleList = new ArrayList<>();
+//        if (user.getUserId()!=1&&roleByUserId.size()>0){
+//            for (Integer a :roleByUserId){
+//                roleList.addAll(roleMapper.selectRoleByRoles(a));
 //            }
-//            wheres.append(" ) ");
 //        }
-//        StringBuffer sql = super.base(StringBuffer::new);
-//        sql.append(" select role_id as roleId,role_name as roleName from sys_role_tbl where 1=1 "+wheres+" and delete_flag = 0 order by level_num");
-//        List<Map<String,Object>> list = shCommonDaoImpl.getSqlList(sql.toString(), sqMap);
-//        return GeneralResult.success(list);
+//        return GeneralResult.success(roleList);
 //    }
 //
-//    @Override
-//    public Map<String, Object> findEmployeeRole(Integer roleId) {
-//        User user =  SecurityUtils.getPrincipal();
-//        Map<String, Object> map = new HashMap<>();
-//        List<Role> list = pcSysrolecfgRepository.findAllByDeleteFlagAndRoleId(0, roleId);
-//        StringBuffer resultStr = new StringBuffer();
-//        if(!list.isEmpty()) {
-//            list.forEach(f ->resultStr.append("<div id='"+f.getRoleId()+"' class='check-box '><i class='fa fa-check'></i> <span>"+f.getRoleName()+"</span></div>"));
-//        }
-//        map.put("resultStr", resultStr);
-//        return map;
-//    }
+//
 //
 //    @Override
 //    public GeneralResult getUserRoles(Long userId) {

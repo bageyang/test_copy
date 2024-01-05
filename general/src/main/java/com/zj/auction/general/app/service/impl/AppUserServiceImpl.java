@@ -110,16 +110,13 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     //实名认证
     @Override
     public Boolean authIdentity(UserDTO dto) {
-        System.out.println(">>>>>>>>>>>>>>>>>>>"+dto);
-//        AuthToken appToken = AppTokenUtils.getAuthToken();
-        User user = (User)SecurityUtils.getSubject().getPrincipal();
-        //User user = userMapper.selectByPrimaryKey(appToken.getUserId());
+        User user = SecurityUtils.getPrincipal();
+        System.out.println(">>>********************"+user.getUserName());
         user.setRealName(dto.getRealName());//真实姓名
         user.setCardNumber(dto.getCardNum());//身份证号
         UserConfig u = userConfigMapper.selectAllByUserId(user.getUserId());
         u.setFrontImage(dto.getFrontImage());//正面
         u.setReverseImage(dto.getReverseImage());//反面
-        System.out.println(">>>>>>>>>>>>>"+u);
         user.setAudit(1);//：0默认，1待审核，2审核通过，3拒绝审核
         u.setApplyTime(LocalDateTime.now());//申请时间
         userMapper.updateByPrimaryKeySelective(user);

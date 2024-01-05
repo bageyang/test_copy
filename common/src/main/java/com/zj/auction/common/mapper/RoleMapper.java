@@ -40,8 +40,13 @@ public interface RoleMapper extends BaseMapper<Role> {
     @Select(value="select a.*,b.role_name,b.role_code from (select role_id from zj_user_role where user_id=#{userId} ) a left join zj_role b on a.role_id=b.role_id where b.delete_flag=0 ")
     List<Map<String, Object>> listSysRoleTbl(@Param("userId") Long userId);
 
-@Select("select role_id from sys_role_tbl where pid_str like CONCAT('%',#{roleIdStr},'%') and delete_flag=0")
+    @Select("select role_id from zj_role where pid_str like CONCAT('%',#{roleIdStr},'%') and delete_flag=0")
     List<Integer> selectRoleIdList(Integer roleIdStr);
-@Select("update zj_role set delete_flag=1,update_time=now() where role_id in (#{roles}) and delete_flag=0")
-Integer deleteSubRole(List<Integer> roles);
+
+    @Select("update zj_role set delete_flag=1,update_time=now() where role_id in (#{roles}) and delete_flag=0")
+    Integer deleteSubRole(List<Integer> roles);
+
+
+    @Select("SELECT role_id AS roleId,role_name AS roleName FROM zj_role WHERE 1 = 1 and pid_str like CONCAT('%',#{roles},'%') AND delete_flag = 0 ORDER BY level_num")
+    List<Role> selectRoleByRoles(Integer roles);
 }
