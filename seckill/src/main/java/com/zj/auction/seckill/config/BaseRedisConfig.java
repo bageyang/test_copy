@@ -1,5 +1,6 @@
 package com.zj.auction.seckill.config;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONReader;
 import com.alibaba.fastjson2.JSONWriter;
 import com.alibaba.fastjson2.support.config.FastJsonConfig;
@@ -31,13 +32,12 @@ public class BaseRedisConfig {
     @ConditionalOnMissingBean(name = "redisTemplate")
     public RedisTemplate<Object, Object> redisTemplate(
             RedisConnectionFactory redisConnectionFactory) {
-        RedisTemplate<Object, Object> template = new RedisTemplate<>();
+        RedisTemplate<Object, Object> template = new RedisTemplate<Object, Object>();
         // 使用fastjson序列化
-        FastJsonRedisSerializer<Object> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(Object.class);
+        FastJsonRedisSerializer fastJsonRedisSerializer = new FastJsonRedisSerializer(Object.class);
         FastJsonConfig config = new FastJsonConfig();
         config.setReaderFeatures(JSONReader.Feature.SupportAutoType);
         config.setWriterFeatures(JSONWriter.Feature.WriteClassName);
-        config.setDateFormat("yyyy-MM-dd HH:mm:ss");
         fastJsonRedisSerializer.setFastJsonConfig(config);
         // value值的序列化采用fastJsonRedisSerializer
         template.setValueSerializer(fastJsonRedisSerializer);
@@ -69,7 +69,7 @@ public class BaseRedisConfig {
         String password = redisProperties.getPassword();
         String address = protocolPrefix + host + ":" + port;
         singleServerConfig.setAddress(address);
-        if (StringUtils.hasText(password)) {
+        if (!StringUtils.hasText(password)) {
             singleServerConfig.setPassword(password);
         }
         return Redisson.create(config);
