@@ -19,6 +19,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -32,15 +33,15 @@ public class AuctionServiceImpl implements AuctionService {
     private final AuctionMapper auctionMapper;
     private final GoodsMapper goodsMapper;
     private final AuctionStockRelationMapper auctionStockMapper;
-    private final RedisTemplate<String,Object> redisTemplate;
     private final RedissonClient redissonClient;
+    @Resource
+    private  RedisTemplate<String,Object> redisTemplate;
 
     @Autowired
-    public AuctionServiceImpl(AuctionMapper auctionMapper, GoodsMapper goodsMapper, AuctionStockRelationMapper auctionStockMapper, RedisTemplate<String, Object> redisTemplate, RedissonClient redissonClient) {
+    public AuctionServiceImpl(AuctionMapper auctionMapper, GoodsMapper goodsMapper, AuctionStockRelationMapper auctionStockMapper, RedissonClient redissonClient) {
         this.auctionMapper = auctionMapper;
         this.goodsMapper = goodsMapper;
         this.auctionStockMapper = auctionStockMapper;
-        this.redisTemplate = redisTemplate;
         this.redissonClient = redissonClient;
     }
 

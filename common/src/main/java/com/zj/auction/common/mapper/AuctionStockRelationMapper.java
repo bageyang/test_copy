@@ -22,4 +22,6 @@ public interface AuctionStockRelationMapper {
     int updateByPrimaryKeySelective(AuctionStockRelation record);
 
     List<AuctionStockRelation> listStockByAuctionIds(@Param("auctionIds") List<Long> ids);
+
+    Long getAuctionIdByStockNumber(@Param("stockNumber") Long stockNumber);
 }

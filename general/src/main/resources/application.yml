@@ -10,13 +10,13 @@ spring:
 #      config:
 #        server-addr: 127.0.0.1:8848
   datasource:
-    url:  jdbc:mysql://120.77.247.13:3306/zj?useSSL=false&useUnicode=true&characterEncoding=utf-8
+    url:  jdbc:mysql://127.0.0.1:3306/zj_auction?useSSL=false&useUnicode=true&characterEncoding=utf-8
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: zhongjiu_test
+    password: yangbing
   redis:
     port: 6379
-    host: 120.77.247.13
+    host: 127.0.0.1
     username: root
     timeout: 3000
     lettuce:

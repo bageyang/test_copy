@@ -17,8 +17,6 @@ public class Goods implements Serializable {
 
     private BigDecimal discountPrices;
 
-    private Integer acquireIntegral;
-
     private String rebateTransactionId;
 
     private Integer hotFlag;
@@ -36,8 +34,6 @@ public class Goods implements Serializable {
     private Integer typeId;
 
     private Integer status;
-
-    private String transactionId;
 
     private String remarks;
 
@@ -61,8 +57,6 @@ public class Goods implements Serializable {
 
     private Integer sellTotal;
 
-    private Byte recommend;
-
     private String frozenExplain;
 
     private String shipAddress;
@@ -73,7 +67,7 @@ public class Goods implements Serializable {
 
     private Long tagId;
 
-    private Long auctionId;
+    private Long auctionAreaId;
 
     private Integer auctionStatus;
 
@@ -137,14 +131,6 @@ public class Goods implements Serializable {
 
     public void setDiscountPrices(BigDecimal discountPrices) {
         this.discountPrices = discountPrices;
-    }
-
-    public Integer getAcquireIntegral() {
-        return acquireIntegral;
-    }
-
-    public void setAcquireIntegral(Integer acquireIntegral) {
-        this.acquireIntegral = acquireIntegral;
     }
 
     public String getRebateTransactionId() {
@@ -217,14 +203,6 @@ public class Goods implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
-    }
-
-    public String getTransactionId() {
-        return transactionId;
-    }
-
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
     }
 
     public String getRemarks() {
@@ -315,14 +293,6 @@ public class Goods implements Serializable {
         this.sellTotal = sellTotal;
     }
 
-    public Byte getRecommend() {
-        return recommend;
-    }
-
-    public void setRecommend(Byte recommend) {
-        this.recommend = recommend;
-    }
-
     public String getFrozenExplain() {
         return frozenExplain;
     }
@@ -363,12 +333,12 @@ public class Goods implements Serializable {
         this.tagId = tagId;
     }
 
-    public Long getAuctionId() {
-        return auctionId;
+    public Long getAuctionAreaId() {
+        return auctionAreaId;
     }
 
-    public void setAuctionId(Long auctionId) {
-        this.auctionId = auctionId;
+    public void setAuctionAreaId(Long auctionAreaId) {
+        this.auctionAreaId = auctionAreaId;
     }
 
     public Integer getAuctionStatus() {
@@ -439,7 +409,6 @@ public class Goods implements Serializable {
         sb.append(", oldPrice=").append(oldPrice);
         sb.append(", price=").append(price);
         sb.append(", discountPrices=").append(discountPrices);
-        sb.append(", acquireIntegral=").append(acquireIntegral);
         sb.append(", rebateTransactionId=").append(rebateTransactionId);
         sb.append(", hotFlag=").append(hotFlag);
         sb.append(", discountFlag=").append(discountFlag);
@@ -449,7 +418,6 @@ public class Goods implements Serializable {
         sb.append(", videoUrl=").append(videoUrl);
         sb.append(", typeId=").append(typeId);
         sb.append(", status=").append(status);
-        sb.append(", transactionId=").append(transactionId);
         sb.append(", remarks=").append(remarks);
         sb.append(", createTime=").append(createTime);
         sb.append(", updateTime=").append(updateTime);
@@ -461,13 +429,12 @@ public class Goods implements Serializable {
         sb.append(", sort=").append(sort);
         sb.append(", updateUserId=").append(updateUserId);
         sb.append(", sellTotal=").append(sellTotal);
-        sb.append(", recommend=").append(recommend);
         sb.append(", frozenExplain=").append(frozenExplain);
         sb.append(", shipAddress=").append(shipAddress);
         sb.append(", bucklePointRatio=").append(bucklePointRatio);
         sb.append(", specification=").append(specification);
         sb.append(", tagId=").append(tagId);
-        sb.append(", auctionId=").append(auctionId);
+        sb.append(", auctionAreaId=").append(auctionAreaId);
         sb.append(", auctionStatus=").append(auctionStatus);
         sb.append(", handNum=").append(handNum);
         sb.append(", deliveryMoney=").append(deliveryMoney);

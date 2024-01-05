@@ -1,6 +1,7 @@
 package com.zj.auction.general.pc.service;
 
 import com.zj.auction.common.model.Auction;
+import com.zj.auction.common.query.AuctionQuery;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  */
 public interface AuctionManagerService {
     // todo 拍品列表
-    List<Auction> listAuction(Auction queryCondition);
+    List<Auction> listAuction(AuctionQuery queryCondition);
     // todo 拍品详情
     Auction getAuctionInfo(Long auctionId);
     // todo 下架拍品
