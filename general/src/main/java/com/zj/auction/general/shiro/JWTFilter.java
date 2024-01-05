@@ -1,16 +1,21 @@
 package com.zj.auction.general.shiro;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zj.auction.common.dto.Ret;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.ShiroException;
 import org.apache.shiro.authc.ExpiredCredentialsException;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
+import org.apache.shiro.web.util.WebUtils;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * @author: lhy
@@ -31,10 +36,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         String token = httpServletRequest.getHeader("Authorization"); //前端命名Authorization
         //token不存在
         if(token == null || "".equals(token)){
-//            ResultTemplate<Object> res = new ResultTemplate<>();
-//            res.setCode(StatusCode.UNLOGIN.getCode()).setMessage("无token，无权访问，请先登录");
-//            out(response, res);
-            System.out.println("无token，无权访问，请先登录");
+            out(response,"无token，无权访问，请先登录");
             return false;
         }
 
@@ -44,34 +46,27 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
             SecurityUtils.getSubject().login(jwtToken);  //通过subject，提交给myRealm进行登录验证
             return true;
         } catch (ExpiredCredentialsException e){
-//            ResultTemplate<Object> res = new ResultTemplate<>();
-//            res.setCode(StatusCode.TOKENEXPIRED.getCode()).setMessage("token过期，请重新登录");
-//            out(response,res);
-//            e.printStackTrace();
-            System.out.println("token过期，请重新登录");
+            out(response,"token过期，请重新登录");
+            e.printStackTrace();
             return false;
         } catch (ShiroException e){
             // 其他情况抛出的异常统一处理，由于先前是登录进去的了，所以都可以看成是token被伪造造成的
-//            ResultTemplate<Object> res = new ResultTemplate<>();
-//            res.etCode(StatusCode.FAKETOKEN.getCode()).setMessage("token被伪造，无效token");
-//            out(response,res);
-//            e.printStackTrace();
-            System.out.println("token被伪造，无效token");
+            out(response,"token被伪造，无效token");
+            e.printStackTrace();
             return false;
         }
     }
-
     /**
      * json形式返回结果token验证失败信息，无需转发
      */
-//    private void out(ServletResponse response, ResultTemplate<Object> res) throws IOException {
-//        HttpServletResponse httpServletResponse = WebUtils.toHttp(response);
-//        ObjectMapper mapper = new ObjectMapper();
-//        String jsonRes = mapper.writeValueAsString(res);
-//        httpServletResponse.setCharacterEncoding("UTF-8");
-//        httpServletResponse.setContentType("application/json; charset=utf-8");
-//        httpServletResponse.getOutputStream().write(jsonRes.getBytes());
-//    }
+    private void out(ServletResponse response, String res) throws IOException {
+        HttpServletResponse httpServletResponse = WebUtils.toHttp(response);
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonRes = mapper.writeValueAsString(res);
+        httpServletResponse.setCharacterEncoding("UTF-8");
+        httpServletResponse.setContentType("application/json; charset=utf-8");
+        httpServletResponse.getOutputStream().write(jsonRes.getBytes());
+    }
 
     /**
      * 过滤器拦截请求的入口方法
