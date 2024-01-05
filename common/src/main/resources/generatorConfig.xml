@@ -39,13 +39,15 @@
 
 
 
-        <javaModelGenerator targetPackage="com.zj.auction.common.model.backup" targetProject="common\src\main\java"/>
+        <javaModelGenerator targetPackage="com.zj.auction.common.model" targetProject="./"/>
 
-        <sqlMapGenerator targetPackage="backup" targetProject="common\src\main\resources"/>
+        <sqlMapGenerator targetPackage="com.zj.auction.common.mapper.xml" targetProject="./"/>
 
-        <javaClientGenerator type="XMLMAPPER" targetPackage="com.zj.auction.common.mapper..backup" targetProject="common\src\main\java"/>
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.zj.auction.common.mapper" targetProject="./"/>
         <!--生成全部表tableName设为%-->
-        <table tableName="zj_user">
+        <table tableName="zj_auction_appointment" enableCountByExample="false"
+               enableUpdateByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <domainObjectRenamingRule searchString="^Zj" replaceString="" />
         </table>
