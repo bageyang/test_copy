@@ -1,6 +1,7 @@
 package com.zj.auction.general.app.service;
 
 import com.github.pagehelper.PageInfo;
+import com.zj.auction.common.dto.PassWordDTO;
 import com.zj.auction.common.dto.UserDTO;
 import com.zj.auction.common.model.Address;
 import com.zj.auction.common.model.User;
@@ -91,10 +92,9 @@ public interface AppUserService {
 
     /**
      * 发送短信
-     * @param tel
      * @return
      */
-    Map<String, Object> sendMessages(HttpServletRequest request, String tel);
+    Map<String, Object> sendMessages(HttpServletRequest request,String tel);
 
 
     /**
@@ -162,14 +162,9 @@ public interface AppUserService {
 
 
     /**
-     * @Description 根据id查询单个地址
-     * @Title getAddrById
-     * @Author Mao Qi
-     * @Date 2019/9/6 16:31
-     * @param addrId
-     * @return	com.duoqio.boot.business.entity.AddrInfoTbl
+
      */
-    Address getAddrById(Long addrId);
+    Address getAddrById(UserDTO dto);
 
     /**
      * @Title: deleteAddr
@@ -216,23 +211,21 @@ public interface AppUserService {
     /**
      * @Description 修改密码
      */
-    Boolean updatePassWord(String oldPassWord, String newPassWord);
+    Boolean updatePassWord(PassWordDTO dto);
 
 
     /**
      * @Description 修改手机号/用户名
      */
-    User updateUserName(String tel, String code,String newUserName);
+    User updateUserName(UserDTO dto);
 
 
     /**
      * 添加密码
      *
-     * @param code     代码
-     * @param password 密码
      * @return {@link Boolean}
      */
-    Boolean addPassword(String code, String password);
+    Boolean addPassword(PassWordDTO dto);
 
     /**
      * @Description 是否有支付密码
@@ -319,7 +312,7 @@ public interface AppUserService {
    */
     PageInfo<User> findCustomerByUserId(PageAction pageAction);
 
-    User addOrUpdateAliNum(String realName, String alipayNum);
+    User addOrUpdateAliNum(UserDTO dto);
     /**
      * @Description 查询所有上级
      */
@@ -401,13 +394,11 @@ public interface AppUserService {
 
 
     /**
-     * @param tel      电话
-     * @param code     代码
-     * @param password 密码
+
      * @Description 忘记密码
      * @return java.lang.Boolean
      */
-    Boolean forgetPassword(String tel, String code, String password);
+    Boolean forgetPassword(PassWordDTO dto);
 
     User addOrUpdateAliOrWx(String tel,String name, String account,Integer type);
 

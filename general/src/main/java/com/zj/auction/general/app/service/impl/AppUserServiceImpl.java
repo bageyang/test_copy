@@ -12,6 +12,7 @@ import com.zj.auction.common.constant.RedisConstant;
 import com.zj.auction.common.constant.SystemConfig;
 import com.zj.auction.common.constant.SystemConstant;
 import com.zj.auction.common.date.DateUtil;
+import com.zj.auction.common.dto.PassWordDTO;
 import com.zj.auction.common.dto.Ret;
 import com.zj.auction.common.dto.UserDTO;
 import com.zj.auction.common.exception.ServiceException;
@@ -230,23 +231,23 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     //设置/忘记密码
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Boolean forgetPassword(String tel, String code, String password) {
-        PubFun.check(tel, code, password);
-        messagesCheck(tel, code);
-        if (password.length() < 6) {
+    public Boolean forgetPassword(PassWordDTO dto) {
+        PubFun.check(dto.getTel(), dto.getCode(), dto.getPassword());
+        messagesCheck(dto.getTel(), dto.getCode());
+        if (dto.getPassword().length() < 6) {
             throw new RuntimeException("密码必须六位以上!");
         }
         String regex = "^(?!([a-zA-Z]+|\\d+)$)[a-zA-Z\\d]{6,20}$";
-        if (!password.matches(regex)) {
+        if (!dto.getPassword().matches(regex)) {
             throw new RuntimeException("密码必须又数字和字母组成!");
         }
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
-        wrapper.eq(User::getUserName, tel).eq(User::getDeleteFlag, 0).eq(User::getUserType, 0);
+        wrapper.eq(User::getUserName, dto.getTel()).eq(User::getDeleteFlag, 0).eq(User::getUserType, 0);
         User user = userMapper.selectOne(wrapper);
         if (ObjectUtils.isEmpty(user)) {
             throw new RuntimeException("该手机号还未注册");
         }
-        String[] encryption = MD5Utils.encryption(password);
+        String[] encryption = MD5Utils.encryption(dto.getPassword());
         user.setPassWord(encryption[0]);
         user.setSalt(encryption[1]);
         user.setUpdateUserId(user.getUserId());
@@ -541,7 +542,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
 //    }
 
     /**
-     * @param tel
+     * @param
      * @return java.lang.Boolean
      * @Description 发送短信验证码
      * @Title sendMessages
@@ -549,15 +550,15 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
      * @Date 2019/9/8 15:35
      */
     @Override
-    public Map<String, Object> sendMessages(HttpServletRequest request, String tel) {
-        if (!StringUtils.hasText(tel)) {
+    public Map<String, Object> sendMessages(HttpServletRequest request,UserDTO dto) {
+        if (!StringUtils.hasText(dto.getTel())) {
             throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, SystemConstant.DATA_ILLEGALITY);
         }
         Function<String, Map<String, Object>> deal = param -> {
-            Map<String, Object> map = sendMessages("1755231367", tel, PubFun.generateRandomNumbersMax10(4), request);
+            Map<String, Object> map = sendMessages("1755231367", dto.getTel(), PubFun.generateRandomNumbersMax10(4), request);
             return map;
         };
-        return super.base(tel, deal);
+        return super.base(dto.getTel(), deal);
     }
 
     public Map<String, Object> sendMessages(String template, String phone, String code, HttpServletRequest request) {
@@ -595,14 +596,14 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     //修改常用手机号
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public User updateCommonTel(String commonTel, String commonName) {
+    public User updateCommonTel(UserDTO dto) {
         User user = (User) SecurityUtils.getSubject().getPrincipal();
-        PubFun.check(commonTel, commonName);
-        if (commonTel.trim().length() != 11) {
+        PubFun.check(dto.getCommonTel(), dto.getCommonName());
+        if (dto.getCommonTel().trim().length() != 11) {
             throw new ServiceException(523, "请输入正确手机号");
         }
-        user.setCommonTel(commonTel);
-        user.setCommonName(commonName);
+        user.setCommonTel(dto.getCommonTel());
+        user.setCommonName(dto.getCommonName());
         user.setUpdateUserId(user.getUserId());
         userMapper.updateByPrimaryKeySelective(user);
         redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, user.getUserId()), JSON.toJSONString(user));
@@ -668,26 +669,25 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
      * @return {@link Address}
      */
     @Override
-    public Address getAddrById(Long addId) {
-        if (super.baseCheck(addId, Objects::isNull)) {
+    public Address getAddrById(UserDTO dto) {
+        if (super.baseCheck(dto.getAddrId(), Objects::isNull)) {
             throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, SystemConstant.DATA_ILLEGALITY);
         }
-        return Optional.ofNullable(addressMapper.selectByPrimaryKey(addId)).orElseThrow(() -> PubFun.throwException("未查询到地址信息"));
+        return Optional.ofNullable(addressMapper.selectByPrimaryKey(dto.getAddrId())).orElseThrow(() -> PubFun.throwException("未查询到地址信息"));
     }
 
 
     /**
-     * @param addrId 地址id
      * @return java.lang.Boolean
      * @Description 修改默认地址
      * @Title updateDefaultAddrById
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Boolean updateDefaultAddrById(Long addrId) {
+    public Boolean updateDefaultAddrById(UserDTO dto) {
         User user = (User) SecurityUtils.getSubject().getPrincipal();
-        PubFun.check(addrId);
-        Address oldAddr = Optional.ofNullable(addressMapper.selectByPrimaryKey(addrId)).orElseThrow(() -> PubFun.throwException("未查询到地址信息"));
+        PubFun.check(dto.getAddrId());
+        Address oldAddr = Optional.ofNullable(addressMapper.selectByPrimaryKey(dto.getAddrId())).orElseThrow(() -> PubFun.throwException("未查询到地址信息"));
         oldAddr.setDefaultFlag(1);
         addressMapper.updateByPrimaryKey(oldAddr);
         //	将非当前地址id默认的取消
@@ -696,19 +696,16 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     }
 
     /**
-     * @param addrId
-     * @return java.lang.Boolean
+
      * @Description 删除收获地址
      * @Title deleteAddr
-     * @Author Mao Qi
-     * @Date 2019/9/22 18:52
      */
     @Transactional
     @Override
-    public Boolean deleteAddr(Long addrId) {
+    public Boolean deleteAddr(UserDTO dto) {
         User user = SecurityUtils.getPrincipal();
-        PubFun.check(addrId);
-        Address oldAddr = Optional.ofNullable(addressMapper.selectByPrimaryKey(addrId)).orElseThrow(() -> PubFun.throwException("未查询到地址信息"));
+        PubFun.check(dto.getAddrId());
+        Address oldAddr = Optional.ofNullable(addressMapper.selectByPrimaryKey(dto.getAddrId())).orElseThrow(() -> PubFun.throwException("未查询到地址信息"));
         oldAddr.setDeleteFlag(1);
         addressMapper.updateByPrimaryKey(oldAddr);
         return true;
@@ -796,8 +793,6 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     }
 
     /**
-     * @param oldPassWord
-     * @param newPassWord
      * @return java.lang.Boolean
      * @Description 修改密码
      * @Title updatePassWord
@@ -806,19 +801,19 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Boolean updatePassWord(String oldPassWord, String newPassWord) {
+    public Boolean updatePassWord(PassWordDTO dto) {
         User user = SecurityUtils.getPrincipal();
-        if (!StringUtils.hasText(oldPassWord) || !StringUtils.hasText(newPassWord)) {
+        if (!StringUtils.hasText(dto.getOldPassWord()) || !StringUtils.hasText(dto.getNewPassWord())) {
             throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, SystemConstant.DATA_ILLEGALITY);
         }
         // 严格验证登录密码
         User old = Optional.ofNullable(userMapper.selectByPrimaryKey(user.getUserId())).get();
         //密码处理
-        String md5 = MD5Utils.isEncryption(oldPassWord, old.getSalt());
+        String md5 = MD5Utils.isEncryption(dto.getOldPassWord(), old.getSalt());
         if (!old.getPassWord().equals(md5)) {
             throw new ServiceException(524, "您输入的原密码错误,请重新输入!");
         }
-        String[] encryption = MD5Utils.encryption(newPassWord);
+        String[] encryption = MD5Utils.encryption(dto.getNewPassWord());
         old.setPassWord(encryption[0]);
         userMapper.updateByPrimaryKeySelective(old);
         return true;
@@ -852,24 +847,24 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     //修改手机号/用户名
     @Override
     @Transactional
-    public User updateUserName(String userName, String code, String newUserName) {
+    public User updateUserName(UserDTO dto) {
 //        AuthToken authToken = AppTokenUtils.getAuthToken();
         // 数据校验
-        PubFun.check(userName, code);
+        PubFun.check(dto.getUserName(), dto.getCode());
         //校验手机验证
-        messagesCheck(userName, code);
+        messagesCheck(dto.getUserName(), dto.getCode());
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
-        wrapper.eq(User::getUserName, newUserName).eq(User::getUserType, 0).eq(User::getDeleteFlag, 0);
+        wrapper.eq(User::getUserName, dto.getNewUserName()).eq(User::getUserType, 0).eq(User::getDeleteFlag, 0);
         Long count = userMapper.selectCount(wrapper);
-        User currentUser = userMapper.findByUserName(userName);
+        User currentUser = userMapper.findByUserName(dto.getUserName());
         if (count > 0) {//存在
             throw new ServiceException(525, "手机号已注册,请更换手机号!");
         } else {
-            currentUser.setUserName(newUserName);
-            currentUser.setTel(newUserName);
+            currentUser.setUserName(dto.getNewUserName());
+            currentUser.setTel(dto.getNewUserName());
             userMapper.updateByPrimaryKeySelective(currentUser);
         }
-        redisTemplate.delete(AppTokenUtils.CODE_FILE + userName);//删除验证码
+        redisTemplate.delete(AppTokenUtils.CODE_FILE + dto.getUserName());//删除验证码
 //        authToken.setUser(currentUser);
 //        redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, currentUser.getUserId()));
         return BeanUtils.copy(currentUser);
@@ -878,18 +873,18 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     //设置/忘记密码
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Boolean addPassword( String code, String password) {
+    public Boolean addPassword(PassWordDTO dto) {
         User user = SecurityUtils.getPrincipal();
-        PubFun.check(user.getTel(), code, password);
-        messagesCheck(user.getTel(), code);
-        if (password.length() < 8) {
+        PubFun.check(user.getTel(), dto.getCode(), dto.getPassword());
+        messagesCheck(user.getTel(), dto.getCode());
+        if (dto.getPassword().length() < 8) {
             throw new ServiceException(526, "密码必须八位以上!");
         }
         String regex = "^(?!([a-zA-Z]+|\\d+)$)[a-zA-Z\\d]{6,20}$";
-        if (!password.matches(regex)) {
+        if (!dto.getPassword().matches(regex)) {
             throw new ServiceException(527, "密码必须又数字和字母组成!");
         }
-        String[] encryption = MD5Utils.encryption(password);
+        String[] encryption = MD5Utils.encryption(dto.getPassword());
         user.setPassWord(encryption[0]);
         user.setSalt(encryption[1]);
         userMapper.updateByPrimaryKeySelective(user);
@@ -1042,11 +1037,11 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     //添加或者修改支付宝账户
     @Override
     @Transactional
-    public User addOrUpdateAliNum(String realName, String alipayNum) {
-        PubFun.check(realName, alipayNum);
+    public User addOrUpdateAliNum(UserDTO dto) {
+        PubFun.check(dto.getRealName(), dto.getAlipayNum());
         User user = SecurityUtils.getPrincipal();
-        user.setAlipayNum(alipayNum);//支付宝账户
-        user.setRealName(realName);//真实姓名
+        user.setAlipayNum(dto.getAlipayNum());//支付宝账户
+        user.setRealName(dto.getRealName());//真实姓名
         user.setUpdateUserId(user.getUserId());
         user.setUpdateTime(LocalDateTime.now());
         userMapper.updateByPrimaryKeySelective(user);

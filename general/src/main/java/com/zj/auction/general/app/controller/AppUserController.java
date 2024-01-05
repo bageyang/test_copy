@@ -1,4 +1,5 @@
 package com.zj.auction.general.app.controller;
+import com.zj.auction.common.dto.PassWordDTO;
 import com.zj.auction.common.dto.Ret;
 import com.zj.auction.common.dto.UserDTO;
 import com.zj.auction.common.model.User;
@@ -82,15 +83,15 @@ public class AppUserController {
     }
 
     /**
-     * @param userName
+     * @param
      * @Description 发送手机短信
      * @Title sendMessages
      */
     @ApiOperation(value = "发送短信")
     @ApiImplicitParam(name = "userName", value = "电话")
     @PostMapping(value = "/sendMessages")
-    public Ret sendMessages(HttpServletRequest request,@RequestParam(name = "userName") String userName) {
-        return Ret.ok(appUserService.sendMessages(request,userName));
+    public Ret sendMessages(HttpServletRequest request,@RequestBody UserDTO dto) {
+        return Ret.ok(appUserService.sendMessages(request,dto.getTel()));
     }
 
 
@@ -103,15 +104,13 @@ public class AppUserController {
             @ApiImplicitParam(name = "alipayNum", value = "支付宝账户", dataType = "String")
     })
     @PostMapping(value = "/addOrUpdateAliNum")
-    public GeneralResult addOrUpdateAliNum(@RequestParam(name = "realName") String realName,@RequestParam(name = "alipayNum") String alipayNum) {
-        return GeneralResult.success(appUserService.addOrUpdateAliNum(realName,alipayNum));
+    public GeneralResult addOrUpdateAliNum(@RequestBody UserDTO dto) {
+        return GeneralResult.success(appUserService.addOrUpdateAliNum(dto));
     }
 
     /**
      * 更新用户名
      *
-     * @param userName 用户名
-     * @param code     代码
      * @return {@link GeneralResult}
      * @Description 修改手机号/用户名
      * @Title updateUserName
@@ -119,11 +118,12 @@ public class AppUserController {
     @ApiOperation(value = "修改手机号/用户名", notes = "nickName:昵称")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userName", value = "账户", dataType = "String"),
-            @ApiImplicitParam(name = "code", value = "短信验证码", dataType = "String")
+            @ApiImplicitParam(name = "code", value = "短信验证码", dataType = "String"),
+            @ApiImplicitParam(name = "newUserName", value = "新账户", dataType = "String")
     })
     @PostMapping(value = "/updateUserName")
-    public GeneralResult updateUserName(@RequestParam(name = "userName") String userName,@RequestParam(name = "code") String code,@RequestParam(name = "newUserName")String newUserName) {
-        return GeneralResult.success(appUserService.updateUserName(userName,code,newUserName));
+    public GeneralResult updateUserName(@RequestBody UserDTO dto) {
+        return GeneralResult.success(appUserService.updateUserName(dto));
     }
 
 
@@ -138,8 +138,8 @@ public class AppUserController {
             @ApiImplicitParam(name = "commonName", value = "常用联系姓名")
     })
     @PostMapping(value = "/updateCommonTel")
-    public GeneralResult updateCommonTel(@RequestParam(name = "commonTel") String commonTel,@RequestParam(name = "commonName") String commonName) {
-        return GeneralResult.success(appUserService.updateCommonTel(commonTel,commonName));
+    public GeneralResult updateCommonTel(@RequestBody UserDTO dto) {
+        return GeneralResult.success(appUserService.updateCommonTel(dto.getCommonTel(),dto.getCommonName()));
     }
 
 
@@ -166,37 +166,35 @@ public class AppUserController {
     }
 
     /**
-     * @param addrId
      * @return
      * @return：GeneralResult
      */
     @ApiOperation(value = "设置为默认地址", notes = "addrId:地址id")
     @ApiImplicitParam(name = "addrId", value = "地址id", dataType = "Long")
     @PostMapping(value = "/updateDefaultAddrById")
-    public GeneralResult updateDefaultAddrById(Long addrId) {
-        return GeneralResult.success( appUserService.updateDefaultAddrById(addrId));
+    public GeneralResult updateDefaultAddrById(@RequestBody UserDTO dto) {
+        return GeneralResult.success( appUserService.updateDefaultAddrById(dto.getAddrId()));
     }
 
     /**
-     * @param addrId
      * @Description 根据id查询单个地址
      */
     @ApiOperation(value = "根据id查询单个地址", notes = "addrId:地址id")
     @ApiImplicitParam(name = "addrId", value = "地址id", dataType = "Long")
     @PostMapping(value = "/getAddrById")
-    public GeneralResult getAddrById(@RequestParam(name = "addrId") Long addrId) {
-        return GeneralResult.success(appUserService.getAddrById(addrId));
+    public GeneralResult getAddrById(@RequestBody UserDTO dto) {
+        return GeneralResult.success(appUserService.getAddrById(dto));
     }
 
     /**
-     * @param addrId
+     * @param
      * @Description 删除地址
      */
     @ApiOperation(value = "删除地址", notes = "addrId:地址id")
     @ApiImplicitParams({@ApiImplicitParam(name = "addrId", value = "地址id", dataType = "Long")})
     @PostMapping(value = "/deleteAddr")
-    public GeneralResult deleteAddr(Long addrId) {
-        return GeneralResult.success(appUserService.deleteAddr(addrId));
+    public GeneralResult deleteAddr(@RequestBody UserDTO dto) {
+        return GeneralResult.success(appUserService.deleteAddr(dto.getAddrId()));
     }
 
     /**
@@ -240,8 +238,6 @@ public class AppUserController {
     }
 
     /**
-     * @param oldPassWord
-     * @param oldPassWord
      * @Description 修改密码
      * @Title updatePassWord
      */
@@ -251,8 +247,8 @@ public class AppUserController {
             @ApiImplicitParam(name = "newPassWord", value = "新密码", dataType = "String")
     })
     @PostMapping(value = "/updatePassWord")
-    public GeneralResult updatePassWord(String oldPassWord, String newPassWord) {
-        return GeneralResult.success(appUserService.updatePassWord(oldPassWord, newPassWord));
+    public GeneralResult updatePassWord(@RequestBody PassWordDTO dto) {
+        return GeneralResult.success(appUserService.updatePassWord(dto));
     }
 
 
@@ -268,8 +264,8 @@ public class AppUserController {
             @ApiImplicitParam(name = "password", value = "新密码", dataType = "String")
     })
     @PostMapping(value = "/addPassword")
-        public GeneralResult addPassword(@RequestParam(name = "code") String code,@RequestParam(name = "password") String password) {
-        return GeneralResult.success(appUserService.addPassword(code,password));
+        public GeneralResult addPassword(@RequestBody PassWordDTO dto) {
+        return GeneralResult.success(appUserService.addPassword(dto));
     }
 
     /**
@@ -283,8 +279,8 @@ public class AppUserController {
             @ApiImplicitParam(name = "password", value = "新密码", dataType = "String"),
     })
     @PostMapping(value = "/forgetPassword")
-    public GeneralResult forgetPassword(String tel,String code, String password) {
-        return GeneralResult.success(appUserService.forgetPassword(tel, code,password));
+    public GeneralResult forgetPassword(@RequestBody PassWordDTO dto) {
+        return GeneralResult.success(appUserService.forgetPassword(dto));
     }
 
 
@@ -300,15 +296,15 @@ public class AppUserController {
 
 
     /**
-     * @param payPassword
+
      * @Title 验证交易密码
      * @Description payPassword
      */
     @ApiOperation(value = "验证交易密码")
     @PostMapping("checkPayPassword")
-    public GeneralResult payPassword(@RequestParam(name = "payPassword") String payPassword) {
-        PubFun.check (  payPassword );
-        return GeneralResult.success(appUserService.isPayPassword( payPassword ));
+    public GeneralResult payPassword(@RequestBody PassWordDTO dto) {
+        PubFun.check (  dto );
+        return GeneralResult.success(appUserService.isPayPassword(dto.getPayPassword() ));
     }
 
 
@@ -318,9 +314,9 @@ public class AppUserController {
      */
     @ApiOperation(value = "添加支付密码")
     @PostMapping("addPayPassword")
-    public GeneralResult addPayPassword(@RequestParam(name = "payPassword")String payPassword) {
-        PubFun.check (  payPassword );
-        return GeneralResult.success(appUserService.addPayPassword( payPassword));
+    public GeneralResult addPayPassword(@RequestBody PassWordDTO dto) {
+        PubFun.check (  dto );
+        return GeneralResult.success(appUserService.addPayPassword( dto.getPayPassword()));
     }
 
 
