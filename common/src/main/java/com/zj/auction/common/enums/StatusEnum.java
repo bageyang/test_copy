@@ -24,7 +24,7 @@ public enum StatusEnum {
     AUCTION_MISS_ERROR(1005,"无法找到拍品信息"),
     STOCK_NOT_MATCH_ERROR(1006,"库存信息不像符"),
     AUCTION_NOT_MATCH_ERROR(1007,"拍品信息不匹配"),
-    AUCTION_STATUS_ERROR(1008,"订单状态异常"),
+    ORDER_STATUS_ERROR(1008,"订单状态异常"),
     TRANSFER_LIMIT_ERROR(1009,"转拍限制,无法转拍"),
     PAYMENT_VOUCHER_BLANK_ERROR(1010,"支付凭证不得为空"),
     GOODS_INFO_BLANK_ERROR(1011,"商品信息不得为空"),

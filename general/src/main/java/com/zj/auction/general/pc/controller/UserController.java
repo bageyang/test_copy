@@ -7,16 +7,16 @@ import com.zj.auction.common.dto.UserDTO;
 import com.zj.auction.common.model.Permis;
 import com.zj.auction.common.model.User;
 import com.zj.auction.general.shiro.SecurityUtils;
+import com.zj.auction.common.util.RedisUtil;
 import com.zj.auction.general.pc.service.UserService;
 import com.zj.auction.common.vo.GeneralResult;
 import com.zj.auction.common.vo.PageAction;
 import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -37,8 +37,6 @@ public class UserController{
 
     @Autowired
     private UserService pcUserServer;
-    @Resource
-    private RedisTemplate<String,Object> redisTemplate;
 
 
     @PostMapping("/test")
@@ -228,21 +226,21 @@ public class UserController{
 
 
 
-//    /**
-//     * @Description 导出会员
-//     * @Title exportUser
-//     * @Author Mao Qi
-//     * @Date 2020/10/21 10:41
-//     * @param pageAction
-//     * @param httpServletResponse
-//     * @return	void
-//     */
-////    @SystemLog
-//    @RequiresPermissions(value="member:export")
-//    @PostMapping("/exportUser")
-//    public void exportUser(@RequestBody PageAction pageAction,Integer userType,String userIds, HttpServletResponse httpServletResponse){
-//        pcUserServer.exportUser(pageAction,userType,userIds, httpServletResponse);
-//    }
+    /**
+     * @Description 导出会员
+     * @Title exportUser
+     * @Author Mao Qi
+     * @Date 2020/10/21 10:41
+     * @param pageAction
+     * @param httpServletResponse
+     * @return	void
+     */
+//    @SystemLog
+    @RequiresPermissions(value="member:export")
+    @PostMapping("/exportUser")
+    public void exportUser(@RequestBody PageAction pageAction,Integer userType,String userIds, HttpServletResponse httpServletResponse){
+        pcUserServer.exportUser(pageAction,userType,userIds, httpServletResponse);
+    }
 
     /**
      * @Description 根据id查询会员信息
@@ -292,7 +290,7 @@ public class UserController{
     public GeneralResult removeSession() {
         User user =  SecurityUtils.getPrincipal();
         SecurityUtils.logout();
-        redisTemplate.delete(RedisConstant.PC_USER_TOKEN+user.getUserId());
+        RedisUtil.del(RedisConstant.PC_USER_TOKEN+user.getUserId());
 
         return GeneralResult.success();
     }

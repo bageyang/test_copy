@@ -16,8 +16,6 @@ import com.zj.auction.common.exception.ServiceException;
 import com.zj.auction.common.mapper.*;
 import com.zj.auction.common.model.*;
 import com.zj.auction.common.util.*;
-import com.zj.auction.general.auth.AppTokenUtils;
-import com.zj.auction.general.auth.AuthToken;
 import com.zj.auction.general.pc.service.UserService;
 import com.zj.auction.general.shiro.SecurityUtils;
 import com.zj.auction.common.vo.GeneralResult;
@@ -28,11 +26,10 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -63,8 +60,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     private final AreaMapper areaMapper;
     private final WalletMapper walletMapper;
     private final GoodsMapper goodsMapper;
-    @Resource
-    private RedisTemplate<String,Object> redisTemplate;
 
 
 
@@ -114,7 +109,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         //敏感信息不返回给前端，加入缓存2天方便解密时使用
         AuthToken authToken = new AuthToken(userId, token);
         authToken.setUser(userInfo);
-        redisTemplate.opsForValue().set(String.format(RedisConstant.PC_USER_TOKEN, userId), JSON.toJSONString(authToken), 60 * 60 * 24 * 30L);
+        RedisUtil.set(String.format(RedisConstant.PC_USER_TOKEN, userId), JSON.toJSONString(authToken), 60 * 60 * 24 * 30L);
         return data;
     }
 
@@ -811,44 +806,44 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         return userMapper.selectList(wrapper);
     }
 
-//    //导出用户
-//    @Override
-//    public void exportUser(PageAction pageAction, Integer userType, String userIds, HttpServletResponse httpServletResponse) {
-//        List<Long> userList = new ArrayList<>();
-//        if (!StringUtils.isEmpty(userIds)) {
-//            userList = JSON.parseArray(userIds, Long.class);
-//        }
-//        PageInfo<User> userPage = getUserPage(pageAction, userList);
-//
-//        List<List<String>> excelData = new ArrayList<>();
-//        List<String> head = new ArrayList<>();
-//        head.add("用户ID");
-//        head.add("账号");
-//        head.add("昵称");
-//        head.add("电话");
-//        head.add("用户类型");
-////		head.add("金币余额");
-////		head.add("银币余额");
-////		head.add("店铺收入");
-//        head.add("注册时间");
-//        // 添加头部
-//        excelData.add(head);
-//        for (User user : userPage.getList()) {
-//            List<String> data1 = new ArrayList<>();
-//            data1.add(user.getUserId().toString());  //ID
-//            data1.add(user.getUserName());  //账号
-//            data1.add(Objects.toString(user.getNickName(), ""));  //昵称
-//            data1.add(Objects.toString(user.getTel(), ""));  //手机号
-//            data1.add(user.getUserType() == 1 ? "店主" : "用户");   //用户类型
-////			data1.add(Objects.toString(user.getGoldBalance(), "0"));   //金币余额
-////			data1.add(Objects.toString(user.getSilverBalance(), "0"));   //银币余额
-////			data1.add(Objects.toString(user.getBalance(), "0"));   //店铺收入
-//            data1.add(Objects.toString(DateTimeUtils.toString(user.getAddTime(), "yyyy-MM-dd HH:mm:ss"), ""));
-//            excelData.add(data1);
-//        }
+    //导出用户
+    @Override
+    public void exportUser(PageAction pageAction, Integer userType, String userIds, HttpServletResponse httpServletResponse) {
+        List<Long> userList = new ArrayList<>();
+        if (!StringUtils.isEmpty(userIds)) {
+            userList = JSON.parseArray(userIds, Long.class);
+        }
+        PageInfo<User> userPage = getUserPage(pageAction, userList);
+
+        List<List<String>> excelData = new ArrayList<>();
+        List<String> head = new ArrayList<>();
+        head.add("用户ID");
+        head.add("账号");
+        head.add("昵称");
+        head.add("电话");
+        head.add("用户类型");
+//		head.add("金币余额");
+//		head.add("银币余额");
+//		head.add("店铺收入");
+        head.add("注册时间");
+        // 添加头部
+        excelData.add(head);
+        for (User user : userPage.getList()) {
+            List<String> data1 = new ArrayList<>();
+            data1.add(user.getUserId().toString());  //ID
+            data1.add(user.getUserName());  //账号
+            data1.add(Objects.toString(user.getNickName(), ""));  //昵称
+            data1.add(Objects.toString(user.getTel(), ""));  //手机号
+            data1.add(user.getUserType() == 1 ? "店主" : "用户");   //用户类型
+//			data1.add(Objects.toString(user.getGoldBalance(), "0"));   //金币余额
+//			data1.add(Objects.toString(user.getSilverBalance(), "0"));   //银币余额
+//			data1.add(Objects.toString(user.getBalance(), "0"));   //店铺收入
+            data1.add(Objects.toString(DateTimeUtils.toString(user.getAddTime(), "yyyy-MM-dd HH:mm:ss"), ""));
+            excelData.add(data1);
+        }
 //        ExcelUtil.exportExcel(httpServletResponse,
 //                excelData, "会员信息", "member.xls", 20);
-//    }
+    }
 
 
     /**

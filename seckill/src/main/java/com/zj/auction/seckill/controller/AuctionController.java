@@ -1,7 +1,8 @@
 package com.zj.auction.seckill.controller;
 
 import com.zj.auction.common.dto.Ret;
-import com.zj.auction.common.model.Auction;
+import com.zj.auction.common.vo.AuctionListVo;
+import com.zj.auction.common.vo.AuctionVo;
 import com.zj.auction.seckill.service.AuctionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,12 +19,12 @@ public class AuctionController {
     private AuctionService auctionService;
 
     @GetMapping("/area/{areaId}")
-    public Object listAreaAuction(@PathVariable("areaId")Integer areaId){
+    public Ret<List<AuctionListVo>> listAreaAuction(@PathVariable("areaId")Integer areaId){
         return Ret.ok(auctionService.listAuctionByAreaId(areaId));
     }
 
     @GetMapping("/info/{auctionId}")
-    public Object listAreaAuction(@PathVariable("auctionId")Long auctionId){
+    public Ret<AuctionVo> listAreaAuction(@PathVariable("auctionId")Long auctionId){
         return Ret.ok(auctionService.getAuctionInfo(auctionId));
     }
 }

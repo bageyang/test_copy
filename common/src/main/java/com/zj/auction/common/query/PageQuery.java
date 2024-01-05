@@ -11,7 +11,12 @@ public class PageQuery {
     }
 
     private Integer getSuitablePageNum() {
-        return (Objects.isNull(pageNum) || pageNum < 1) ? 1 : pageNum;
+        if(Objects.isNull(pageNum) || pageNum < 1){
+            setPageNum(1);
+        }else {
+            setPageNum(pageNum);
+        }
+        return this.pageNum;
     }
 
     public void setPageNum(Integer pageNum) {
@@ -23,7 +28,12 @@ public class PageQuery {
     }
 
     private Integer getSuitablePageSize() {
-        return (Objects.isNull(pageSize) || pageSize < 1) ? 10 : pageSize;
+        if(Objects.isNull(pageSize) || pageSize < 1){
+            setPageSize(10);
+        }else {
+            setPageSize(pageSize);
+        }
+        return pageSize;
     }
 
     public void setPageSize(Integer pageSize) {

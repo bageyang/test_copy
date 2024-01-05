@@ -51,11 +51,15 @@ public class SeckillServiceImpl implements SeckillService {
         if(!ret.isPresent()){
             return Ret.error(StatusEnum.SECKILL_FAIL_ERROR);
         }
-        // todo 后续所有异常需要捕获并补偿消息
         // 3.发送mq 生成订单
         long orderSn = SnowFlake.nextId();
         BaseOrderDto baseOrderDto = buildOrderMqMSg(orderSn,ret.get(),auctionId);
-        rabbitTemplate.convertAndSend(Constant.ORDER_EXCHANGE_KEY, null, baseOrderDto);
+        try {
+            rabbitTemplate.convertAndSend(Constant.ORDER_EXCHANGE_KEY, null, baseOrderDto);
+        }catch (Exception e){
+            log.error("发送mq异常订单信息:{}",baseOrderDto);
+            log.error("发送mq异常:",e);
+        }
         return Ret.ok(baseOrderDto);
     }
 
@@ -63,6 +67,8 @@ public class SeckillServiceImpl implements SeckillService {
         BaseOrderDto baseOrderDto = new BaseOrderDto();
         baseOrderDto.setOrderSn(orderSn);
         baseOrderDto.setSn(Long.parseLong(sn));
+        // todo
+        baseOrderDto.setUserId(2L);
         baseOrderDto.setCreateTime(LocalDateTime.now());
         baseOrderDto.setAuctionId(auctionId);
         return baseOrderDto;

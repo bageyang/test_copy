@@ -25,20 +25,27 @@ public class RedisConstant {
      */
     public static final String AUCTION_SEQUENCE_KEY = "auction:sequence:";
 
+    /**
+     * 创建拍品全局锁
+     */
     public static final String AUCTION_GENERATOR_LOCK_KEY = "auction:generator:lock";
 
+    /**
+     * SnowFlake 全局机器号相关 key
+     */
     public static final String MACHINE_SEQUENCE_KEY = "machine:sn";
 
+    /**
+     * SnowFlake 全局机器号相关 key
+     */
     public static final String MACHINE_SEQUENCE_LOCK_KEY = "machine:sn_lock";
 
-    public static final String AUCTION_LUA_SCRIPT =
-            "if ((redis.call('exists', KEYS[1]) == 1) and (redis.call('exists', KEYS[2]) == 1)) then " +
-            "if(tonumber(redis.call('hget', KEYS[1], ARGV[1])) > 0) then " +
-            "redis.call('hincrby', KEYS[1], ARGV[1], -1) " +
-            "return redis.call('LPOP', KEYS[2]); " +
-            "end; " +
-            "return nil; " +
-            "end; " +
-            "return nil;";
+    /**
+     * 秒杀订单缓存key
+     */
+    public static final String AUCTION_ORDER_CACHE_KEY = "auction:createdOrder";
+
+    public static final String AUCTION_LUA_SCRIPT = "if ((redis.call('exists', KEYS[1]) == 1) and (redis.call('exists', KEYS[2]) == 1)) then if(tonumber(redis.call('hget', KEYS[1], ARGV[1])) > 0) then redis.call('hincrby', KEYS[1], ARGV[1], -1) return redis.call('LPOP', KEYS[2]); end; return nil; end; return nil;";
+
     public static final String AUCTION_LUA_SCRIPT_SHA = "636c1465770b16cd5f70e6b3bc50aa05ac29dfc9";
 }
