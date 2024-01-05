@@ -1,7 +1,7 @@
 package com.zj.auction.common.util;
 
  public class SnowFlake {
-     private static long initFLag = -1;
+     private static int initFLag = 0;
     // 起始的时间戳
     private final static long START_STMP = 1640966400000L; //2020-01-01
     // 每一部分占用的位数，就三个
@@ -30,11 +30,11 @@ package com.zj.auction.common.util;
         }
         SnowFlake.datacenterId = datacenterId;
         SnowFlake.machineId = machineId;
-        SnowFlake.initFLag = System.currentTimeMillis();
+        SnowFlake.initFLag = 1;
     }
 
     public synchronized static void init(long datacenterId, long machineId){
-        if(initFLag == -1L){
+        if(initFLag == 0){
             setMachineIdAndDatacenterId(datacenterId,machineId);
         }else {
             throw new IllegalArgumentException("SnowFlake has already init");
@@ -82,18 +82,4 @@ package com.zj.auction.common.util;
     private static long timeGen() {
         return System.currentTimeMillis();
     }
-
-     public static long getMachineId() {
-         return machineId;
-     }
-
-     public static long getInitFLag() {
-         return initFLag;
-     }
-
-     public static void setInitFLag(long initFLag) {
-        if(initFLag != -1){
-            SnowFlake.initFLag = initFLag;
-        }
-     }
- }
+}

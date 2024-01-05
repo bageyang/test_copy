@@ -3,7 +3,6 @@ package com.zj.auction.general.vo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import javax.persistence.Transient;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -61,8 +60,6 @@ public class UserVO implements Serializable {
     @ApiModelProperty(value = "浏览次数")
     private Long browseNum = 0L;
 
-    @ApiModelProperty(value = "带看房次数")
-    private Long withLookNum = 0L;
 
     @ApiModelProperty(value = "交易完成数量")
     private Long houseFinishNum = 0L;

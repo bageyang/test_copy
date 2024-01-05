@@ -5,7 +5,7 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="goods_id" jdbcType="BIGINT" property="goodsId" />
     <result column="prices" jdbcType="DECIMAL" property="prices" />
-    <result column="stock_number" jdbcType="BIGINT" property="stockNumber" />
+    <result column="stock_number" jdbcType="VARCHAR" property="stockNumber" />
     <result column="stock_status" jdbcType="TINYINT" property="stockStatus" />
     <result column="owner_id" jdbcType="BIGINT" property="ownerId" />
     <result column="transfer_num" jdbcType="INTEGER" property="transferNum" />
@@ -25,7 +25,7 @@
       stock_status, owner_id, transfer_num, 
       create_time, update_time, is_deleted
       )
-    values (#{goodsId,jdbcType=BIGINT}, #{prices,jdbcType=DECIMAL}, #{stockNumber,jdbcType=BIGINT},
+    values (#{goodsId,jdbcType=BIGINT}, #{prices,jdbcType=DECIMAL}, #{stockNumber,jdbcType=VARCHAR}, 
       #{stockStatus,jdbcType=TINYINT}, #{ownerId,jdbcType=BIGINT}, #{transferNum,jdbcType=INTEGER}, 
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=TINYINT}
       )
@@ -34,7 +34,7 @@
     update zj_stock
     set goods_id = #{goodsId,jdbcType=BIGINT},
       prices = #{prices,jdbcType=DECIMAL},
-      stock_number = #{stockNumber,jdbcType=BIGINT},
+      stock_number = #{stockNumber,jdbcType=VARCHAR},
       stock_status = #{stockStatus,jdbcType=TINYINT},
       owner_id = #{ownerId,jdbcType=BIGINT},
       transfer_num = #{transferNum,jdbcType=INTEGER},

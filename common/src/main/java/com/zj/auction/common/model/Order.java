@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 public class Order implements Serializable {
     private Long id;
 
-    private Long orderSn;
+    private String orderSn;
 
     private Long goodsId;
 
@@ -53,11 +53,11 @@ public class Order implements Serializable {
         this.id = id;
     }
 
-    public Long getOrderSn() {
+    public String getOrderSn() {
         return orderSn;
     }
 
-    public void setOrderSn(Long orderSn) {
+    public void setOrderSn(String orderSn) {
         this.orderSn = orderSn;
     }
 

@@ -9,8 +9,6 @@ public class User implements Serializable {
 
     private Integer roleId;
 
-    private Integer roleType;
-
     private String userName;
 
     private String passWord;
@@ -43,19 +41,7 @@ public class User implements Serializable {
 
     private LocalDateTime loginTime;
 
-    private Integer userType;
-
     private Integer currentUserType;
-
-    private String addr;
-
-    private String cardNumber;
-
-    private String domainName;
-
-    private Integer subUserNum;
-
-    private Integer subUserNumAll;
 
     private String payPassword;
 
@@ -81,18 +67,6 @@ public class User implements Serializable {
 
     private String backgroundImg;
 
-    private String province;
-
-    private String city;
-
-    private String county;
-
-    private Long provinceId;
-
-    private Long cityId;
-
-    private Long countyId;
-
     private Integer isFirstLogin;
 
     private Integer shareType;
@@ -101,27 +75,13 @@ public class User implements Serializable {
 
     private String wxUnionId;
 
-    private String frontImage;
-
-    private String reverseImage;
-
-    private LocalDateTime applyTime;
-
     private LocalDateTime lastLoginTime;
 
     private String transactionId;
 
-    private String faceImg;
-
-    private Integer enteringStatus;
-
     private LocalDateTime birthTime;
 
     private String deviceNumber;
-
-    private String simNumber;
-
-    private String primaryTel;
 
     private String uniqueNum;
 
@@ -138,10 +98,6 @@ public class User implements Serializable {
     private Integer likeTotal;
 
     private Integer luckyDrawNum;
-
-    private Long agentUserId;
-
-    private String pcPassword;
 
     private String pcSalt;
 
@@ -181,6 +137,10 @@ public class User implements Serializable {
 
     private String commonTel;
 
+    private String memo;
+
+    private Integer userType;
+
     private static final long serialVersionUID = 1L;
 
     public Long getUserId() {
@@ -197,14 +157,6 @@ public class User implements Serializable {
 
     public void setRoleId(Integer roleId) {
         this.roleId = roleId;
-    }
-
-    public Integer getRoleType() {
-        return roleType;
-    }
-
-    public void setRoleType(Integer roleType) {
-        this.roleType = roleType;
     }
 
     public String getUserName() {
@@ -335,60 +287,12 @@ public class User implements Serializable {
         this.loginTime = loginTime;
     }
 
-    public Integer getUserType() {
-        return userType;
-    }
-
-    public void setUserType(Integer userType) {
-        this.userType = userType;
-    }
-
     public Integer getCurrentUserType() {
         return currentUserType;
     }
 
     public void setCurrentUserType(Integer currentUserType) {
         this.currentUserType = currentUserType;
-    }
-
-    public String getAddr() {
-        return addr;
-    }
-
-    public void setAddr(String addr) {
-        this.addr = addr;
-    }
-
-    public String getCardNumber() {
-        return cardNumber;
-    }
-
-    public void setCardNumber(String cardNumber) {
-        this.cardNumber = cardNumber;
-    }
-
-    public String getDomainName() {
-        return domainName;
-    }
-
-    public void setDomainName(String domainName) {
-        this.domainName = domainName;
-    }
-
-    public Integer getSubUserNum() {
-        return subUserNum;
-    }
-
-    public void setSubUserNum(Integer subUserNum) {
-        this.subUserNum = subUserNum;
-    }
-
-    public Integer getSubUserNumAll() {
-        return subUserNumAll;
-    }
-
-    public void setSubUserNumAll(Integer subUserNumAll) {
-        this.subUserNumAll = subUserNumAll;
     }
 
     public String getPayPassword() {
@@ -487,54 +391,6 @@ public class User implements Serializable {
         this.backgroundImg = backgroundImg;
     }
 
-    public String getProvince() {
-        return province;
-    }
-
-    public void setProvince(String province) {
-        this.province = province;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getCounty() {
-        return county;
-    }
-
-    public void setCounty(String county) {
-        this.county = county;
-    }
-
-    public Long getProvinceId() {
-        return provinceId;
-    }
-
-    public void setProvinceId(Long provinceId) {
-        this.provinceId = provinceId;
-    }
-
-    public Long getCityId() {
-        return cityId;
-    }
-
-    public void setCityId(Long cityId) {
-        this.cityId = cityId;
-    }
-
-    public Long getCountyId() {
-        return countyId;
-    }
-
-    public void setCountyId(Long countyId) {
-        this.countyId = countyId;
-    }
-
     public Integer getIsFirstLogin() {
         return isFirstLogin;
     }
@@ -567,30 +423,6 @@ public class User implements Serializable {
         this.wxUnionId = wxUnionId;
     }
 
-    public String getFrontImage() {
-        return frontImage;
-    }
-
-    public void setFrontImage(String frontImage) {
-        this.frontImage = frontImage;
-    }
-
-    public String getReverseImage() {
-        return reverseImage;
-    }
-
-    public void setReverseImage(String reverseImage) {
-        this.reverseImage = reverseImage;
-    }
-
-    public LocalDateTime getApplyTime() {
-        return applyTime;
-    }
-
-    public void setApplyTime(LocalDateTime applyTime) {
-        this.applyTime = applyTime;
-    }
-
     public LocalDateTime getLastLoginTime() {
         return lastLoginTime;
     }
@@ -607,22 +439,6 @@ public class User implements Serializable {
         this.transactionId = transactionId;
     }
 
-    public String getFaceImg() {
-        return faceImg;
-    }
-
-    public void setFaceImg(String faceImg) {
-        this.faceImg = faceImg;
-    }
-
-    public Integer getEnteringStatus() {
-        return enteringStatus;
-    }
-
-    public void setEnteringStatus(Integer enteringStatus) {
-        this.enteringStatus = enteringStatus;
-    }
-
     public LocalDateTime getBirthTime() {
         return birthTime;
     }
@@ -637,22 +453,6 @@ public class User implements Serializable {
 
     public void setDeviceNumber(String deviceNumber) {
         this.deviceNumber = deviceNumber;
-    }
-
-    public String getSimNumber() {
-        return simNumber;
-    }
-
-    public void setSimNumber(String simNumber) {
-        this.simNumber = simNumber;
-    }
-
-    public String getPrimaryTel() {
-        return primaryTel;
-    }
-
-    public void setPrimaryTel(String primaryTel) {
-        this.primaryTel = primaryTel;
     }
 
     public String getUniqueNum() {
@@ -717,22 +517,6 @@ public class User implements Serializable {
 
     public void setLuckyDrawNum(Integer luckyDrawNum) {
         this.luckyDrawNum = luckyDrawNum;
-    }
-
-    public Long getAgentUserId() {
-        return agentUserId;
-    }
-
-    public void setAgentUserId(Long agentUserId) {
-        this.agentUserId = agentUserId;
-    }
-
-    public String getPcPassword() {
-        return pcPassword;
-    }
-
-    public void setPcPassword(String pcPassword) {
-        this.pcPassword = pcPassword;
     }
 
     public String getPcSalt() {
@@ -887,6 +671,22 @@ public class User implements Serializable {
         this.commonTel = commonTel;
     }
 
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
+
+    public Integer getUserType() {
+        return userType;
+    }
+
+    public void setUserType(Integer userType) {
+        this.userType = userType;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -895,7 +695,6 @@ public class User implements Serializable {
         sb.append("Hash = ").append(hashCode());
         sb.append(", userId=").append(userId);
         sb.append(", roleId=").append(roleId);
-        sb.append(", roleType=").append(roleType);
         sb.append(", userName=").append(userName);
         sb.append(", passWord=").append(passWord);
         sb.append(", realName=").append(realName);
@@ -912,13 +711,7 @@ public class User implements Serializable {
         sb.append(", email=").append(email);
         sb.append(", loginIp=").append(loginIp);
         sb.append(", loginTime=").append(loginTime);
-        sb.append(", userType=").append(userType);
         sb.append(", currentUserType=").append(currentUserType);
-        sb.append(", addr=").append(addr);
-        sb.append(", cardNumber=").append(cardNumber);
-        sb.append(", domainName=").append(domainName);
-        sb.append(", subUserNum=").append(subUserNum);
-        sb.append(", subUserNumAll=").append(subUserNumAll);
         sb.append(", payPassword=").append(payPassword);
         sb.append(", departmentId=").append(departmentId);
         sb.append(", addTime=").append(addTime);
@@ -931,27 +724,14 @@ public class User implements Serializable {
         sb.append(", shareImg=").append(shareImg);
         sb.append(", userImg=").append(userImg);
         sb.append(", backgroundImg=").append(backgroundImg);
-        sb.append(", province=").append(province);
-        sb.append(", city=").append(city);
-        sb.append(", county=").append(county);
-        sb.append(", provinceId=").append(provinceId);
-        sb.append(", cityId=").append(cityId);
-        sb.append(", countyId=").append(countyId);
         sb.append(", isFirstLogin=").append(isFirstLogin);
         sb.append(", shareType=").append(shareType);
         sb.append(", shopId=").append(shopId);
         sb.append(", wxUnionId=").append(wxUnionId);
-        sb.append(", frontImage=").append(frontImage);
-        sb.append(", reverseImage=").append(reverseImage);
-        sb.append(", applyTime=").append(applyTime);
         sb.append(", lastLoginTime=").append(lastLoginTime);
         sb.append(", transactionId=").append(transactionId);
-        sb.append(", faceImg=").append(faceImg);
-        sb.append(", enteringStatus=").append(enteringStatus);
         sb.append(", birthTime=").append(birthTime);
         sb.append(", deviceNumber=").append(deviceNumber);
-        sb.append(", simNumber=").append(simNumber);
-        sb.append(", primaryTel=").append(primaryTel);
         sb.append(", uniqueNum=").append(uniqueNum);
         sb.append(", roleShopId=").append(roleShopId);
         sb.append(", roleRange=").append(roleRange);
@@ -960,8 +740,6 @@ public class User implements Serializable {
         sb.append(", commentTotal=").append(commentTotal);
         sb.append(", likeTotal=").append(likeTotal);
         sb.append(", luckyDrawNum=").append(luckyDrawNum);
-        sb.append(", agentUserId=").append(agentUserId);
-        sb.append(", pcPassword=").append(pcPassword);
         sb.append(", pcSalt=").append(pcSalt);
         sb.append(", alipayNum=").append(alipayNum);
         sb.append(", wxTel=").append(wxTel);
@@ -981,6 +759,8 @@ public class User implements Serializable {
         sb.append(", diamondOrderLimit=").append(diamondOrderLimit);
         sb.append(", commonName=").append(commonName);
         sb.append(", commonTel=").append(commonTel);
+        sb.append(", memo=").append(memo);
+        sb.append(", userType=").append(userType);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

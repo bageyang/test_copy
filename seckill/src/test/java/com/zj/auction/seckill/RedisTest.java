@@ -7,7 +7,6 @@ import com.zj.auction.common.enums.AuctionStatEnum;
 import com.zj.auction.common.mapper.GoodsMapper;
 import com.zj.auction.common.model.Auction;
 import com.zj.auction.common.model.Goods;
-import com.zj.auction.common.util.SnowFlake;
 import com.zj.auction.seckill.service.RedisService;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
@@ -76,12 +75,5 @@ public class RedisTest {
         String s = JSON.parseObject(buf.array(), String.class);
         System.out.println(s);
 //        String o = JSON.parseObject(new ByteBufInputStream(buf), String.class);
-    }
-
-    @Test
-    public void testIdGenerator(){
-        for (int i = 0; i < 10; i++) {
-            System.out.println(SnowFlake.nextId());
-        }
     }
 }
