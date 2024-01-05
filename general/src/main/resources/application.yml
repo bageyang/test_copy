@@ -1,16 +1,14 @@
 server:
-  servlet:
-    context-path: /general
-  port: 9091
+  port: 9090
 spring:
-  application:
-    name: general-server
+  main:
+    allow-circular-references: true
   cloud:
     nacos:
       discovery:
-        server-addr: 120.79.20.49:8848
+        server-addr: 127.0.0.1:8848
       config:
-        server-addr: 120.79.20.49:8848
+        server-addr: 127.0.0.1:8848
   datasource:
     url:  jdbc:mysql://120.77.247.13:3306/zj?useSSL=false&useUnicode=true&characterEncoding=utf-8
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -18,7 +16,7 @@ spring:
     password: zhongjiu_test
   redis:
     port: 6379
-    host: 120.79.20.49
+    host: 120.77.247.13
     username: root
     timeout: 3000
     lettuce:
@@ -28,10 +26,10 @@ spring:
         max-idle: 64
         max-wait: -1
     password: zhongjiu_test
-  rabbitmq:
-    addresses: 120.79.20.49:5672
-    username: admin
-    password: zhongjiu_test
+#  rabbitmq:
+#    addresses: 120.77.247.13:5672
+#    username: guest
+#    password: guest
 
 #mybatis:
 #  mapper-locations:

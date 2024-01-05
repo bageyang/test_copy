@@ -7,19 +7,20 @@ import com.zj.auction.common.dto.BaseOrderDto;
 import com.zj.auction.common.dto.Ret;
 import com.zj.auction.common.enums.AuctionStatEnum;
 import com.zj.auction.common.enums.StatusEnum;
+import com.zj.auction.common.exception.CustomException;
+import com.zj.auction.common.model.Auction;
 import com.zj.auction.common.util.SnowFlake;
 import com.zj.auction.common.vo.AuctionVo;
 import com.zj.auction.seckill.service.AuctionService;
 import com.zj.auction.seckill.service.RedisService;
 import com.zj.auction.seckill.service.SeckillService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,25 +30,19 @@ public class SeckillServiceImpl implements SeckillService {
     private final RedisService redisService;
     private final AuctionService auctionService;
     private final RabbitTemplate rabbitTemplate;
-    private final HttpServletRequest request;
     private static ConcurrentHashMap<String,Object> SELL_OUT_AUCTION_MAP =new ConcurrentHashMap<>();
 
     @Autowired
-    public SeckillServiceImpl(RedisService redisService, AuctionService auctionService, RabbitTemplate rabbitTemplate, HttpServletRequest request) {
+    public SeckillServiceImpl(RedisService redisService, AuctionService auctionService, RabbitTemplate rabbitTemplate) {
         this.redisService = redisService;
         this.auctionService = auctionService;
         this.rabbitTemplate = rabbitTemplate;
-        this.request = request;
     }
 
     @Override
     public Ret<BaseOrderDto> seckill(Long auctionId) {
-        Long userId = getUserId();
-        if(Objects.isNull(userId)){
-            return Ret.error(StatusEnum.USER_TOKEN_ERROR);
-        }
         // 1.状态检查
-        Optional<Ret<BaseOrderDto>> checkRet = doCheck(auctionId,userId);
+        Optional<Ret<BaseOrderDto>> checkRet = doCheck(auctionId);
         if(checkRet.isPresent()){
             return checkRet.get();
         }
@@ -58,7 +53,7 @@ public class SeckillServiceImpl implements SeckillService {
         }
         // 3.发送mq 生成订单
         long orderSn = SnowFlake.nextId();
-        BaseOrderDto baseOrderDto = buildOrderMqMSg(orderSn,ret.get(),auctionId,userId);
+        BaseOrderDto baseOrderDto = buildOrderMqMSg(orderSn,ret.get(),auctionId);
         try {
             rabbitTemplate.convertAndSend(Constant.ORDER_EXCHANGE_KEY, null, baseOrderDto);
         }catch (Exception e){
@@ -68,17 +63,19 @@ public class SeckillServiceImpl implements SeckillService {
         return Ret.ok(baseOrderDto);
     }
 
-    private BaseOrderDto buildOrderMqMSg(Long orderSn, String sn, Long auctionId,Long userId) {
+    private BaseOrderDto buildOrderMqMSg(Long orderSn, String sn, Long auctionId) {
         BaseOrderDto baseOrderDto = new BaseOrderDto();
         baseOrderDto.setOrderSn(orderSn);
         baseOrderDto.setSn(Long.parseLong(sn));
-        baseOrderDto.setUserId(userId);
+        // todo
+        baseOrderDto.setUserId(2L);
         baseOrderDto.setCreateTime(LocalDateTime.now());
         baseOrderDto.setAuctionId(auctionId);
         return baseOrderDto;
     }
 
-    private Optional<Ret<BaseOrderDto>> doCheck(Long auctionId,Long userId) {
+    private Optional<Ret<BaseOrderDto>> doCheck(Long auctionId) {
+        // userId
         if(Objects.isNull(auctionId)){
             return Optional.of(Ret.error(StatusEnum.PARAM_ERROR));
         }
@@ -104,16 +101,11 @@ public class SeckillServiceImpl implements SeckillService {
         }
         // todo 区域时间判断
 
-        // todo 预约用户判断
+        // todo 用户判断
         return Optional.empty();
     }
 
     private Optional<String> decreStock(Long auctionId) {
         return Optional.ofNullable(auctionService.deductAuctionStock(auctionId));
-    }
-
-    private Long getUserId() {
-        String userIdStr = request.getHeader("userId");
-        return StringUtils.isBlank(userIdStr) ? null : Long.parseLong(userIdStr);
     }
 }

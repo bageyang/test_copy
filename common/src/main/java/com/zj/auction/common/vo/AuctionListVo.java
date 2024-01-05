@@ -8,7 +8,7 @@ public class AuctionListVo {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long auctionId;
     private Long goodsId;
-    private BigDecimal cashPrice;
+    private BigDecimal prices;
     private String imageUrl;
     private Byte auctionStatus;
 
@@ -28,12 +28,12 @@ public class AuctionListVo {
         this.goodsId = goodsId;
     }
 
-    public BigDecimal getCashPrice() {
-        return cashPrice;
+    public BigDecimal getPrices() {
+        return prices;
     }
 
-    public void setCashPrice(BigDecimal cashPrice) {
-        this.cashPrice = cashPrice;
+    public void setPrices(BigDecimal prices) {
+        this.prices = prices;
     }
 
     public String getImageUrl() {
