@@ -39,4 +39,13 @@ public class UidGenerator {
     public static String createHouseXid() {
         return "MF"+IdWorker.getId();
     }
+
+    /** ZF 开头
+     * 获取新唯一编号（18为数值）
+     * 来自于twitter项目snowflake的id产生方案，全局唯一，时间有序。
+     * 64位ID (42(毫秒)+5(机器ID)+5(业务编码)+12(重复累加))
+     */
+    public static String createPayXid() {
+        return "ZF"+IdWorker.getId();
+    }
 }

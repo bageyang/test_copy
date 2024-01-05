@@ -19,16 +19,18 @@ import com.zj.auction.common.util.*;
 import com.zj.auction.general.auth.AppTokenUtils;
 import com.zj.auction.general.auth.AuthToken;
 import com.zj.auction.general.pc.service.UserService;
+import com.zj.auction.general.shiro.SecurityUtils;
 import com.zj.auction.common.vo.GeneralResult;
 import com.zj.auction.common.vo.LoginResp;
 import com.zj.auction.common.vo.PageAction;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -230,7 +232,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Transactional
     public Boolean createManager(User userCfg) {
         PubFun.check(userCfg.getUserName(), userCfg.getTel(), userCfg.getPassWord());
-        User user = (User) SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         //	查询该用户名是否使用
         Integer count = userMapper.countByName(userCfg.getUserName());
         if (count > 0) {
@@ -280,7 +282,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Boolean updateManager(UserDTO userCfg) {
-        User user = (User)SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         PubFun.check(userCfg, userCfg.getTel(), userCfg.getUserName(), userCfg.getRealName());
         if (super.baseCheck(userCfg.getUserId(), Objects::isNull)) {
             throw new RuntimeException("未获取到管理员ID");
@@ -336,7 +338,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     @Transactional
     public Boolean deleteUser(User userCfg) {
-        User user = (User)SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         if (super.baseCheck(userCfg.getUserId(), Objects::isNull)) {
             throw new RuntimeException("未获取到管理员ID");
         }
@@ -357,7 +359,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     @Transactional
     public Boolean updateManagerStatus(User userCfg) {
-        User user = (User)SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         Function<User, Boolean> deal = param -> {
             Optional<User> userOpt = Optional.ofNullable(userMapper.selectById(param.getUserId()));
             User oldUser = userOpt.orElseThrow(() -> throwException("未查询到管理员信息"));
@@ -395,7 +397,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             sTime = DateTimeUtils.parse(pageAction.getStartTime());
             eTime = DateTimeUtils.parse(pageAction.getEndTime());
         }
-        User user = (User)SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
         wrapper.eq(User::getDeleteFlag, 0)
                 .ge(User::getUserType, 0)
@@ -422,7 +424,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         PubFun.check(pid);
         LocalDateTime sTime = DateTimeUtils.parse(pageAction.getStartTime());
         LocalDateTime eTime = DateTimeUtils.parse(pageAction.getEndTime());
-        User user = (User)SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         PageHelper.startPage(pageAction.getCurrentPage(), pageAction.getPageSize());
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
         wrapper.eq(User::getDeleteFlag, 0)
@@ -453,7 +455,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     @Transactional
     public Boolean updateUserStatus(Long userId, Integer status, String frozenExplain) {
-        User user = (User)SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         User oldUser = Optional.ofNullable(userMapper.selectById(userId)).orElseThrow(() -> throwException("未查询到用户信息"));
         oldUser.setStatus(status);
         if (status == 1) {
@@ -533,7 +535,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     public GeneralResult updVipType(Long userId, Integer vipType, Long tagId) {
         PubFun.check(userId, vipType);
-        User pUser = (User)SecurityUtils.getSubject();
+        User pUser = SecurityUtils.getPrincipal();
         User user = userMapper.selectByPrimaryKey(userId);
         if ((user.getVipType() == 0 || user.getVipType() == 1) && vipType.compareTo(2) == 0) {//设置团长必须设置分馆馆长
             PubFun.check(userId, tagId);
@@ -565,21 +567,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         return GeneralResult.success();
     }
 
-    /**
-     * 超级管理员修改用户角色
-     * @param userId
-     * @param roleId
-     */
-    @Override
-    public void updateUserAuthority(String userId, String roleId) {
-        userRoleMapper.updateUserAuthority(userId,roleId);
-    }
-
 
     // 添加用户
     @Override
     public Boolean insertUser(User userCfg) {
-        User principal = (User)SecurityUtils.getSubject();
+        User principal = SecurityUtils.getPrincipal();
         PubFun.check(userCfg, userCfg.getUserName(), userCfg.getNickName(), userCfg.getUserImg(), userCfg.getPassWord(),
                 userCfg.getUserType());
         //较验手机号
@@ -644,7 +636,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     // 查看用户信息
     @Override
     public User getUserByUserId(Long userId) {
-        //SecurityUtils.getPrincipal();
+        SecurityUtils.getPrincipal();
         if (super.baseCheck(userId, Objects::isNull)) {
             throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, "数据非法");
         }
@@ -655,7 +647,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
     @Transactional(rollbackFor = Exception.class)
     public Boolean deleteMember(Long userId) {
-        User user = (User)SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         if (super.baseCheck(userId, Objects::isNull)) {
             throw new RuntimeException("参数为空");
         }
@@ -703,7 +695,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
      */
     @Transactional
     public Integer updateAuditRejection(Long userId, String auditExplain) {
-        //SecurityUtils.getPrincipal();
+        SecurityUtils.getPrincipal();
         if (super.baseCheck(userId, Objects::isNull)) {
             throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, "数据非法");
         }
@@ -713,7 +705,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     //    实名通过审核
     @Transactional
     public Integer updateAuditApproval(Long userId) {
-        //SecurityUtils.getPrincipal();
+        SecurityUtils.getPrincipal();
         if (super.baseCheck(userId, Objects::isNull)) {
             throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, "数据非法");
         }
@@ -724,7 +716,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     //后台操作变更资金
     @Override
     public Integer changeBalance(Long userId, Integer moneyType, Integer type, BigDecimal integral, String remark) {
-        //User pcUser = SecurityUtils.getPrincipal();
+        User pcUser = SecurityUtils.getPrincipal();
         PubFun.check(userId, moneyType, type);
         if (com.zj.auction.common.util.StringUtils.isEmpty(integral) || integral.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ServiceException(506, "变更数量输入有误!");
@@ -907,7 +899,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     public GeneralResult statistics() {
         //获取当前用户信息
-        User user = (User)SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         Map<String, Object> map = new HashMap<>();
         //今年
         Integer year = LocalDateTime.now().getYear();
@@ -952,7 +944,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Transactional
     public GeneralResult updatePassOrImg(String userImg, String oldPass, String newPass) {
         PubFun.check(userImg, oldPass, newPass);
-        User user = (User)SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         User pcUser = Optional.ofNullable(userMapper.selectById(user.getUserId())).orElseThrow(() -> new ServiceException(407, "该用户已经不存在"));
         //校验旧密码
         String md5 = MD5Utils.isEncryption(oldPass, pcUser.getSalt());
@@ -980,7 +972,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Transactional
     public void updateUserById(Long userId, Object remarks, Integer type) {
         PubFun.check(userId, remarks);
-        User pUser = (User)SecurityUtils.getSubject();
+        User pUser = SecurityUtils.getPrincipal();
         if (((Integer) remarks) <= 0) {
             throw new ServiceException(621, "请输入大于零的数");
         }
