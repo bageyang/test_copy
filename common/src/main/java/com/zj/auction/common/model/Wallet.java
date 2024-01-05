@@ -21,7 +21,7 @@ public class Wallet implements Serializable {
     /**
      * 基金类型
      */
-    private Integer fundType;
+    private Byte fundType;
 
     /**
      * 资金

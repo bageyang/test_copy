@@ -335,7 +335,23 @@
       trade_no = #{tradeNo,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <select id="selectAllByUserId" parameterType="long">
-    select * from  zj_wallet where user_id =#{userId}
+  <update id="incrementUserBalance">
+    update zj_wallet
+    set balance = balance + {changeNum,jdbcType=DECIMAL}
+    where id = #{id} and balance = #{changeBefore}
+  </update>
+  <update id="decrementUserBalance">
+    update zj_wallet
+    set balance = balance - {changeNum,jdbcType=DECIMAL}
+    where id = #{id} and balance = #{changeBefore}
+  </update>
+  <select id="selectAllByUserId" parameterType="long" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from  zj_wallet where user_id =#{userId}
+  </select>
+  <select id="selectWalletByUserIdAndType" resultMap="BaseResultMap">
+    select
+        <include refid="Base_Column_List"/>
+    from zj_wallet
+    where user_id =#{userId} and fund_type = #{fundType}
   </select>
 </mapper>
