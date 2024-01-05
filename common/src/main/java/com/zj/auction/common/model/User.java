@@ -32,6 +32,8 @@ public class User implements Serializable {
      */
     private String realName;
 
+
+
     /**
      * 盐
      */
@@ -333,9 +335,17 @@ public class User implements Serializable {
     private String commonTel;
 
     /**
+     * 身份证号
+     */
+    private String cardNumber;
+
+    /**
      * 备忘录
      */
     private String memo;
+    private String memo1;
+    private String memo2;
+    private String memo3;
 
     /**
      * 用户类型

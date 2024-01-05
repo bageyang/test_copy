@@ -1,4 +1,4 @@
-package com.zj.auction.common.shiro;
+package com.zj.auction.general.shiro;
 import com.zj.auction.common.model.User;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.subject.Subject;

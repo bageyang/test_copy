@@ -7,7 +7,7 @@
     <result column="card_number" jdbcType="INTEGER" property="cardNumber" />
     <result column="domain_name" jdbcType="VARCHAR" property="domainName" />
     <result column="sub_user_num" jdbcType="INTEGER" property="subUserNum" />
-    <result column="sub_user_num_all" jdbcType="VARCHAR" property="subUserNumAll" />
+    <result column="sub_user_num_all" jdbcType="INTEGER" property="subUserNumAll" />
     <result column="province" jdbcType="VARCHAR" property="province" />
     <result column="city" jdbcType="VARCHAR" property="city" />
     <result column="county" jdbcType="VARCHAR" property="county" />
@@ -32,7 +32,7 @@
       front_image, reverse_image, apply_time, 
       face_img, entering_status)
     values (#{userConfigId,jdbcType=INTEGER}, #{addr,jdbcType=VARCHAR}, #{cardNumber,jdbcType=INTEGER}, 
-      #{domainName,jdbcType=VARCHAR}, #{subUserNum,jdbcType=INTEGER}, #{subUserNumAll,jdbcType=VARCHAR}, 
+      #{domainName,jdbcType=VARCHAR}, #{subUserNum,jdbcType=INTEGER}, #{subUserNumAll,jdbcType=INTEGER},
       #{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, #{county,jdbcType=VARCHAR}, 
       #{provinceId,jdbcType=BIGINT}, #{cityId,jdbcType=BIGINT}, #{countyId,jdbcType=BIGINT}, 
       #{frontImage,jdbcType=VARCHAR}, #{reverseImage,jdbcType=VARCHAR}, #{applyTime,jdbcType=TIMESTAMP}, 
@@ -44,7 +44,7 @@
       card_number = #{cardNumber,jdbcType=INTEGER},
       domain_name = #{domainName,jdbcType=VARCHAR},
       sub_user_num = #{subUserNum,jdbcType=INTEGER},
-      sub_user_num_all = #{subUserNumAll,jdbcType=VARCHAR},
+      sub_user_num_all = #{subUserNumAll,jdbcType=INTEGER},
       province = #{province,jdbcType=VARCHAR},
       city = #{city,jdbcType=VARCHAR},
       county = #{county,jdbcType=VARCHAR},
