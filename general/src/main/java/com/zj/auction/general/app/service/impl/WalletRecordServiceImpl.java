@@ -1,6 +1,7 @@
 package com.zj.auction.general.app.service.impl;
 
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.zj.auction.common.mapper.WalletRecordMapper;
 import com.zj.auction.common.model.User;
@@ -28,8 +29,10 @@ public class WalletRecordServiceImpl implements WalletRecordService {
      */
     @Override
     public List<WalletRecord> listUserWalletRecord(PageQuery pageQuery) {
-        User user = SecurityUtils.getPrincipal();
+        // todo
+//        User user = SecurityUtils.getPrincipal();
+        Long userId = 202L;
         PageHelper.startPage(pageQuery.getPageNum(),pageQuery.getPageSize());
-        return walletRecordMapper.listUserWalletRecord(user.getUserId());
+        return  (Page)walletRecordMapper.listUserWalletRecord(userId);
     }
 }

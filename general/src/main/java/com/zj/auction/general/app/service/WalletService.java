@@ -62,28 +62,7 @@ public interface WalletService {
      * @return
      */
     Boolean cashWithdraw(RebateTransferDto transferDto);
-
-    /**
-     * 撤销列表记录
-     *
-     * @param pageQuery 页面查询
-     * @return {@link List}<{@link Withdraw}>
-     */
     List<Withdraw> listWithdrawRecord(PageQuery pageQuery);
-
-    /**
-     * 拒绝现金收回
-     *
-     * @param withDrawId 提现ID
-     * @return {@link Boolean}
-     */
     Boolean rejectCashWithdraw(Long withDrawId);
-
-    /**
-     * 成功现金收回
-     *
-     * @param withDrawId 提现ID
-     * @return {@link Boolean}
-     */
     Boolean successCashWithdraw(Long withDrawId);
 }
