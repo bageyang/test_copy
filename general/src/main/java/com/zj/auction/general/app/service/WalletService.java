@@ -12,13 +12,13 @@ public interface WalletService {
     void changeUserBalance(BalanceChangeDto changeDto);
 
     /**
-     * 增加用户金额
+     * 增加用户金额 建议使用
      * @param changeDto
      */
     void incrementUserBalance(BalanceChangeDto changeDto);
 
     /**
-     * 减少用户金额
+     * 减少用户金额 建议使用
      * @param changeDto
      */
     void decrementUserBalance(BalanceChangeDto changeDto);

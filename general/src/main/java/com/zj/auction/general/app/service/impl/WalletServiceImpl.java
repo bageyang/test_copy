@@ -114,6 +114,9 @@ public class WalletServiceImpl implements WalletService {
         BigDecimal balanceBefore = wallet.getBalance();
         BigDecimal freezeBefore = wallet.getFreeze();
         BigDecimal balanceAfter = balanceBefore.subtract(changeNum);
+        if(balanceAfter.compareTo(BigDecimal.ZERO)<0){
+            throw new CustomException(StatusEnum.BALANCE_NOT_ENOUGH_ERROR);
+        }
         BigDecimal freezeAfter = freezeBefore.add(changeNum);
         walletRecord.setBalanceBefore(balanceBefore);
         walletRecord.setBalanceAfter(balanceAfter);
@@ -138,13 +141,15 @@ public class WalletServiceImpl implements WalletService {
         BigDecimal freezeBefore = wallet.getFreeze();
         BigDecimal balanceAfter = balanceBefore.add(changeNum);
         BigDecimal freezeAfter = freezeBefore.subtract(changeNum);
+        if(freezeAfter.compareTo(BigDecimal.ZERO)<0){
+            throw new CustomException(StatusEnum.BALANCE_NOT_ENOUGH_ERROR);
+        }
         walletRecord.setBalanceBefore(balanceBefore);
         walletRecord.setBalanceAfter(balanceAfter);
         wallet.setFreeze(freezeAfter);
         wallet.setBalance(balanceAfter);
         walletMapper.updateByPrimaryKey(wallet);
         walletRecordMapper.insertSelective(walletRecord);
-
     }
 
     private Wallet getUserWallet(Long userId,FundTypeEnum fundType){
