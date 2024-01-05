@@ -12,14 +12,13 @@ public class PageResult<T> {
 
     public Long currentPage;
 
-    public Long totalCount;
+    public Long count;
 
     public List<T> data;
 
     public String message;
 
-    public Long totalPage;
-
+    public Long pages;
 
 
 }

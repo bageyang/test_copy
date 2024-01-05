@@ -3,7 +3,6 @@ package com.zj.auction.general.pc.controller;
 import com.github.pagehelper.PageInfo;
 import com.zj.auction.common.constant.RedisConstant;
 import com.zj.auction.common.constant.SystemConfig;
-import com.zj.auction.common.dto.Ret;
 import com.zj.auction.common.dto.UserDTO;
 import com.zj.auction.common.model.Permis;
 import com.zj.auction.common.model.User;
@@ -86,7 +85,7 @@ public class UserController{
      */
     @PostMapping(value="/getManagerPage")
     public GeneralResult getManagerList(@RequestBody PageAction pageAction) {
-        return GeneralResult.success(pcUserServer.getManagerList(pageAction));
+        return pcUserServer.getManagerList(pageAction);
     }
 
 

@@ -26,10 +26,6 @@ spring:
         max-idle: 64
         max-wait: -1
     password: zhongjiu_test
-#  rabbitmq:
-#    addresses: 120.77.247.13:5672
-#    username: guest
-#    password: guest
 
 #mybatis:
 #  mapper-locations:

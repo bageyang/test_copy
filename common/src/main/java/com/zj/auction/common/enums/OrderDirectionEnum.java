@@ -1,11 +1,6 @@
 package com.zj.auction.common.enums;
 
-import com.google.common.collect.Lists;
-
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 public enum OrderDirectionEnum {
     BUY((byte) 1),SELL((byte)2);
