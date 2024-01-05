@@ -23,16 +23,18 @@ import com.zj.auction.general.app.service.WalletService;
 import com.zj.auction.general.auth.AppTokenUtils;
 import com.zj.auction.general.auth.AuthToken;
 import com.zj.auction.general.pc.service.UserService;
+import com.zj.auction.general.shiro.SecurityUtils;
 import com.zj.auction.common.vo.GeneralResult;
 import com.zj.auction.common.vo.LoginResp;
 import com.zj.auction.common.vo.PageAction;
-import com.zj.auction.general.shiro.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -204,7 +206,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 //        pageAction.setTotalPage(pageInfo.getPageNum());
 //        return GeneralResult.success(pageInfo.getList(), pageAction);
 //    }
-    @Override
     public GeneralResult getManagerList(PageAction pageAction) {
 //        User user = SecurityUtils.getPrincipal();
         PageHelper.startPage(pageAction.getCurrentPage(), pageAction.getPageSize());
@@ -392,7 +393,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
 
     //查询平台管理员
-    @Override
     public PageInfo<User> getUserPage(PageAction pageAction, List<Long> userIds) {
         LocalDateTime sTime = null;
         LocalDateTime eTime = null;
@@ -539,26 +539,19 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     public GeneralResult updVipType(Long userId, Integer vipType, Long tagId) {
         PubFun.check(userId, vipType);
-        User pUser = (User)SecurityUtils.getSubject();
+        User pUser = SecurityUtils.getPrincipal();
         User user = userMapper.selectByPrimaryKey(userId);
         if ((user.getVipType() == 0 || user.getVipType() == 1) && vipType.compareTo(2) == 0) {//设置团长必须设置分馆馆长
             PubFun.check(userId, tagId);
-            if (tagId <= 0) {
-                throw new ServiceException(410, "请选择分馆");
-            }
-            if (user.getTagId().compareTo(tagId) == 0) {
-                throw new ServiceException(411, "该用户已经属于该馆成员了");
-            }
-            if (user.getTagId().compareTo(tagId) != 0 && user.getTagId() > 0) {
+            if (tagId <= 0) throw new ServiceException(410, "请选择分馆");
+            if (user.getTagId().compareTo(tagId) == 0) throw new ServiceException(411, "该用户已经属于该馆成员了");
+            if (user.getTagId().compareTo(tagId) != 0 && user.getTagId() > 0)
                 throw new ServiceException(412, "该用户已经属于其他馆成员了");
-            }
             //判断这个馆是否已经有馆长了
             LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
             wrapper.eq(User::getDeleteFlag, 0).eq(User::getTagId, tagId).eq(User::getVipType, 2);
             Long count = userMapper.selectCount(wrapper);
-            if (count > 0) {
-                throw new ServiceException(413, "该分馆已经有馆长了");
-            }
+            if (count > 0) throw new ServiceException(413, "该分馆已经有馆长了");
             user.setTagId(tagId);
             //所有下级团队都可以进入
             userMapper.updUserChildByPidStr(tagId, user.getUserId(), pUser.getUserId());
@@ -578,21 +571,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         return GeneralResult.success();
     }
 
-    /**
-     * 超级管理员修改用户角色
-     * @param userId
-     * @param roleId
-     */
-    @Override
-    public void updateUserAuthority(String userId, String roleId) {
-        userRoleMapper.updateUserAuthority(userId,roleId);
-    }
-
 
     // 添加用户
     @Override
     public Boolean insertUser(User userCfg) {
-        User user = SecurityUtils.getPrincipal();
+        User principal = SecurityUtils.getPrincipal();
         PubFun.check(userCfg, userCfg.getUserName(), userCfg.getNickName(), userCfg.getUserImg(), userCfg.getPassWord(),
                 userCfg.getUserType());
         //较验手机号
@@ -657,7 +640,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     // 查看用户信息
     @Override
     public User getUserByUserId(Long userId) {
-        //SecurityUtils.getPrincipal();
+        SecurityUtils.getPrincipal();
         if (super.baseCheck(userId, Objects::isNull)) {
             throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, "数据非法");
         }
@@ -666,7 +649,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     }
 
 
-    @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean deleteMember(Long userId) {
         User user = SecurityUtils.getPrincipal();
@@ -715,10 +697,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
      * @author: Mao Qi
      * @date: 2020年4月3日下午7:22:33
      */
-    @Override
     @Transactional
     public Integer updateAuditRejection(Long userId, String auditExplain) {
-        //SecurityUtils.getPrincipal();
+        SecurityUtils.getPrincipal();
         if (super.baseCheck(userId, Objects::isNull)) {
             throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, "数据非法");
         }
@@ -726,10 +707,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     }
 
     //    实名通过审核
-    @Override
     @Transactional
     public Integer updateAuditApproval(Long userId) {
-        //SecurityUtils.getPrincipal();
+        SecurityUtils.getPrincipal();
         if (super.baseCheck(userId, Objects::isNull)) {
             throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, "数据非法");
         }
@@ -740,7 +720,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     //后台操作变更资金
     @Override
     public Integer changeBalance(Long userId, Integer moneyType, Integer type, BigDecimal integral, String remark) {
-        //User pcUser = SecurityUtils.getPrincipal();
+        User pcUser = SecurityUtils.getPrincipal();
         PubFun.check(userId, moneyType, type);
         if (com.zj.auction.common.util.StringUtils.isEmpty(integral) || integral.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ServiceException(506, "变更数量输入有误!");
@@ -819,6 +799,44 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         return userMapper.selectList(wrapper);
     }
 
+//    //导出用户
+//    @Override
+//    public void exportUser(PageAction pageAction, Integer userType, String userIds, HttpServletResponse httpServletResponse) {
+//        List<Long> userList = new ArrayList<>();
+//        if (!StringUtils.isEmpty(userIds)) {
+//            userList = JSON.parseArray(userIds, Long.class);
+//        }
+//        PageInfo<User> userPage = getUserPage(pageAction, userList);
+//
+//        List<List<String>> excelData = new ArrayList<>();
+//        List<String> head = new ArrayList<>();
+//        head.add("用户ID");
+//        head.add("账号");
+//        head.add("昵称");
+//        head.add("电话");
+//        head.add("用户类型");
+////		head.add("金币余额");
+////		head.add("银币余额");
+////		head.add("店铺收入");
+//        head.add("注册时间");
+//        // 添加头部
+//        excelData.add(head);
+//        for (User user : userPage.getList()) {
+//            List<String> data1 = new ArrayList<>();
+//            data1.add(user.getUserId().toString());  //ID
+//            data1.add(user.getUserName());  //账号
+//            data1.add(Objects.toString(user.getNickName(), ""));  //昵称
+//            data1.add(Objects.toString(user.getTel(), ""));  //手机号
+//            data1.add(user.getUserType() == 1 ? "店主" : "用户");   //用户类型
+////			data1.add(Objects.toString(user.getGoldBalance(), "0"));   //金币余额
+////			data1.add(Objects.toString(user.getSilverBalance(), "0"));   //银币余额
+////			data1.add(Objects.toString(user.getBalance(), "0"));   //店铺收入
+//            data1.add(Objects.toString(DateTimeUtils.toString(user.getAddTime(), "yyyy-MM-dd HH:mm:ss"), ""));
+//            excelData.add(data1);
+//        }
+//        ExcelUtil.exportExcel(httpServletResponse,
+//                excelData, "会员信息", "member.xls", 20);
+//    }
 
 
     /**
@@ -867,7 +885,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     public GeneralResult statistics() {
         //获取当前用户信息
-        User user = (User)SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         Map<String, Object> map = new HashMap<>();
         //今年
         Integer year = LocalDateTime.now().getYear();
@@ -912,7 +930,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Transactional
     public GeneralResult updatePassOrImg(String userImg, String oldPass, String newPass) {
         PubFun.check(userImg, oldPass, newPass);
-        User user = (User)SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         User pcUser = Optional.ofNullable(userMapper.selectById(user.getUserId())).orElseThrow(() -> new ServiceException(407, "该用户已经不存在"));
         //校验旧密码
         String md5 = MD5Utils.isEncryption(oldPass, pcUser.getSalt());
@@ -940,7 +958,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Transactional
     public void updateUserById(Long userId, Object remarks, Integer type) {
         PubFun.check(userId, remarks);
-        User pUser = (User)SecurityUtils.getSubject();
+        User pUser = SecurityUtils.getPrincipal();
         if (((Integer) remarks) <= 0) {
             throw new ServiceException(621, "请输入大于零的数");
         }

@@ -20,4 +20,5 @@ public interface AuctionService {
 
     Auction getAuctionById(Long auctionId);
 
+    boolean decrementQuantity(Long id,Long stockNumber);
 }

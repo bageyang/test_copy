@@ -17,12 +17,10 @@ import java.security.MessageDigest;
 public class MD5Utils {
 
     public static void main(String[] args) {
-//        String encryption = encryption("TmpVME16SXhNREE9DQowNjUxYTdhMjc2ZDQ0MGYxOWY0YzI0N2FmNjQ3MTJhMw==", "0651a7a276d440f19f4c247af64712a3");
-//        System.out.println("encryption = " + encryption);
-            String a =    encryption("y4209232","a(");
-		System.out.println(a);
+        String encryption = encryption("TmpVME16SXhNREE9DQowNjUxYTdhMjc2ZDQ0MGYxOWY0YzI0N2FmNjQ3MTJhMw==", "0651a7a276d440f19f4c247af64712a3");
+        System.out.println("encryption = " + encryption);
+                
     }
-
 
 	/**
 	 * 加密

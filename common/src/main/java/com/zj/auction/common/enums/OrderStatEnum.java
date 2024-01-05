@@ -25,7 +25,14 @@ import java.util.Objects;
  *  10 已收货
  */
 public enum OrderStatEnum {
-
+    /**
+     * 确认超时
+     */
+    CONFIRM_TIME_OUT((byte)-5,SELL.getCode()),
+    /**
+     * 支付超时
+     */
+    PAY_TIME_OUT((byte)-4,BUY.getCode()),
     /**
      * 转拍次数达到上限
      */

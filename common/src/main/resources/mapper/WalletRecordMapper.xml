@@ -116,7 +116,21 @@
     from zj_wallet_record
     where user_id = #{userId} order by create_time desc
   </select>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zj.auction.common.model.WalletRecord">
+    <select id="listWalletRecord" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List" />
+      from zj_wallet_record
+      <where>
+        <if test="userId != null">
+          user_id = #{userId}
+        </if>
+        <if test="walletType != null">
+          wallet_type = #{walletType}
+        </if>
+      </where>
+      order by create_time desc
+    </select>
+    <update id="updateByPrimaryKeySelective" parameterType="com.zj.auction.common.model.WalletRecord">
     update zj_wallet_record
     <set>
       <if test="userId != null">
