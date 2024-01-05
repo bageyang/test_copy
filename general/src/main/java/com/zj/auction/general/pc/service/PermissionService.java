@@ -2,6 +2,7 @@ package com.zj.auction.general.pc.service;
 
 import com.github.pagehelper.PageInfo;
 import com.zj.auction.common.condition.PermissionCondition;
+import com.zj.auction.common.dto.MenuDTO;
 import com.zj.auction.common.dto.Ret;
 import com.zj.auction.common.model.Permis;
 import com.zj.auction.common.model.PermisRole;
@@ -38,7 +39,7 @@ public interface PermissionService {
      * @return
      *************************************************
      */
-    List<Map<String,Object>> findMenuAll(Integer levelNum);
+    List<Map<String,Object>> findMenuAll(MenuDTO dto);
 
 
 

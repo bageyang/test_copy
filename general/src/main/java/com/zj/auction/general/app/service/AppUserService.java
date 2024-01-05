@@ -76,13 +76,8 @@ public interface AppUserService {
     /**
      * @Description 登录
      * @Title login
-     * @Author Mao Qi
-     * @Date 2019/9/8 11:52
-     * @param userName 账户/手机号
-     * @param code
-     * @return	com.duoqio.boot.business.entity.UserInfoTbl
      */
-    LoginResp login(String userName, String password, String code);
+    LoginResp login(UserDTO dto);
 
     /**
      * 根据用户名查询用户信息

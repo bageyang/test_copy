@@ -63,17 +63,12 @@ public class AppUserController {
     /**
      * 登录
      *
-     * @param userName 用户名
-     * @param password 密码
-     * @param code     验证码
      * @return {@link Ret}
      */
     @ApiOperation("登录")
     @PostMapping(value = "/login")
-    public Ret login(@RequestParam(name = "userName") String userName,
-                               @RequestParam(name = "password") String password,
-                               @RequestParam(name = "code") String code) {
-        return Ret.ok(appUserService.login(userName,password, code));
+    public Ret login(@RequestBody UserDTO dto) {
+        return Ret.ok(appUserService.login(dto));
     }
 
     @ApiOperation("refreshToken")

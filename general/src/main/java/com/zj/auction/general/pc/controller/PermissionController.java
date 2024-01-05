@@ -2,6 +2,7 @@ package com.zj.auction.general.pc.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.zj.auction.common.condition.PermissionCondition;
+import com.zj.auction.common.dto.MenuDTO;
 import com.zj.auction.common.dto.Ret;
 import com.zj.auction.common.model.Permis;
 import com.zj.auction.common.model.Role;
@@ -13,10 +14,7 @@ import com.zj.auction.general.pc.service.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -46,9 +44,9 @@ public class PermissionController {
      */
 
     @PostMapping(value="/findMenuAll")
-    public Ret findMenuAll(@RequestParam(name = "levelNum")Integer levelNum) {
+    public Ret findMenuAll(@RequestBody MenuDTO dto) {
         Ret result = new Ret();
-        result.setData(permissionService.findMenuAll(levelNum));
+        result.setData(permissionService.findMenuAll(dto));
         return result;
     }
 

@@ -28,4 +28,7 @@ public interface UserRoleMapper extends BaseMapper<UserRole> {
      */
     @Select("update zj_user_role set role_id=#{userId} where user_id=#{roleId}")
     void updateUserAuthority(String userId, String roleId);
+
+    @Select(value = "select * from zj_user_role where user_id=#{userId} ")
+    List<UserRole> selectAllByUserId(Long userId);
 }

@@ -1,6 +1,7 @@
 package com.zj.auction.common.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.zj.auction.common.dto.MenuDTO;
 import com.zj.auction.common.model.Permis;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.data.repository.query.Param;
@@ -39,7 +40,7 @@ public interface PermisMapper extends BaseMapper<Permis> {
     List<Map<String, Object>> menuTree();
 
     @Select(value = " select permis_id,level_num,permis_name from zj_permis where level_num<3 and delete_flag = 0 order by level_num asc ")
-    List<Map<String, Object>> findMenuAll(Integer levelNum);
+    List<Map<String, Object>> findMenuAll(MenuDTO dto);
 
     @Select(value = "select permis_id,permis_name,level_num,pid from zj_permis where delete_flag = 0 ")
     List<Map<String, Object>> findMenuList();

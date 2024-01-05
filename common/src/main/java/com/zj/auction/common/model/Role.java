@@ -18,6 +18,7 @@ public class Role extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "角色名称")
     private String roleName;
+    private String addUserid;
 
 
     @ApiModelProperty(value = "描述")

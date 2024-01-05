@@ -427,32 +427,27 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     }
 
     /**
-     * @param userName 用户名/电话
-     * @param password 密码
-     * @param code     手机短信码
-     * @return com.duoqio.boot.business.entity.User
+
      * @Description 登录
      * @Title login
-     * @Author Mao Qi
-     * @Date 2019/9/8 11:59
      */
     @Override
-    public LoginResp login(String userName, String password, String code) {
+    public LoginResp login(UserDTO dto) {
         LoginResp data = new LoginResp();
-        PubFun.check(userName);
-        User user = userMapper.findByUserName(userName);//查询用户
+        PubFun.check(dto.getUserName());
+        User user = userMapper.findByUserName(dto.getUserName());//查询用户
         if (Objects.isNull(user)) {//不存在
             throw new ServiceException(516, "手机号未注册,请先注册!");
         } else {
-            if (StringUtils.isEmpty(password)) {//验证码登录
-                PubFun.check(code);//数据校验
+            if (StringUtils.isEmpty(dto.getPassWord())) {//验证码登录
+                PubFun.check(dto.getCode());//数据校验
                 //校验手机验证
-                messagesCheck(userName, code);
+                messagesCheck(dto.getUserName(), dto.getCode());
             } else {//密码登录
-                PubFun.check(password);//数据校验
+                PubFun.check(dto.getPassWord());//数据校验
                 //校验密码
                 String salt = user.getSalt();
-                Md5Hash md5Hash = new Md5Hash(password, salt, 1024);
+                Md5Hash md5Hash = new Md5Hash(dto.getPassWord(), salt, 1024);
 
                 System.out.println("md5Hash---->" + md5Hash);
                 String userId = String.valueOf(user.getUserId());
@@ -460,7 +455,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
                 String md5 = MD5Utils.isEncryption(userId, String.valueOf(expressTime));
                 String accessToken = JwtUtil.getTmpJwtToken(userId, md5, expressTime);
                 //生成token字符串
-                String token = JwtUtil.getJwtToken(userName, md5Hash.toHex());   //toHex转换成16进制，32为字符
+                String token = JwtUtil.getJwtToken(dto.getUserName(), md5Hash.toHex());   //toHex转换成16进制，32为字符
                 //toHex转换成16进制，32为字符
                 JwtToken jwtToken = new JwtToken(token);
                 data.setToken(token);

@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.zj.auction.common.base.BaseServiceImpl;
 import com.zj.auction.common.condition.PermissionCondition;
 import com.zj.auction.common.constant.SystemConstant;
+import com.zj.auction.common.dto.MenuDTO;
 import com.zj.auction.common.dto.Ret;
 import com.zj.auction.common.exception.ServiceException;
 import com.zj.auction.common.mapper.PermisMapper;
@@ -48,8 +49,8 @@ public class PermissionServiceImpl extends BaseServiceImpl implements Permission
     }
 
     @Override
-    public List<Map<String, Object>> findMenuAll(Integer levelNum) {
-        return permisMapper.findMenuAll(levelNum);
+    public List<Map<String, Object>> findMenuAll(MenuDTO dto) {
+        return permisMapper.findMenuAll(dto);
     }
 
 
