@@ -20,6 +20,7 @@ import com.zj.auction.common.model.Role;
 import com.zj.auction.common.model.User;
 import com.zj.auction.common.model.UserConfig;
 import com.zj.auction.common.oss.OssUpload;
+import com.zj.auction.common.oss.SendMessage;
 import com.zj.auction.common.util.*;
 import com.zj.auction.common.vo.LoginResp;
 import com.zj.auction.common.vo.PageAction;
@@ -32,7 +33,6 @@ import com.zj.auction.general.shiro.JwtToken;
 import com.zj.auction.general.shiro.JwtUtil;
 import com.zj.auction.general.shiro.PwdTool;
 import com.zj.auction.general.shiro.SecurityUtils;
-import com.zj.auction.general.sms.SmsUtils;
 import lombok.extern.log4j.Log4j2;
 import org.apache.shiro.authc.ExpiredCredentialsException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -545,14 +545,14 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
             throw new ServiceException(SystemConstant.DATA_ILLEGALITY_CODE, SystemConstant.DATA_ILLEGALITY);
         }
         Function<String, Map<String, Object>> deal = param -> {
-            Map<String, Object> map = sendMessages(tel, request);
+            Map<String, Object> map = sendMessages("1755231367", tel, PubFun.generateRandomNumbersMax10(4), request);
             return map;
         };
         return super.base(tel, deal);
     }
 
-    public Map<String, Object> sendMessages(String phone, HttpServletRequest request) {
-        Map<String, Object> sendMessage = SmsUtils.sendMessagesByAliyun(phone,IPUtils.getRemoteAddr(request));
+    public Map<String, Object> sendMessages(String template, String phone, String code, HttpServletRequest request) {
+        Map<String, Object> sendMessage = SendMessage.sendMessage(template, phone, code, IPUtils.getRemoteAddr(request));
         redisTemplate.opsForValue().set(AppTokenUtils.CODE_FILE + phone, sendMessage.get("code").toString().trim(), 5 * 60, TimeUnit.SECONDS);
         return sendMessage;
     }

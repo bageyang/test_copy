@@ -4,6 +4,7 @@ import com.zj.auction.common.dto.BalanceChangeDto;
 import com.zj.auction.common.dto.PayDto;
 import com.zj.auction.common.enums.FundTypeEnum;
 import com.zj.auction.common.enums.StatusEnum;
+import com.zj.auction.common.enums.TransactionTypeEnum;
 import com.zj.auction.common.exception.CustomException;
 import com.zj.auction.general.app.service.WalletRecordService;
 import com.zj.auction.general.app.service.WalletService;
@@ -44,6 +45,7 @@ public class CashRechargeHandler implements PayCallBackHandler{
         changeDto.setChangeNum(payDto.getAmount());
         changeDto.setUserId(userId);
         changeDto.setFundType(FundTypeEnum.CASH);
+        changeDto.setTransactionType(TransactionTypeEnum.RECHARGE);
         changeDto.setRemark(REMARK);
         walletService.incrementUserBalance(changeDto);
         log.info("处理余额充值到账完成");

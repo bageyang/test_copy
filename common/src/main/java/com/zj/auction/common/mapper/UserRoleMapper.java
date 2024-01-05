@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zj.auction.common.model.Role;
 import com.zj.auction.common.model.UserRole;
 import org.apache.ibatis.annotations.Select;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -12,7 +11,6 @@ import java.util.Map;
 public interface UserRoleMapper extends BaseMapper<UserRole> {
     int deleteByPrimaryKey(Integer userRoleId);
 
-    @Override
     int insert(UserRole record);
 
     UserRole selectByPrimaryKey(Integer userRoleId);
@@ -31,7 +29,7 @@ public interface UserRoleMapper extends BaseMapper<UserRole> {
     @Select("update zj_user_role set role_id=#{userId} where user_id=#{roleId}")
     void updateUserAuthority(String userId, String roleId);
 
-    @Select(value = "select * from zj_user_role where user_id=#{userId}  ")
+    @Select(value = "select * from zj_user_role where user_id=#{userId} ")
     List<UserRole> selectAllByUserId(Long userId);
 
     /**
@@ -51,16 +49,12 @@ public interface UserRoleMapper extends BaseMapper<UserRole> {
      * @param userId
      * @return
      */
-    @Select("SELECT r.role_name FROM `zj_user_role` ur LEFT JOIN zj_role r ON r.role_id = ur.role_id WHERE ur.user_id = #{userId}")
+    @Select("SELECT\n" +
+            "\tr.role_name \n" +
+            "FROM\n" +
+            "\t`zj_user_role` ur\n" +
+            "\tLEFT JOIN zj_role r ON r.role_id = ur.role_id \n" +
+            "WHERE\n" +
+            "\tur.user_id = #{userId}")
     List<String> selectRolesByUserId(Long userId);
-
-    @Select("select role_id from zj_user_role where user_id=#{userId}")
-    List<Integer> roleList (Long userId);
-
-    /**
-     * 删除多余的角色
-     */
-    @Select(value="delete from zj_user_role where user_id=#{userId} and role_id in(#{roleIds}) ")
-    @Transactional
-    boolean deleteSysUserRoleMd(Long userId, List<Integer> roleIds);
 }

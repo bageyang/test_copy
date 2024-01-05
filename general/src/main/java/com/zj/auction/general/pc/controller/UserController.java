@@ -49,11 +49,13 @@ public class UserController{
     /**
      * pc登录
      *
+     * @param username 用户名
+     * @param password 密码
      * @return {@link GeneralResult}
      *///    @ReqLimit(rateSecond =4)
     @PostMapping("/userLogin")
-    public GeneralResult getPcLogin(@RequestBody UserDTO dto) {
-        return GeneralResult.success(pcUserServer.getPcLogin(dto.getUserName(),dto.getPassWord()));
+    public GeneralResult getPcLogin(@RequestParam String username, @RequestParam String password) {
+        return GeneralResult.success(pcUserServer.getPcLogin(username,password));
     }
 
 
