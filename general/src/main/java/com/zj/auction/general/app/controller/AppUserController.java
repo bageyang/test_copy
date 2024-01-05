@@ -97,7 +97,7 @@ public class AppUserController {
             @ApiImplicitParam(name = "alipayNum", value = "支付宝账户", dataType = "String")
     })
     @PostMapping(value = "/addOrUpdateAliNum")
-    public GeneralResult addOrUpdateAliNum(String realName, String alipayNum) {
+    public GeneralResult addOrUpdateAliNum(@RequestParam(name = "realName") String realName,@RequestParam(name = "alipayNum") String alipayNum) {
         return GeneralResult.success(appUserService.addOrUpdateAliNum(realName,alipayNum));
     }
 
