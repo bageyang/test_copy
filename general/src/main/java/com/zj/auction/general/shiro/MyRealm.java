@@ -1,12 +1,21 @@
 package com.zj.auction.general.shiro;
 
+import com.zj.auction.common.mapper.PermisRoleMapper;
+import com.zj.auction.common.mapper.UserRoleMapper;
+import com.zj.auction.common.model.Role;
 import com.zj.auction.common.model.User;
+import com.zj.auction.common.util.StringUtils;
 import com.zj.auction.general.app.service.AppUserService;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author: lhy
@@ -15,7 +24,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class MyRealm extends AuthorizingRealm {
     @Autowired
     private AppUserService userService;
-
+    @Autowired
+    private UserRoleMapper userRoleMapper;
+    @Autowired
+    private PermisRoleMapper permisRoleMapper;
     /**
      * 限定这个realm只能处理JwtToken（不加的话会报错）
      */
@@ -29,8 +41,34 @@ public class MyRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        //获取到用户名，查询用户权限
-        return null;
+        //获取登录用户名
+        User user = (User) principals.getPrimaryPrincipal();
+//        //查询用户名称
+//        User user = null;
+        //添加角色和权限
+        SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
+        //查询当前用户拥有的角色
+        List<Role> sysRoleTblList = userRoleMapper.listSysRoleTbl(user.getUserId().intValue());
+        if (!sysRoleTblList.isEmpty()) {
+            List<Long> collect = sysRoleTblList.stream().map(m -> {
+                //添加角色
+                simpleAuthorizationInfo.addRole(StringUtils.emptyIfNull(m.getRoleCode()));
+                //返回角色id
+                return  m.getRoleId();
+            }).collect(Collectors.toList());
+            //查询该角色权限
+            if (!collect.isEmpty()) {
+                List<Map<String, Object>> permissionList = permisRoleMapper.listSysPermisTblByRoleIds(collect);
+                if (!permissionList.isEmpty()) {
+                    //添加权限
+                    permissionList.stream().distinct().map(m -> StringUtils.emptyIfNull(m.get("permis"))).forEach(simpleAuthorizationInfo::addStringPermission);
+                }
+            }
+        }
+        return simpleAuthorizationInfo;
+
+//        //获取到用户名，查询用户权限
+//        return null;
     }
 
     /**
