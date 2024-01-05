@@ -41,15 +41,16 @@ public class AuctionServiceImpl implements AuctionService {
     }
 
     @Override
-    public String decreAuctionStock(Long auctionId) {
+    public String deductAuctionStock(Long auctionId) {
         // redis检查
         try {
             RScript script = redissonClient.getScript();
             List<Object> keys = new ArrayList<>();
             keys.add(RedisConstant.AUCTION_REMAINDER_KEY);
-            keys.add(RedisConstant.AUCTION_STOCK_KEY);
-            return script.evalSha(RScript.Mode.READ_WRITE, RedisConstant.AUCTION_LUA_SCRIPT, RScript.ReturnType.VALUE,keys, auctionId);
+            keys.add(RedisConstant.AUCTION_STOCK_KEY+ auctionId);
+            return script.evalSha(RScript.Mode.READ_WRITE, RedisConstant.AUCTION_LUA_SCRIPT_SHA, RScript.ReturnType.VALUE,keys, auctionId);
         }catch (Exception e){
+            e.printStackTrace();
             return null;
         }
     }
@@ -65,18 +66,14 @@ public class AuctionServiceImpl implements AuctionService {
             String key = String.valueOf(k);
             // hash 缓存库存数量
             redisService.hSet(RedisConstant.AUCTION_REMAINDER_KEY,key,v.size());
-            List<Long> snList = v.stream()
+            Object[] snList = v.stream()
                     .map(AuctionStockRelation::getStockNumber)
-                    .collect(Collectors.toList());
+                    .toArray();
             // list 缓存库存编号
             redisService.lPushAll(RedisConstant.AUCTION_STOCK_KEY+key,snList);
         });
     }
 
-    @Override
-    public Auction transfer2Auction(Long stockId) {
-        return null;
-    }
 
     @Override
     public AuctionVo getAuctionInfo(Long auctionId) {

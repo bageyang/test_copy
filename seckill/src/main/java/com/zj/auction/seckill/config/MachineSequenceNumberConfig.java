@@ -3,6 +3,7 @@ package com.zj.auction.seckill.config;
 import com.zj.auction.common.constant.RedisConstant;
 import com.zj.auction.common.util.SnowFlake;
 import com.zj.auction.seckill.service.RedisService;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.Redisson;
 import org.redisson.api.RLock;
 import org.slf4j.Logger;
@@ -27,8 +28,8 @@ import java.util.stream.Collectors;
 
 @Configuration
 @EnableScheduling
+@Slf4j
 public class MachineSequenceNumberConfig implements ApplicationRunner {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MachineSequenceNumberConfig.class);
     @Autowired
     private RedisService redisService;
     @Autowired
@@ -52,20 +53,18 @@ public class MachineSequenceNumberConfig implements ApplicationRunner {
                 for (int j = 0; j <= i; j++) {
                     if(!snSet.contains(j)){
                         machineNumber = j;
-                        System.out.println(machineNumber);
                         break;
                     }
                 }
             }
             if(Objects.isNull(machineNumber)){
-                // todo log err info
                 // exit start
-                LOGGER.error("全局ID机器码初始化失败");
+                log.error("全局ID机器码初始化失败");
                 int exitCode = SpringApplication.exit(context, () -> 0);
                 System.exit(exitCode);
             }else {
                 redisService.sAddExpress(RedisConstant.MACHINE_SEQUENCE_KEY,MACHINE_SEQUENCE_EXPRESS_TIME,machineNumber);
-                LOGGER.info("全局ID机器码已初始化,初始时间:{},机器码:{}",System.currentTimeMillis(),machineNumber);
+                log.info("全局ID机器码已初始化,初始时间:{},机器码:{}",System.currentTimeMillis(),machineNumber);
                 SnowFlake.init(0,machineNumber);
             }
         }finally {
@@ -82,9 +81,9 @@ public class MachineSequenceNumberConfig implements ApplicationRunner {
         if(initFLag!=-1){
             long now = System.currentTimeMillis();
             if((now-initFLag)<(60*1000)){
-                LOGGER.info("全局ID机器码已初始化,初始时间:{}",initFLag);
+                log.info("全局ID机器码已初始化,初始时间:{}",initFLag);
             }else {
-                LOGGER.info("续存机器码:{},上次续存时间:{}",SnowFlake.getMachineId(),SnowFlake.getInitFLag());
+                log.info("续存机器码:{},上次续存时间:{}",SnowFlake.getMachineId(),SnowFlake.getInitFLag());
                 RLock lock = redisson.getLock(RedisConstant.MACHINE_SEQUENCE_LOCK_KEY);
                 try {
                     if (lock.tryLock()) {
