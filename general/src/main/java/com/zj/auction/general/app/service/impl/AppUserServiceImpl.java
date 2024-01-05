@@ -1280,16 +1280,16 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
     public Boolean whetherNewUser(String time) {
         User user = SecurityUtils.getPrincipal();
         LocalTime scheduleTime = DateUtil.stringToLocalTime(time, "HH:mm");//规定的开始时间
-        Integer newUserDay = SystemConfig.getNewUserDay() == null ? 30 : Integer.valueOf(SystemConfig.getNewUserDay());
+        int newUserDay = SystemConfig.getNewUserDay() == null ? 30 : Integer.parseInt(SystemConfig.getNewUserDay());
         LocalDateTime addTime = user.getAddTime();
         LocalDateTime now = LocalDateTime.now();
         Duration duration = Duration.between(addTime, now);
         if (duration.toDays() >= 0 && duration.toDays() <= newUserDay) {//如果是新用户
             //判断是否五秒
-            Integer userEnterInAdvance = SystemConfig.getUserEnterInAdvance() == null ? 5 : Integer.valueOf(SystemConfig.getUserEnterInAdvance());
+            int userEnterInAdvance = SystemConfig.getUserEnterInAdvance() == null ? 5 : Integer.parseInt(SystemConfig.getUserEnterInAdvance());
             LocalTime localTime = now.toLocalTime();
-            Long millis = Duration.between(localTime, scheduleTime).toMillis();//毫秒
-            return millis <= userEnterInAdvance * 1000 ? true : false;
+            long millis = Duration.between(localTime, scheduleTime).toMillis();//毫秒
+            return millis <= userEnterInAdvance * 1000;
         } else {
             return false;
         }

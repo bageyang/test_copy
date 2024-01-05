@@ -200,6 +200,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 //        pageAction.setTotalPage(pageInfo.getPageNum());
 //        return GeneralResult.success(pageInfo.getList(), pageAction);
 //    }
+    @Override
     public GeneralResult getManagerList(PageAction pageAction) {
 //        User user = SecurityUtils.getPrincipal();
         PageHelper.startPage(pageAction.getCurrentPage(), pageAction.getPageSize());
