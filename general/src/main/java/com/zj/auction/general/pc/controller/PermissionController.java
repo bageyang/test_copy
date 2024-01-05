@@ -150,6 +150,7 @@ public class PermissionController {
     @PostMapping(value="/getUserAuthority")
     public Ret getUserAuthority() {
         User user = (User)SecurityUtils.getSubject().getPrincipal();
+        //System.out.println("getUserAuthority----------->"+user);
         List<Permis> listResult = userService.findByMenuId(user.getUserId());
         return Ret.ok(listResult);
     }
