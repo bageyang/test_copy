@@ -367,4 +367,11 @@ public interface UserService  {
 //     * @return	com.duoqio.common.vo.GeneralResult
 //     */
     GeneralResult updVipType(Long userId, Integer vipType, Long tagId);
+
+    /**
+     * 超级管理员修改用户角色
+     * @param userId
+     * @param roleId
+     */
+    void updateUserAuthority(String userId, String roleId);
 }

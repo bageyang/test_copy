@@ -8,17 +8,16 @@ import com.zj.auction.common.model.Role;
 import com.zj.auction.common.model.User;
 import com.zj.auction.common.util.PubFun;
 import com.zj.auction.common.vo.GeneralResult;
-import com.zj.auction.common.vo.PageAction;
 import com.zj.auction.general.pc.service.PermissionService;
 import com.zj.auction.general.pc.service.UserService;
-import com.zj.auction.general.shiro.SecurityUtils;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.List;
 
 @RequestMapping("/system/permission")
@@ -47,9 +46,9 @@ public class PermissionController {
      */
 
     @PostMapping(value="/findMenuAll")
-    public Ret findMenuAll() {
+    public Ret findMenuAll(@RequestParam(name = "levelNum")Integer levelNum) {
         Ret result = new Ret();
-        result.setData(permissionService.findMenuAll());
+        result.setData(permissionService.findMenuAll(levelNum));
         return result;
     }
 
@@ -66,27 +65,7 @@ public class PermissionController {
     }
 
 
-    /**
-     * @Description 查询菜单list
-     * @Title findMenuList
-     * @Author Mao Qi
-     * @Date 2019/10/31 19:30
-     * @param pageAction
-     * @param levelNum
-     * @param jsTreeByPermissionId
-     * @return	com.duoqio.boot.framework.result.GeneralResult
-     */
-    @PostMapping(value="/findMenuList")
-    public Ret findMenuList(PageAction pageAction, String levelNum, Integer jsTreeByPermissionId) {
-        Ret result = new Ret();
-        HashMap<String, Object> map =new HashMap<>(1);
-        map.put("levelNum", levelNum);
-        map.put("jsTreeByPermissionId", jsTreeByPermissionId);
-        GeneralResult generalResult = userService.getManagerList(pageAction);
-        result.setData(generalResult.getResult());
-        result.setPageAction(generalResult.getPageAction());
-        return result;
-    }
+
 
     /**
      * @Description 修改菜单弹框
@@ -147,7 +126,7 @@ public class PermissionController {
      * @description: 根据用户角色查询权限
      */
     @PostMapping(value="/listPermissionByRoleId")
-    public Ret listPermissionByRoleId(Integer roleId) {
+    public Ret listPermissionByRoleId(@RequestParam(value = "roleId") Integer roleId) {
         return permissionService.listPermissionByRoleId(roleId);
     }
 
@@ -170,8 +149,23 @@ public class PermissionController {
      */
     @PostMapping(value="/getUserAuthority")
     public Ret getUserAuthority() {
-        User user = SecurityUtils.getPrincipal();
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
         List<Permis> listResult = userService.findByMenuId(user.getUserId());
         return Ret.ok(listResult);
     }
+
+    /**
+     * @Description 超级管理员修改用户角色
+     * @Title getUserAuthority
+     */
+    @PostMapping(value="/updateUserAuthority")
+    public Ret updateUserAuthority(@RequestParam(value = "userId") String userId,@RequestParam(value = "roleId") String roleId) {
+        User user = (User)SecurityUtils.getSubject().getPrincipal();
+        if (user.getRoleId()!=2) {
+            return Ret.ok("没有权限！");
+        }
+        userService.updateUserAuthority(userId,roleId);
+        return Ret.ok();
+    }
+
 }
