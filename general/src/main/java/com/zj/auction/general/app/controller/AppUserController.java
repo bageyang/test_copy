@@ -68,10 +68,6 @@ public class AppUserController {
      * @param userName 用户名/手机号
      * @param code  短信验证码
      * @Description 登录
-     * @Title login
-     * @Author Mao Qi
-     * @Date 2019/9/8 10:01
-     * @return com.duoqio.boot.framework.result.GeneralResult
      */
     @ApiOperation("单点登录")
     @ApiImplicitParams({
@@ -88,9 +84,6 @@ public class AppUserController {
      * @param userName
      * @Description 发送手机短信
      * @Title sendMessages
-     * @Author Mao Qi
-     * @Date 2019/9/6 16:47
-     * @return com.duoqio.boot.framework.result.GeneralResult
      */
     @ApiOperation(value = "发送短信")
     @ApiImplicitParam(name = "userName", value = "电话")
@@ -136,10 +129,7 @@ public class AppUserController {
     /**
      * @Description updateCommonTel
      * @Title updateCommonTel
-     * @Author Mao Qi
-     * @Date 2022/3/28 16:11
-     * @param commonTel
-     * @return	com.duoqio.common.vo.GeneralResult
+
      */
     @ApiOperation(value = "修改常用手机号", notes = "commonTel:常用手机号")
     @ApiImplicitParams({
@@ -155,9 +145,6 @@ public class AppUserController {
     /**
      * @return
      * @Title: getDefaultAddrByUserId
-     * @Description: 查询用户默认收货地址
-     * @author：Mao Qi
-     * @date： 2019年7月9日下午7:23:31
      * @return：AddrInfoTbl
      */
     @ApiOperation(value = "查询用户默认收货地址", notes = "不传参")
@@ -170,9 +157,6 @@ public class AppUserController {
      * @param
      * @Description 查询收货地址
      * @Title listAddr
-     * @Author Mao Qi
-     * @Date 2019/10/14 14:07
-     * @return com.duoqio.boot.framework.result.GeneralResult
      */
     @ApiOperation(value = "查询收货地址", notes = "不传参")
     @PostMapping(value = "/listAddr")
@@ -183,10 +167,6 @@ public class AppUserController {
     /**
      * @param addrId
      * @return
-     * @Title: updateDefaultAddrById
-     * @Description: 设置为默认地址
-     * @author：Mao Qi
-     * @date： 2019年7月9日下午8:35:33
      * @return：GeneralResult
      */
     @ApiOperation(value = "设置为默认地址", notes = "addrId:地址id")
@@ -199,10 +179,6 @@ public class AppUserController {
     /**
      * @param addrId
      * @Description 根据id查询单个地址
-     * @Title getAddrById
-     * @Author Mao Qi
-     * @Date 2019/9/8 16:00
-     * @return com.duoqio.boot.framework.result.GeneralResult
      */
     @ApiOperation(value = "根据id查询单个地址", notes = "addrId:地址id")
     @ApiImplicitParam(name = "addrId", value = "地址id", dataType = "Long")
@@ -214,10 +190,6 @@ public class AppUserController {
     /**
      * @param addrId
      * @Description 删除地址
-     * @Title deleteAddr
-     * @Author Mao Qi
-     * @Date 2019/10/24 19:28
-     * @return com.duoqio.boot.framework.result.GeneralResult
      */
     @ApiOperation(value = "删除地址", notes = "addrId:地址id")
     @ApiImplicitParams({@ApiImplicitParam(name = "addrId", value = "地址id", dataType = "Long")})
@@ -253,14 +225,6 @@ public class AppUserController {
     /**
      * @Description 修改收货地址
      * @Title updateAddr
-     * @Author Mao Qi
-     * @Date 2020/6/12 14:23
-     * @param addrId
-     * @param name
-     * @param tel1
-     * @param addr2
-     * @param defaultFlag
-     * @return	com.duoqio.common.vo.GeneralResult
      */
     @ApiOperation(value = "修改收货地址", notes = "addrId 地址id ,name:姓名,tel1:电话,addr2:定位地址,addr3:门牌号，Longitude:经度,Latitude 纬度,defaultFlag:是否默认（0非默认,1默认)")
     @ApiImplicitParams({
@@ -281,9 +245,6 @@ public class AppUserController {
      * @param oldPassWord
      * @Description 修改密码
      * @Title updatePassWord
-     * @Author Mao Qi
-     * @Date 2019/9/8 16:03
-     * @return com.duoqio.boot.framework.result.GeneralResult
      */
     @ApiOperation(value = "修改登入密码")
     @ApiImplicitParams({
@@ -300,12 +261,6 @@ public class AppUserController {
     /**
      * @Description 设置密码
      * @Title addPassword
-     * @Author Mao Qi
-     * @Date 2020/10/8 19:48
-     * @param tel
-     * @param code
-     * @param password
-     * @return	com.duoqio.common.vo.GeneralResult
      */
     @ApiOperation(value = "设置密码", notes = "tel：电话号,password：密码，code：短信验证码")
     @ApiImplicitParams({
@@ -321,12 +276,6 @@ public class AppUserController {
     /**
      * @Description 忘记密码
      * @Title forgetPassword
-     * @Author Mao Qi
-     * @Date 2020/10/8 19:48
-     * @param tel
-     * @param code
-     * @param password
-     * @return	com.duoqio.common.vo.GeneralResult
      */
     @ApiOperation(value = "忘记密码", notes = "tel：电话号,password：密码，code：短信验证码")
     @ApiImplicitParams({
@@ -367,10 +316,6 @@ public class AppUserController {
     /**
      * @Description 添加支付密码
      * @Title addPayPassword
-     * @Author Mao Qi
-     * @Date 2020/6/12 13:53
-     * @param payPassword
-     * @return	com.duoqio.common.vo.GeneralResult
      */
     @ApiOperation(value = "添加支付密码")
     @PostMapping("addPayPassword")
@@ -383,10 +328,6 @@ public class AppUserController {
     /**
      * @param
      * @Description 查询用户信息
-     * @Title findByUserCfg
-     * @Author Mao Qi
-     * @Date 2019/10/31 19:22
-     * @return com.duoqio.boot.framework.result.GeneralResult
      */
     @ApiOperation(value = "查询用户信息")
     @PostMapping(value = "/findByUserCfg")
@@ -397,11 +338,6 @@ public class AppUserController {
     /**
      * @param userCfg
      * @return
-     * @title: findByUserName
-     * @description: 根据账号查询用户
-     * @author: Mao Qi
-     * @date: 2019年7月16日下午3:28:25
-     * @return: GeneralResult
      */
     @ApiOperation(value = "根据账号查询用户", notes = "userName(String):账号")
     @PostMapping(value = "/findByUserName")
@@ -412,10 +348,7 @@ public class AppUserController {
     /**
      * @param
      * @Description 登出
-     * @Title exit
-     * @Author Mao Qi
-     * @Date 2019/9/12 15:54
-     * @return com.duoqio.boot.framework.result.GeneralResult
+
      */
     @ApiOperation(value = "退出登入")
     @PostMapping(value = "/outLogin")
@@ -427,10 +360,7 @@ public class AppUserController {
     /**
      * @param
      * @Description 注销
-     * @Title delUser
-     * @Author Mao Qi
-     * @Date 2019/9/12 15:54
-     * @return com.duoqio.boot.framework.result.GeneralResult
+
      */
     @ApiOperation(value = "注销")
     @PostMapping(value = "/delUser")
@@ -441,10 +371,7 @@ public class AppUserController {
 
     /**
      * @Description 实名认证
-     * @Title realNameAuth
-     * @Author Mao Qi
-     * @Date 2020/4/3 15:39
-     * @return com.duoqio.boot.framework.result.GeneralResult
+
      */
     @ApiOperation(value = "实名认证")
     @ApiImplicitParams({

@@ -424,11 +424,6 @@ public interface AppUserService {
 
     /**
      * @Description 查询直接上级
-     * @Title parentUser
-     * @Author Mao Qi
-     * @Date 2021/1/8 22:51
-     * @param
-     * @return	com.duoqio.common.vo.GeneralResult
      */
     GeneralResult parentUser();
 
