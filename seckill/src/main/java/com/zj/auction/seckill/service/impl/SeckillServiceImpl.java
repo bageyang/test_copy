@@ -29,7 +29,12 @@ public class SeckillServiceImpl implements SeckillService {
         doCheck(auctionId);
         // 2.扣减库存 decrement
         Optional<String> ret = decreStock(auctionId);
-        return null;
+        if(!ret.isPresent()){
+            return Ret.error(StatusEnum.SECKILL_FAIL_ERROR);
+        }
+        // 3.发送mq 生成订单 todo 提前生成订单编号
+
+        return Ret.ok(ret.get());
     }
 
     private void doCheck(Long auctionId) {
@@ -52,6 +57,6 @@ public class SeckillServiceImpl implements SeckillService {
     }
 
     private Optional<String> decreStock(Long auctionId) {
-return null;
+        return Optional.empty();
     }
 }
