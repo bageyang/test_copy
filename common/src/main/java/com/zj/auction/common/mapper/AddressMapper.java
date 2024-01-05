@@ -13,11 +13,4 @@ public interface AddressMapper {
     List<Address> selectAll();
 
     int updateByPrimaryKey(Address record);
-
-    List<Address> findByUserId(Long userId);
-
-    Address findByDefault(Long userId);
-
-    int updateAddrDefaultByIdNot(Long userId,Long addrId);
-    int updateAddrDefaultFlag(Long userId);
 }

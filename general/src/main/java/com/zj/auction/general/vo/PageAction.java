@@ -1,4 +1,4 @@
-package com.zj.auction.common.vo;
+package com.zj.auction.general.vo;
 
 /**
  * ************************************************

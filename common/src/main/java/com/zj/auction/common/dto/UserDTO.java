@@ -1,6 +1,5 @@
 package com.zj.auction.common.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -345,13 +344,9 @@ public class UserDTO {
 
     private String address;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime startDate;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+
     private LocalDateTime endDate;
 
     private String userIds;
-
-    private Integer page;
-    private Integer pageSize;
 }

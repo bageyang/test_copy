@@ -29,6 +29,9 @@
   </delete>
 
   <insert id="insert" parameterType="com.zj.auction.common.model.Stock">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
     insert into zj_stock (goods_id, price, stock_number,
       stock_status, owner_id, transfer_num, 
       create_time, update_time, is_deleted
@@ -41,6 +44,9 @@
 
   <insert id="insertSelective" parameterType="com.zj.auction.common.model.Stock">
     insert into zj_stock
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="goodsId != null">
         goods_id,

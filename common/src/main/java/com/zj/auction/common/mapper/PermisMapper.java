@@ -1,10 +1,9 @@
 package com.zj.auction.common.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zj.auction.common.model.Permis;
 import java.util.List;
 
-public interface PermisMapper extends BaseMapper<Permis> {
+public interface PermisMapper {
     int deleteByPrimaryKey(Long permisId);
 
     int insert(Permis record);

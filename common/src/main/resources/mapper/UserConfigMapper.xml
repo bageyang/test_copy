@@ -71,8 +71,4 @@
     apply_time, face_img, entering_status
     from zj_user_config
   </select>
-
-  <select id="selectAllByUserId" resultMap="BaseResultMap">
-    select * from zj_user_config where user_id =#{userId}
-  </select>
 </mapper>
