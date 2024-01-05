@@ -31,9 +31,9 @@ public interface OrderService {
 
     /**
      * 转拍支付回调
-     * @param stockSn
+     * @param orderSn
      */
-    void transferPaymentCallBack(Long stockSn);
+    void transferPaymentCallBack(Long orderSn);
 
     /**
      * 放货

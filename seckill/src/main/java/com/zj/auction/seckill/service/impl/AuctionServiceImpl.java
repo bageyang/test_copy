@@ -103,7 +103,8 @@ public class AuctionServiceImpl implements AuctionService {
         vo.setAuctionName(auction.getAuctionName());
         vo.setAuctionAreaId(auction.getAuctionAreaId());
         vo.setGoodsId(auction.getGoodsId());
-        vo.setPrices(auction.getPrice());
+        vo.setCashPrice(auction.getCashPrice());
+        vo.setIntegralPrice(auction.getIntegralPrice());
         vo.setStockQuantity(auction.getStockQuantity());
         vo.setGoodsInfo(goods);
         return vo;
@@ -125,7 +126,7 @@ public class AuctionServiceImpl implements AuctionService {
         vo.setAuctionId(e.getId());
         vo.setAuctionStatus(e.getAuctionStatus());
         vo.setGoodsId(e.getGoodsId());
-        vo.setPrices(e.getPrice());
+        vo.setCashPrice(e.getCashPrice());
         String imageUrl = Optional.ofNullable(goodsIdMap.get(e.getGoodsId()))
                 .map(Goods::getImgUrl)
                 .orElse("");

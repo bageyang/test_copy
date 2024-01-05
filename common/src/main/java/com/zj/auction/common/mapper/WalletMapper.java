@@ -1,15 +1,12 @@
 package com.zj.auction.common.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zj.auction.common.model.Wallet;
-import com.zj.auction.common.model.example.WalletExample;
+
+import java.math.BigDecimal;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
-public interface WalletMapper extends BaseMapper<Wallet> {
-    long countByExample(WalletExample example);
-
-    int deleteByExample(WalletExample example);
+public interface WalletMapper {
 
     int deleteByPrimaryKey(Long id);
 
@@ -17,17 +14,19 @@ public interface WalletMapper extends BaseMapper<Wallet> {
 
     int insertSelective(Wallet record);
 
-    List<Wallet> selectByExample(WalletExample example);
 
     Wallet selectByPrimaryKey(Long id);
 
-    int updateByExampleSelective(@Param("record") Wallet record, @Param("example") WalletExample example);
-
-    int updateByExample(@Param("record") Wallet record, @Param("example") WalletExample example);
 
     int updateByPrimaryKeySelective(Wallet record);
 
     int updateByPrimaryKey(Wallet record);
 
-    Wallet selectAllByUserId(@Param("userId") Long userId);
+    List<Wallet> selectAllByUserId(@Param("userId") Long userId);
+
+    Wallet selectWalletByUserIdAndType(@Param("userId")Long userId,@Param("fundType") Byte fundType);
+
+    int incrementUserBalance(@Param("id") Long id, @Param("changeNum") BigDecimal changeNum,@Param("changeBefore") BigDecimal before);
+
+    int decrementUserBalance(@Param("id") Long id, @Param("changeNum") BigDecimal changeNum,@Param("changeBefore") BigDecimal before);
 }
