@@ -16,12 +16,14 @@ import com.zj.auction.common.model.Stock;
 import com.zj.auction.common.util.SnowFlake;
 import com.zj.auction.general.app.service.AuctionService;
 import com.zj.auction.general.pc.service.StockManagerService;
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.net.Socket;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,18 +33,20 @@ import java.util.Objects;
 public class StockManagerServiceImpl implements StockManagerService {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
     private final GoodsMapper goodsMapper;
-    private final AuctionStockRelationMapper auctionStockMapper;
     private final StockMapper stockMapper;
     private final OrderMapper orderMapper;
     private final AuctionService auctionService;
+    private final SqlSessionFactory sqlSessionFactory;
+    private final AuctionStockRelationMapper auctionStockMapper;
 
     @Autowired
-    public StockManagerServiceImpl(GoodsMapper goodsMapper, AuctionStockRelationMapper auctionStockMapper, StockMapper stockMapper, OrderMapper orderMapper, AuctionService auctionService) {
+    public StockManagerServiceImpl(GoodsMapper goodsMapper, AuctionStockRelationMapper auctionStockMapper, StockMapper stockMapper, OrderMapper orderMapper, AuctionService auctionService, SqlSessionFactory sqlSessionFactory) {
         this.goodsMapper = goodsMapper;
         this.auctionStockMapper = auctionStockMapper;
         this.stockMapper = stockMapper;
         this.orderMapper = orderMapper;
         this.auctionService = auctionService;
+        this.sqlSessionFactory = sqlSessionFactory;
     }
 
     @Override

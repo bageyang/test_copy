@@ -28,4 +28,8 @@ public interface AuctionStockRelationMapper {
     Long getAuctionIdByStockNumber(@Param("stockNumber") Long stockNumber);
 
     List<AuctionStockRelation> listUnExclusiveStock(@Param("auctionId") Long auctionId);
+
+    List<AuctionStockRelation> listRelationByStockIds(@Param("stockIds") List<Long> ids);
+
+    int regroupAuctionRelation(@Param("id") Long id,@Param("actionId") Long actionId);
 }

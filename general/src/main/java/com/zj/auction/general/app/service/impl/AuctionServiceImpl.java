@@ -2,6 +2,7 @@ package com.zj.auction.general.app.service.impl;
 
 import com.zj.auction.common.constant.RedisConstant;
 import com.zj.auction.common.enums.AuctionStatEnum;
+import com.zj.auction.common.enums.DeleteEnum;
 import com.zj.auction.common.enums.OrderTypeEnum;
 import com.zj.auction.common.enums.StatusEnum;
 import com.zj.auction.common.exception.CustomException;
@@ -13,6 +14,9 @@ import com.zj.auction.common.model.AuctionStockRelation;
 import com.zj.auction.common.model.Goods;
 import com.zj.auction.common.model.Stock;
 import com.zj.auction.general.app.service.AuctionService;
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -25,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
@@ -38,15 +43,17 @@ public class AuctionServiceImpl implements AuctionService {
     private final GoodsMapper goodsMapper;
     private final AuctionStockRelationMapper auctionStockMapper;
     private final RedissonClient redissonClient;
+    private final SqlSessionFactory sqlSessionFactory;
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    public AuctionServiceImpl(AuctionMapper auctionMapper, GoodsMapper goodsMapper, AuctionStockRelationMapper auctionStockMapper, RedissonClient redissonClient) {
+    public AuctionServiceImpl(AuctionMapper auctionMapper, GoodsMapper goodsMapper, AuctionStockRelationMapper auctionStockMapper, RedissonClient redissonClient, SqlSessionFactory sqlSessionFactory) {
         this.auctionMapper = auctionMapper;
         this.goodsMapper = goodsMapper;
         this.auctionStockMapper = auctionStockMapper;
         this.redissonClient = redissonClient;
+        this.sqlSessionFactory = sqlSessionFactory;
     }
 
     @Override
@@ -57,7 +64,7 @@ public class AuctionServiceImpl implements AuctionService {
         BigDecimal integralPrice = stock.getIntegralPrice();
         Auction auction = auctionMapper.selectAuctionByGoodsIdAndCashPrice(goodsId, cashPrice);
         if (Objects.isNull(auction)) {
-            auction = createAuction(goodsId, cashPrice,integralPrice);
+            auction = createAuction(goodsId, cashPrice, integralPrice);
             auctionMapper.insertSelective(auction);
             if (Objects.isNull(auction)) {
                 return null;
@@ -68,7 +75,7 @@ public class AuctionServiceImpl implements AuctionService {
         relation.setStockId(stock.getId());
         relation.setStockNumber(stock.getStockNumber());
         auctionStockMapper.insertSelective(relation);
-        auction.setStockQuantity(auction.getStockQuantity()+1);
+        auction.setStockQuantity(auction.getStockQuantity() + 1);
         auctionMapper.updateByPrimaryKeySelective(auction);
         return auction;
     }
@@ -84,28 +91,40 @@ public class AuctionServiceImpl implements AuctionService {
         BigDecimal integralPrice = stockList.get(0).getIntegralPrice();
         Auction auction = auctionMapper.selectAuctionByGoodsIdAndCashPrice(goodsId, cashPrice);
         if (Objects.isNull(auction)) {
-            auction = createAuction(goodsId, cashPrice,integralPrice);
+            auction = createAuction(goodsId, cashPrice, integralPrice);
             if (Objects.isNull(auction)) {
                 throw new CustomException(StatusEnum.CREATE_AUCTION_ERROR);
             }
         }
         int addStockNum = 0;
-        for (Stock stock : stockList) {
-            AuctionStockRelation relation = new AuctionStockRelation();
-            relation.setAuctionId(auction.getId());
-            relation.setStockId(stock.getId());
-            relation.setStockNumber(stock.getStockNumber());
-            int i = auctionStockMapper.insertSelective(relation);
-            if (i > 0) {
+        try (SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH, false)) {
+            AuctionStockRelationMapper mapper = sqlSession.getMapper(AuctionStockRelationMapper.class);
+            for (Stock stock : stockList) {
+                AuctionStockRelation relation = new AuctionStockRelation();
+                relation.setAuctionId(auction.getId());
+                relation.setStockId(stock.getId());
+                relation.setStockNumber(stock.getStockNumber());
+                relation.setCreateTime(LocalDateTime.now());
+                relation.setUpdateTime(LocalDateTime.now());
+                relation.setIsDeleted(DeleteEnum.UN_DELETE.getCode());
+                mapper.insert(relation);
                 addStockNum++;
             }
+            sqlSession.commit();
+            sqlSession.clearCache();
         }
-        auction.setStockQuantity(auction.getStockQuantity()+addStockNum);
+        auction.setStockQuantity(auction.getStockQuantity() + addStockNum);
         auctionMapper.updateByPrimaryKeySelective(auction);
         return auction;
     }
 
-    private Auction createAuction(Long goodsId, BigDecimal cashPrice,BigDecimal integralPrice) {
+    @Override
+    public Auction getAuction(Long goodsId, BigDecimal cashPrice, BigDecimal integralPrice) {
+        return auctionMapper.selectAuctionByGoodsIdAndCashPrice(goodsId, cashPrice);
+    }
+
+    @Override
+    public Auction createAuction(Long goodsId, BigDecimal cashPrice, BigDecimal integralPrice) {
         // 全局锁
         RLock lock = redissonClient.getLock(RedisConstant.AUCTION_GENERATOR_LOCK_KEY);
         Auction auction;
@@ -159,7 +178,7 @@ public class AuctionServiceImpl implements AuctionService {
 
     @Override
     public Auction getAuctionById(Long auctionId) {
-        if(Objects.isNull(auctionId)){
+        if (Objects.isNull(auctionId)) {
             throw new CustomException(StatusEnum.PARAM_ERROR);
         }
         return auctionMapper.selectByPrimaryKey(auctionId);
