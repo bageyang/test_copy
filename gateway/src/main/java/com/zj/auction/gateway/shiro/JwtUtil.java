@@ -5,12 +5,9 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 
-//jwt工具，用来生成、校验token以及提取token中的信息
-@Slf4j
 public class JwtUtil {
 
     //指定一个token过期时间（毫秒）

@@ -1,5 +1,10 @@
+server:
+  port: 8083
 spring:
   cloud:
     nacos:
       discovery:
-        server-addr: nacos-cs
+        server-addr: 120.79.20.49:8848
+      config:
+        server-addr: 120.79.20.49:8848
+        namespace: 6905b8ab-06ab-4abd-adfe-51ac258dd402
