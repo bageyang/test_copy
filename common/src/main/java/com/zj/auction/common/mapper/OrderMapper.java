@@ -1,7 +1,6 @@
 package com.zj.auction.common.mapper;
 
 import com.zj.auction.common.model.Order;
-import com.zj.auction.common.query.OrderQuery;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,8 +27,4 @@ public interface OrderMapper {
     Order selectOrderByOrderNumber(@Param("sn")Long sn);
 
     List<Order> listOrderByUserId(@Param("userId") Long userId);
-
-    List<Order> listOrderByCondition(OrderQuery query);
-
-    int countExclusiveAuctionUserNum(@Param("stockeNumber") Long sn,@Param("orderStat") byte code);
 }

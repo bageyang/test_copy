@@ -111,13 +111,6 @@
         <include refid="delete_flag_sql"/>
     </select>
 
-    <select id="getAuctionIdByStockNumber" resultType="java.lang.Long">
-        select auction_id
-        from zj_auction_stock_relation
-        where stock_number = #{stockNumber,jdbcType=BIGINT}
-        <include refid="delete_flag_sql"/>
-    </select>
-
     <update id="updateByPrimaryKeySelective" parameterType="com.zj.auction.common.model.AuctionStockRelation">
         update zj_auction_stock_relation
         <set>

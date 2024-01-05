@@ -45,7 +45,7 @@
 
         <javaClientGenerator type="XMLMAPPER" targetPackage="com.zj.auction.common.mapper..backup" targetProject="common\src\main\java"/>
         <!--生成全部表tableName设为%-->
-        <table tableName="zj_user">
+        <table tableName="zj_wallet">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
             <domainObjectRenamingRule searchString="^Zj" replaceString="" />
         </table>

@@ -317,45 +317,5 @@
         where user_id = #{userId}
         <include refid="delete_flag_sql"/>
     </select>
-    <select id="listOrderByCondition" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from zj_order
-        <where>
-            <if test="goodsId != null">
-                goods_id = #{goodsId}
-            </if>
-            <if test="orderId != null">
-                and id = #{orderId}
-            </if>
-            <if test="orderSn != null">
-                and order_sn = #{orderSn}
-            </if>
-            <if test="userId != null">
-                and user_id = #{userId}
-            </if>
-            <if test="stockNumber != null">
-                and stock_number = #{stockNumber}
-            </if>
-            <if test="orderType != null">
-                and order_type = #{orderType}
-            </if>
-            <if test="orderStat != null">
-                and order_status = #{orderStat}
-            </if>
-            <if test="orderStatList != null and orderStatList.size()>0">
-                and order_status in
-                <foreach collection="orderStatList" item="statItem" open="(" close=")" separator=",">
-                    #{statItem}
-                </foreach>
-            </if>
-        </where>
-        <include refid="delete_flag_sql"/>
-    </select>
-    <select id="countExclusiveAuctionUserNum" resultType="java.lang.Integer">
-        select count(*)
-        from zj_order
-        where stock_number = #{stockeNumber} and order_status = #{orderStat}
-    </select>
 
 </mapper>

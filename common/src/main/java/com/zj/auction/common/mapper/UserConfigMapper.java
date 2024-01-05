@@ -14,6 +14,4 @@ public interface UserConfigMapper extends BaseMapper<UserConfig> {
     List<UserConfig> selectAll();
 
     int updateByPrimaryKey(UserConfig record);
-
-    UserConfig selectAllByUserId (Long userId);
 }

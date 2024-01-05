@@ -1,7 +1,6 @@
 package com.zj.auction.seckill.config;
 
 import com.zj.auction.common.constant.Constant;
-import com.zj.auction.seckill.converter.FastJsonMessageConverter;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.FanoutExchange;
@@ -16,11 +15,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMqConfig {
 
-
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
-        template.setMessageConverter(new FastJsonMessageConverter());
+        template.setMessageConverter(new Jackson2JsonMessageConverter());
         return template;
     }
 

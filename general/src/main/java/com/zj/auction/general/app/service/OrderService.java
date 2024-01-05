@@ -2,7 +2,6 @@ package com.zj.auction.general.app.service;
 
 import com.zj.auction.common.dto.Ret;
 import com.zj.auction.common.model.Order;
-import com.zj.auction.common.query.OrderQuery;
 
 import java.util.List;
 
@@ -41,10 +40,10 @@ public interface OrderService {
 
     /**
      * 查询我的订单
-     * @param query
+     * @param userId
      * @return
      */
-    List<Order> listUserOrder(OrderQuery query);
+    List<Order> listUserOrder(Long userId);
 
 
 }

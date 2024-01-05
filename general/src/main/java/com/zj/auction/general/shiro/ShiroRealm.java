@@ -4,8 +4,9 @@ import com.zj.auction.common.mapper.PermisRoleMapper;
 import com.zj.auction.common.mapper.UserRoleMapper;
 import com.zj.auction.common.model.Role;
 import com.zj.auction.common.model.User;
+import com.zj.auction.common.util.AuthToken;
+import com.zj.auction.common.util.PcTokenUtils;
 import com.zj.auction.common.util.StringUtils;
-import com.zj.auction.general.auth.AuthToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.shiro.authc.*;
@@ -57,7 +58,7 @@ public class ShiroRealm extends AuthorizingRealm {
         if (StringUtils.isEmpty(token)) {
             return null;
         }
-        String userId = "PcTokenUtils.getUserIdFromToken(token)";
+        String userId = PcTokenUtils.getUserIdFromToken(token);
         if(StringUtils.isEmpty(userId)){
             throw new ExpiredCredentialsException();//过期
         }

@@ -1,6 +1,5 @@
 package com.zj.auction.common.model;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -8,7 +7,6 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
-@TableName("zj_user_config")
 public class UserConfig implements Serializable {
 
     private Long userId;
@@ -17,7 +15,13 @@ public class UserConfig implements Serializable {
 
     private String addr;
 
+    private Integer cardNumber;
+
     private String domainName;
+
+    private Integer subUserNum;
+
+    private Integer subUserNumAll;
 
     private String province;
 

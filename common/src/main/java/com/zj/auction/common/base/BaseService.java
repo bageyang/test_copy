@@ -28,8 +28,6 @@ public interface BaseService {
      */
     <T, R> R base(T t, Function<T, R> deal) throws ServiceException;
 
-
-
     /**
      * ************************************************
      * describe:公用的大方法

@@ -1,7 +1,5 @@
 package com.zj.auction.general.app.service.impl;
 
-import com.github.pagehelper.PageHelper;
-import com.zj.auction.common.enums.OrderDirectionEnum;
 import com.zj.auction.common.enums.OrderStatEnum;
 import com.zj.auction.common.enums.StatusEnum;
 import com.zj.auction.common.exception.CustomException;
@@ -11,7 +9,6 @@ import com.zj.auction.common.mapper.StockMapper;
 import com.zj.auction.common.model.Goods;
 import com.zj.auction.common.model.Order;
 import com.zj.auction.common.model.Stock;
-import com.zj.auction.common.query.OrderQuery;
 import com.zj.auction.common.util.StringUtils;
 import com.zj.auction.general.app.service.AuctionService;
 import com.zj.auction.general.app.service.OrderService;
@@ -186,18 +183,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public List<Order> listUserOrder(OrderQuery query) {
-        if(Objects.isNull(query)){
-            throw new CustomException(StatusEnum.PARAM_ERROR);
-        }
-        Byte orderDirection = query.getOrderDirection();
-        if (Objects.nonNull(orderDirection) && Objects.isNull(query.getOrderStat())) {
-            if (OrderDirectionEnum.check(orderDirection)) {
-                List<Byte> directStatList = OrderStatEnum.getDirectStatList(orderDirection);
-                query.setOrderStatList(directStatList);
-            }
-        }
-        PageHelper.startPage(query.getPageNum(),query.getPageSize());
-        return orderMapper.listOrderByCondition(query);
+    public List<Order> listUserOrder(Long userId) {
+        return orderMapper.listOrderByUserId(userId);
     }
 }
