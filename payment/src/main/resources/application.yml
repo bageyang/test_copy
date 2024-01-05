@@ -1,0 +1,35 @@
+server:
+  port: 8090 #服务端口
+  servlet:
+    context-path: /payment
+
+spring:
+  application:
+    name: payment-sever #应用的名字
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://120.77.247.13:3306/zj?serverTimezone=GMT%2B8&characterEncoding=utf-8
+    username: root
+    password: zhongjiu_test
+
+  rabbitmq:
+    addresses: 120.79.20.49:5672
+    username: admin
+    password: zhongjiu_test
+
+mybatis-plus:
+  configuration: #sql日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mapper/*.xml
+
+#logging:
+#  level:
+#    root: info
