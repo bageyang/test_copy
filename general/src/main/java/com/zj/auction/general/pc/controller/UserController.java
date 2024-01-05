@@ -53,7 +53,7 @@ public class UserController{
      * @param password 密码
      * @return {@link GeneralResult}
      *///    @ReqLimit(rateSecond =4)
-    @PostMapping(value="/userLogin")
+    @PostMapping("/userLogin")
     public GeneralResult getPcLogin(@RequestParam String username, @RequestParam String password) {
         return GeneralResult.success(pcUserServer.getPcLogin(username,password));
     }
@@ -94,16 +94,13 @@ public class UserController{
      * @Title: saveManager
      * @Description: 添加管理员
      * @author： YW
-     * @date： 2022年6月7日16:41:10
-     * @param userCfg
-     * @return
      * @return：GeneralResult
      *
      */
 //    @SystemLog
     @PostMapping(value="/createManager")
-    public GeneralResult createManager(@RequestBody User userCfg) {
-        return GeneralResult.success(pcUserServer.createManager(userCfg));
+    public GeneralResult createManager(@RequestBody UserDTO dto) {
+        return GeneralResult.success(pcUserServer.createManager(dto));
     }
 
 

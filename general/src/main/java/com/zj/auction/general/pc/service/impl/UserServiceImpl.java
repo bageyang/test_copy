@@ -26,11 +26,19 @@ import com.zj.auction.general.pc.service.UserService;
 import com.zj.auction.common.vo.GeneralResult;
 import com.zj.auction.common.vo.LoginResp;
 import com.zj.auction.common.vo.PageAction;
+import com.zj.auction.general.shiro.JwtToken;
+import com.zj.auction.general.shiro.JwtUtil;
+import com.zj.auction.general.shiro.PwdTool;
 import com.zj.auction.general.shiro.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authc.ExpiredCredentialsException;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.crypto.hash.Md5Hash;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -58,6 +66,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UserServiceImpl extends BaseServiceImpl implements UserService {
+    private static final long TMP_TOKEN_EXPIRE_TIME = 5 * 60 * 1000L; //5分钟
     private final UserMapper userMapper;
     private final UserRoleMapper userRoleMapper;
     private final RoleMapper roleMapper;
@@ -68,8 +77,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     private final WalletService walletService;
     private final GoodsMapper goodsMapper;
     @Resource
-    private RedisTemplate<String,Object> redisTemplate;
-
+    private RedisTemplate<String, Object> redisTemplate;
 
 
     /**
@@ -82,6 +90,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
      */
     @Override
     public LoginResp getPcLogin(String userName, String password) {
+        LoginResp data = new LoginResp();
         // 数据校验
         PubFun.check(userName, password);
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
@@ -90,17 +99,66 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
 
         if (user == null) {
             throw new ServiceException(610, "账号或密码错误,请重新输入");
-        }
+        }else {
         //校验密码
-        String md5 = MD5Utils.isEncryption(password, user.getSalt());
-        if (!user.getPassWord().equals(md5)) {
-            throw new ServiceException(612, "您输入的密码错误,请重新输入");
+        String salt = user.getSalt();
+        Md5Hash md5Hash = new Md5Hash(password, salt, 1024);
+
+        System.out.println("md5Hash---->" + md5Hash);
+        String userId = String.valueOf(user.getUserId());
+        long expressTime = System.currentTimeMillis() + TMP_TOKEN_EXPIRE_TIME;
+        String md5 = MD5Utils.isEncryption(userId, String.valueOf(expressTime));
+        String accessToken = JwtUtil.getTmpJwtToken(userId, md5, expressTime);
+        //生成token字符串
+        String token = JwtUtil.getJwtToken(userName, md5Hash.toHex());   //toHex转换成16进制，32为字符
+        //toHex转换成16进制，32为字符
+        JwtToken jwtToken = new JwtToken(token);
+        data.setToken(token);
+        data.setUserId(user.getUserId());
+        data.setUserInfo(user);
+        data.setAccessToken(accessToken);
+        data.setMsg("成功!");
+        //拿到Subject对象
+        Subject subject = SecurityUtils.getSubject();
+        //进行认证
+        try {
+            subject.login(jwtToken);
+            // return new ResultTemplate().Ok("200","成功","");
+            System.out.println("成功");
+        } catch (UnknownAccountException e) {
+            // return new ResultTemplate().Ok("500","无效用户，用户不存在","");
+            System.out.println("无效用户，用户不存在");
+            e.printStackTrace();
+        } catch (IncorrectCredentialsException e) {
+            // return new ResultTemplate().Ok("500","密码错误","");
+            System.out.println("密码错误");
+            e.printStackTrace();
+        } catch (ExpiredCredentialsException e) {
+            //return new ResultTemplate().Ok("500","token过期","");
+            System.out.println("token过期");
+            e.printStackTrace();
+        }
+
+        if (!user.getPassWord().equals(md5Hash.toString())) {
+            throw new ServiceException(518, "您输入的密码错误,请重新输入!");
+        }
+        if (user.getStatus() == 1) {
+            throw new ServiceException(519, "用户已被冻结,请联系管理员!");
+        }
+        if (user.getAudit() == 1) {
+            throw new ServiceException(521, "该账号还在审核中!");
+        }
+        if (user.getAudit() == 3) {
+            throw new ServiceException(522, "该账号未通过审核," + user.getAuditExplain());
         }
         // 保存最近一次登入时间
         user.setLoginTime(LocalDateTime.now());
-        userMapper.insert(user);
-        return getPcLoginResp(user.getUserId(), user);
+        userMapper.updateByPrimaryKeySelective(user);
     }
+        System.out.println("==========================="+data);
+     return data;
+}
+
 
     //生成包括token的返回登录数据
     private LoginResp getPcLoginResp(Long userId, User userInfo) {
@@ -233,37 +291,38 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     //添加管理员
     @Override
     @Transactional
-    public Boolean createManager(User userCfg) {
-        PubFun.check(userCfg.getUserName(), userCfg.getTel(), userCfg.getPassWord());
-        User user = SecurityUtils.getPrincipal();
+    public int createManager(UserDTO dto) {
+        PubFun.check(dto.getUserName(), dto.getTel(), dto.getPassWord());
+        System.out.println(dto);
+//        User SystemUser = SecurityUtils.getPrincipal();
         //	查询该用户名是否使用
-        Integer count = userMapper.countByName(userCfg.getUserName());
+        Integer count = userMapper.countByName(dto.getUserName());
         if (count > 0) {
             throw new ServiceException(404, "该账号已存在!");
         }
-//		if(userCfg.getUserName().length()<6) throw new ServiceException(407,"账号设置太短");
-        User newUser = new User();
-        newUser.setUserName(userCfg.getUserName());
-        newUser.setNickName(userCfg.getRealName());
-        newUser.setRealName(userCfg.getRealName());
-        if (!StringUtils.isEmpty(userCfg.getUserImg())) {
-            newUser.setUserImg(userCfg.getUserImg());
+        User user = new User();// 创建用户
+        String salt = PwdTool.getRandomSalt();
+        Md5Hash md5Hash = new Md5Hash(dto.getPassWord(), salt, 1024);
+        user.setPassWord(md5Hash.toString());
+        user.setSalt(salt);
+        user.setUserName(dto.getUserName());
+        user.setNickName(dto.getRealName());
+        user.setRealName(dto.getRealName());
+        if (!StringUtils.isEmpty(dto.getUserImg())) {
+            user.setUserImg(dto.getUserImg());
         }
-        String[] md5pwd = MD5Utils.encryption(userCfg.getPassWord());//md5加密
-        newUser.setPassWord(md5pwd[0]);
-        newUser.setSalt(md5pwd[1]);
-        newUser.setUserType(1);//后台管理员 用于区分APP登录
-        newUser.setTel(userCfg.getTel());
-        newUser.setStatus(0);
-        newUser.setDeleteFlag(0);
-        newUser.setAddUserId(user.getUserId());
-        newUser.setUpdateTime(LocalDateTime.now());
+        user.setUserType(1);//后台管理员 用于区分APP登录
+        user.setTel(dto.getTel());
+        user.setStatus(0);
+        user.setDeleteFlag(0);
+//        user.setAddUserId(SystemUser.getUserId());
+        user.setUpdateTime(LocalDateTime.now());
 		/*newUser.setRoleRange(authToken.getRoleRange());
 		if(!StringUtils.isEmpty(userCfg.getRoleShopId())) {
 			newUser.setRoleShopId(param.getRoleShopId());
 		}*/
 
-        return userMapper.insert(newUser) > 0;
+        return userMapper.insertSelective(user);
     }
 
     //根据id查询会员信息

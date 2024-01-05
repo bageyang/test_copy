@@ -69,6 +69,8 @@ public class ShiroConfig {
         ruleMap.put("/app/user/sendMessages", "anon");
         ruleMap.put("/app/user/login", "anon"); //登录路径、注册路径都需要放行不进行拦截
         ruleMap.put("/app/user/register", "anon");
+        ruleMap.put("/pc/user/createManager", "anon");
+        ruleMap.put("/pc/user/userLogin", "anon");
 //        ruleMap.put("/user/register", "anon");
         ruleMap.put("/**", "jwt");  // /**，一般放在最下，表示对所有资源起作用，使用JwtFilter
         shiroFilterFactoryBean.setFilterChainDefinitionMap(ruleMap);

@@ -13,6 +13,7 @@ import java.util.Map;
 public interface UserMapper extends BaseMapper<User> {
     int deleteByPrimaryKey(Long userId);
 
+    @Override
     int insert(User record);
 
     User selectByPrimaryKey(Long userId);

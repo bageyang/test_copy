@@ -184,7 +184,7 @@ public class AppUserController {
     @ApiOperation(value = "根据id查询单个地址", notes = "addrId:地址id")
     @ApiImplicitParam(name = "addrId", value = "地址id", dataType = "Long")
     @PostMapping(value = "/getAddrById")
-    public GeneralResult getAddrById(Long addrId) {
+    public GeneralResult getAddrById(@RequestParam(name = "addrId") Long addrId) {
         return GeneralResult.success(appUserService.getAddrById(addrId));
     }
 
@@ -380,8 +380,8 @@ public class AppUserController {
             @ApiImplicitParam(name = "reverseImage", value = "身份证反面", dataType = "String")
     })
     @PostMapping(value = "/authIdentity")
-    public GeneralResult authIdentity(String realName, String cardNum, String frontImage, String reverseImage) {
-        return GeneralResult.success(appUserService.authIdentity(realName, cardNum, frontImage, reverseImage));
+    public GeneralResult authIdentity(@RequestBody UserDTO dto) {
+        return GeneralResult.success(appUserService.authIdentity(dto));
     }
 
 
@@ -420,8 +420,8 @@ public class AppUserController {
             @ApiImplicitParam(name = "realName", value = "姓名", dataType = "string"),
             @ApiImplicitParam(name = "cardNumber", value = "身份证号", dataType = "string"),
     })
-    public GeneralResult runRealAutheInfo(@RequestParam String realName, @RequestParam String cardNumber) {
-        return appUserService.runRealAutheInfo(realName, cardNumber);
+    public GeneralResult runRealAutheInfo(@RequestBody UserDTO dto) {
+        return appUserService.runRealAutheInfo(dto);
     }
 
     /**
