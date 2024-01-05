@@ -219,7 +219,7 @@ CREATE TABLE `zj_wallet`
 DROP TABLE IF EXISTS `zj_wallet_record`;
 CREATE TABLE `zj_wallet_record`
 (
-    `id`               bigint(0) NOT NULL,
+    `id`               bigint(0) unsigned NOT NULL AUTO_INCREMENT,
     `user_id`          bigint(0) NOT NULL,
     `wallet_type`      tinyint(0) NULL DEFAULT NULL COMMENT '钱包类型',
     `transaction_type` tinyint(0) NULL DEFAULT NULL COMMENT '交易类型',

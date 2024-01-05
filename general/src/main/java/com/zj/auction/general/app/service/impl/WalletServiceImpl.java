@@ -209,13 +209,13 @@ public class WalletServiceImpl implements WalletService {
         walletRecord.setWalletType(param.getFundType().getCode());
         walletRecord.setChangeBalance(param.getChangeNum());
         walletRecord.setRemark(param.getRemark());
+        walletRecord.setTransactionSn(param.getTransactionSn());
         return walletRecord;
     }
 
     @Override
     public UserWalletVo getUserWallet() {
-        User user = SecurityUtils.getPrincipal();
-        Long userId = user.getUserId();
+        Long userId = 202L;
         List<Wallet> wallets = walletMapper.selectAllByUserId(userId);
         Map<FundTypeEnum, Wallet> walletGroup = wallets.stream()
                 .collect(Collectors.toMap(this::fundTypeGroup, Function.identity()));
@@ -224,12 +224,12 @@ public class WalletServiceImpl implements WalletService {
             cashWallet = createUserWallet(userId, FundTypeEnum.CASH);
         }
         Wallet integralWallet = walletGroup.get(FundTypeEnum.INTEGRAL);
-        if (Objects.isNull(cashWallet)) {
-            cashWallet = createUserWallet(userId, FundTypeEnum.INTEGRAL);
+        if (Objects.isNull(integralWallet)) {
+            integralWallet = createUserWallet(userId, FundTypeEnum.INTEGRAL);
         }
         Wallet rebateWallet = walletGroup.get(FundTypeEnum.REBATE);
-        if (Objects.isNull(cashWallet)) {
-            cashWallet = createUserWallet(userId, FundTypeEnum.REBATE);
+        if (Objects.isNull(rebateWallet)) {
+            rebateWallet = createUserWallet(userId, FundTypeEnum.REBATE);
         }
         UserWalletVo userWalletVo = new UserWalletVo();
         userWalletVo.setCashBalance(cashWallet.getBalance());
@@ -241,8 +241,7 @@ public class WalletServiceImpl implements WalletService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean rebateTransfer(RebateTransferDto transferDto) {
-        User user = SecurityUtils.getPrincipal();
-        Long userId = user.getUserId();
+        Long userId = getUserId();
         Wallet rebateWallet = getUserWallet(userId, FundTypeEnum.REBATE);
         Wallet cashWallet = getUserWallet(userId, FundTypeEnum.CASH);
         BigDecimal transferNum = transferDto.getNum().abs();
@@ -278,11 +277,15 @@ public class WalletServiceImpl implements WalletService {
         return true;
     }
 
+    private Long getUserId() {
+        return 202L;
+    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean cashTransfer(RebateTransferDto transferDto) {
         User user = SecurityUtils.getPrincipal();
-        Long userId = user.getUserId();
+        Long userId = getUserId();
         String userName = user.getUserName();
         Long toUserId = transferDto.getToUserId();
         BigDecimal num = transferDto.getNum().abs();
@@ -328,8 +331,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public Boolean cashWithdraw(RebateTransferDto transferDto) {
-        User user = SecurityUtils.getPrincipal();
-        Long userId = user.getUserId();
+        Long userId = getUserId();
         BigDecimal num = transferDto.getNum().abs();
         Wallet cashWallet = getUserWallet(userId, FundTypeEnum.CASH);
         BigDecimal balance = cashWallet.getBalance();
@@ -377,7 +379,7 @@ public class WalletServiceImpl implements WalletService {
         WalletRecord record = WalletRecord.builder()
                 .userId(userId)
                 .walletType(FundTypeEnum.CASH.getCode())
-                .changeBalance(num.negate())
+                .changeBalance(num)
                 .balanceBefore(balance)
                 .balanceAfter(after)
                 .remark("提现拒绝返还保证金")
@@ -410,7 +412,7 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public List<Withdraw> listWithdrawRecord( PageQuery pageQuery) {
         // todo
-        Long userId = 2L;
+        Long userId = getUserId();
         PageHelper.startPage(pageQuery.getPageNum(),pageQuery.getPageSize());
         return withdrawMapper.listWithdrawRecord(userId);
     }
@@ -418,6 +420,7 @@ public class WalletServiceImpl implements WalletService {
     private Wallet createUserWallet(Long userId, FundTypeEnum fundType) {
         Wallet wallet = Wallet.builder()
                 .userId(userId)
+                .balance(BigDecimal.ZERO)
                 .fundType(fundType.getCode())
                 .build();
         walletMapper.insertSelective(wallet);

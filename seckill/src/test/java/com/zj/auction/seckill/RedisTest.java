@@ -11,7 +11,6 @@ import com.zj.auction.common.model.Auction;
 import com.zj.auction.common.model.Goods;
 import com.zj.auction.common.util.SnowFlake;
 import com.zj.auction.seckill.service.AuctionService;
-import com.zj.auction.seckill.service.OrderService;
 import com.zj.auction.seckill.service.RedisService;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
@@ -49,8 +48,6 @@ public class RedisTest {
     private GoodsMapper goodsMapper;
     @Autowired
     private AuctionService auctionService;
-    @Autowired
-    private OrderService orderService;
 
     @Test
     public void inserRedisList() throws InterruptedException {

@@ -1,5 +1,6 @@
 package com.zj.auction.common.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +22,7 @@ public class WalletRecord {
 
     private Byte transactionType;
 
-    private Byte transactionSn;
+    private String transactionSn;
 
     private BigDecimal balanceBefore;
 
@@ -30,9 +31,9 @@ public class WalletRecord {
     private BigDecimal balanceAfter;
 
     private String remark;
-
+    @JsonFormat( pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createTime;
-
+    @JsonFormat( pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime updateTime;
 
 }

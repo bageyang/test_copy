@@ -86,6 +86,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
 
 
     //实名认证
+    @Override
     public Boolean authIdentity(String realName, String cardNum, String frontImage, String reverseImage) {
         AuthToken appToken = AppTokenUtils.getAuthToken();
         User user = userMapper.selectByPrimaryKey(appToken.getUserId());
