@@ -18,4 +18,12 @@ public enum AuctionStatEnum {
     public static boolean isFinish(Byte code){
         return Objects.equals(CLOSE.code,code);
     }
+
+    public byte getCode() {
+        return code;
+    }
+
+    public String getText() {
+        return text;
+    }
 }

@@ -5,13 +5,27 @@
 ---
 -- inventoryDecrAndLPopSNScript
 if ((redis.call('exists', KEYS[1]) == 1) and (redis.call('exists', KEYS[2]) == 1)) then
-    if(tonumber(redis.call('hget', KEYS[1], ARGV[1])) > tonumber(ARGV[2])) then
-        redis.call('hincrby', KEYS[1], ARGV[1], -ARGV[3])
+    if(tonumber(redis.call('hget', KEYS[1], ARGV[1])) > 0) then
+        redis.call('hincrby', KEYS[1], ARGV[1], -1)
         return redis.call('LPOP', KEYS[2]);
     end;
     return nil;
 end;
 return nil;
+
+-- 2022-05-29 简化版本 v1
+-- if ((redis.call('exists', KEYS[1]) == 1) and (redis.call('exists', KEYS[2]) == 1)) then if(tonumber(redis.call('hget', KEYS[1], ARGV[1])) > 0) then redis.call('hincrby', KEYS[1], ARGV[1], -1) return redis.call('LPOP', KEYS[2]); end; return nil; end; return nil;
+if ((redis.call('exists', KEYS[1]) == 1) and (redis.call('exists', KEYS[2]) == 1)) then
+    if(tonumber(redis.call('hget', KEYS[1], ARGV[1])) > 0) then
+        redis.call('hincrby', KEYS[1], ARGV[1], -1)
+        return redis.call('LPOP', KEYS[2]);
+    end;
+    return nil;
+end;
+return nil;
+
+-- 2022-05-29 支持一次锁定一个库存
+-- if ((redis.call('exists', KEYS[1]) == 1) and (redis.call('exists', KEYS[2]) == 1)) then if(tonumber(redis.call('hget', KEYS[1], ARGV[1])) > tonumber(ARGV[2])) then redis.call('hincrby', KEYS[1], ARGV[1], -ARGV[2]) return redis.call('LPOP', KEYS[2]); end; return nil;end;return nil;
 
 -- "if ((redis.call('exists', KEYS[1]) == 1) and (redis.call('exists', KEYS[2]) == 1)) then if(tonumber(redis.call('hget', KEYS[1], ARGV[1])) > 0) then redis.call('hincrby', KEYS[1], ARGV[1], -ARGV[3])return redis.call('LPOP', KEYS[2]);end;return nil;end;return nil;"
 -- a1b4d39b78f9ee7c73e6f6d9a681b0f8be081d74

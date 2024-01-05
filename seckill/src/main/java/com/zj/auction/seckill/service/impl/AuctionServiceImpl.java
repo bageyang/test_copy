@@ -13,6 +13,7 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,9 +39,15 @@ public class AuctionServiceImpl implements AuctionService {
     @Override
     public String decreAuctionStock(Long auctionId) {
         // redis检查
-        RScript script = redissonClient.getScript();
-//        script.eval()
-        return null;
+        try {
+            RScript script = redissonClient.getScript();
+            List<Object> keys = new ArrayList<>();
+            keys.add(RedisConstant.AUCTION_REMAINDER_KEY);
+            keys.add(RedisConstant.AUCTION_STOCK_KEY);
+            return script.evalSha(RScript.Mode.READ_WRITE, RedisConstant.AUCTION_LUA_SCRIPT, RScript.ReturnType.VALUE,keys, auctionId);
+        }catch (Exception e){
+            return null;
+        }
     }
 
     @Override
@@ -48,13 +55,17 @@ public class AuctionServiceImpl implements AuctionService {
         List<Auction> auctions = auctionMapper.listAuctionByAreaId(areaId);
         List<Long> ids = auctions.stream().map(Auction::getId).collect(Collectors.toList());
         List<AuctionStockRelation> auctionStockRelations = auctionStockRelationMapper.listStockByAuctionIds(ids);
-        Map<Long, List<AuctionStockRelation>> auctionGroup = auctionStockRelations.stream().collect(Collectors.groupingBy(AuctionStockRelation::getAuctionId));
+        Map<Long, List<AuctionStockRelation>> auctionGroup = auctionStockRelations.stream()
+                .collect(Collectors.groupingBy(AuctionStockRelation::getAuctionId));
         auctionGroup.forEach((k,v)->{
             String key = String.valueOf(k);
             // hash 缓存库存数量
-            redisService.hSet(RedisConstant.AUCTION_VOLUME_KEY,key,v.size());
+            redisService.hSet(RedisConstant.AUCTION_REMAINDER_KEY,key,v.size());
+            List<String> snList = v.stream()
+                    .map(AuctionStockRelation::getStockNumber)
+                    .collect(Collectors.toList());
             // list 缓存库存编号
-            redisService.lPushAll(RedisConstant.AUCTION_STOCK_KEY+key,v);
+            redisService.lPushAll(RedisConstant.AUCTION_STOCK_KEY+key,snList);
         });
     }
 
