@@ -1,12 +1,16 @@
 package com.zj.auction.general.shiro;
 
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zj.auction.common.util.MD5Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.ShiroException;
 import org.apache.shiro.authc.ExpiredCredentialsException;
 
+import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
@@ -33,6 +37,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         //在请求头中获取token
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String token = httpServletRequest.getHeader("Authorization"); //前端命名Authorization
+        String accessToken  = httpServletRequest.getHeader("accessToken"); //前端命名Authorization
         //token不存在
         if(token == null || "".equals(token)){
             out(response,"无token，无权访问，请先登录");
@@ -43,6 +48,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         JwtToken jwtToken = new JwtToken(token);
         try {
             SecurityUtils.getSubject().login(jwtToken);  //通过subject，提交给myRealm进行登录验证
+            refreshToken(response,accessToken);
             return true;
         } catch (ExpiredCredentialsException e){
             out(response,"token过期，请重新登录");
@@ -55,6 +61,19 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
             return false;
         }
     }
+
+    private void refreshToken(ServletResponse response, String accessToken) {
+        if (JwtUtil.isExpire(accessToken)) {
+            DecodedJWT jwt = JWT.decode(accessToken);
+            String userId = jwt.getClaim("userId").asString();
+            long expressTime = System.currentTimeMillis() + 5*60*1000L;
+            String md5 = MD5Utils.isEncryption(userId, String.valueOf(expressTime));
+            String newAccessToken = JwtUtil.getTmpJwtToken(userId, md5, expressTime);
+            HttpServletResponse httpServletResponse = WebUtils.toHttp(response);
+            httpServletResponse.setHeader("accessToken",newAccessToken);
+        }
+    }
+
     /**
      * json形式返回结果token验证失败信息，无需转发
      */

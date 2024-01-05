@@ -467,4 +467,6 @@ public interface AppUserService {
      * @return	java.lang.Boolean
      */
     Boolean whetherNewUser(String time);
+
+    LoginResp refreshToken();
 }

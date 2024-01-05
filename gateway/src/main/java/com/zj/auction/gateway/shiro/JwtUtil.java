@@ -14,8 +14,7 @@ public class JwtUtil {
     private static final long EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000; //7天
 
     /**
-
-     生成token
+     * 生成token
      */
 //注意这里的sercet不是密码，而是进行三件套（salt+MD5+1024Hash）处理密码后得到的凭证
 //这里为什么要这么做，在controller中进行说明
@@ -28,27 +27,27 @@ public class JwtUtil {
                 .withExpiresAt(date) //过期时间
                 .sign(algorithm); //签名算法
     }
-    /**
 
-     校验token是否正确
+    /**
+     * 校验token是否正确
      */
     public static boolean verifyToken(String token, String username, String secret) {
         try {
-//根据密钥生成JWT效验器
+            //根据密钥生成JWT效验器
             Algorithm algorithm = Algorithm.HMAC256(secret);
             JWTVerifier verifier = JWT.require(algorithm)
                     .withClaim("username", username)
                     .build();
-//效验TOKEN（其实也就是比较两个token是否相同）
+            //效验TOKEN（其实也就是比较两个token是否相同）
             DecodedJWT jwt = verifier.verify(token);
             return true;
         } catch (Exception exception) {
             return false;
         }
     }
-    /**
 
-     在token中获取到username信息
+    /**
+     * 在token中获取到username信息
      */
     public static String getUsername(String token) {
         try {
@@ -58,13 +57,22 @@ public class JwtUtil {
             return null;
         }
     }
-    /**
 
-     判断是否过期
+    public static String getUserId(String token) {
+        try {
+            DecodedJWT jwt = JWT.decode(token);
+            return jwt.getClaim("userId").asString();
+        } catch (JWTDecodeException e) {
+            return null;
+        }
+    }
+
+    /**
+     * 判断是否过期
      */
-    public static boolean isExpire(String token){
+    public static boolean isExpire(String token) {
         DecodedJWT jwt = JWT.decode(token);
-        return jwt.getExpiresAt().getTime() < System.currentTimeMillis() ;
+        return jwt.getExpiresAt().getTime() < System.currentTimeMillis();
     }
 
 }
