@@ -2,7 +2,6 @@ package com.zj.auction.general.app.service;
 
 
 import com.zj.auction.common.dto.BalanceChangeDto;
-import com.zj.auction.common.model.Wallet;
 
 
 public interface WalletService {
