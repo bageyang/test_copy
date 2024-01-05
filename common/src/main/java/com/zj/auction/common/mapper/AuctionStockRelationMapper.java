@@ -19,7 +19,7 @@ public interface AuctionStockRelationMapper {
 
     List<AuctionStockRelation> listStockByAuctionIds(@Param("auctionIds") List<Long> ids);
 
-    Long selectAuctionIdBySn(@Param("sn") String sn);
+    Long selectAuctionIdBySn(@Param("sn") Long sn);
 
     Long selectAuctionIdByStockId(@Param("stockId") Long stockId);
 }

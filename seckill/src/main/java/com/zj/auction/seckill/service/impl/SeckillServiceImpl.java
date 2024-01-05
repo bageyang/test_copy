@@ -43,15 +43,15 @@ public class SeckillServiceImpl implements SeckillService {
             return Ret.error(StatusEnum.SECKILL_FAIL_ERROR);
         }
         // 3.发送mq 生成订单
-        long orderId = SnowFlake.nextId();
-        BaseOrderDto baseOrderDto = buildOrderMqMSg(orderId,ret.get(),auctionId);
+        long orderSn = SnowFlake.nextId();
+        BaseOrderDto baseOrderDto = buildOrderMqMSg(orderSn,ret.get(),auctionId);
         rabbitTemplate.convertAndSend(Constant.ORDER_EXCHANGE_KEY, null, baseOrderDto);
         return Ret.ok(baseOrderDto);
     }
 
-    private BaseOrderDto buildOrderMqMSg(Long orderId, String sn, Long auctionId) {
+    private BaseOrderDto buildOrderMqMSg(Long orderSn, String sn, Long auctionId) {
         BaseOrderDto baseOrderDto = new BaseOrderDto();
-        baseOrderDto.setOrderId(orderId);
+        baseOrderDto.setOrderSn(orderSn);
         baseOrderDto.setSn(Long.parseLong(sn));
         baseOrderDto.setCreateTime(LocalDateTime.now());
         baseOrderDto.setAuctionId(auctionId);

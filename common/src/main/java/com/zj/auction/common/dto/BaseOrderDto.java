@@ -3,13 +3,16 @@ package com.zj.auction.common.dto;
 import java.time.LocalDateTime;
 
 /**
- * 秒杀订单mq消息
+ * 基础订单信息
  */
 public class BaseOrderDto {
     private LocalDateTime createTime;
-    private Long orderId;
+    private Long orderSn;
     private Long auctionId;
     private Long userId;
+    /**
+     * stockNumber
+     */
     private Long sn;
 
     public LocalDateTime getCreateTime() {
@@ -20,12 +23,12 @@ public class BaseOrderDto {
         this.createTime = createTime;
     }
 
-    public Long getOrderId() {
-        return orderId;
+    public Long getOrderSn() {
+        return orderSn;
     }
 
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
+    public void setOrderSn(Long orderSn) {
+        this.orderSn = orderSn;
     }
 
     public Long getSn() {

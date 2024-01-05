@@ -1,9 +1,11 @@
 package com.zj.auction.seckill.service;
 
+import com.zj.auction.common.dto.BaseOrderDto;
+
 public interface OrderService {
     /**
      * 根据库存号生产订单
-     * @param sn
+     * @param orderInfo
      */
-    void generatorOrder(Long orderId,String sn,Long userId);
+    void generatorOrder(BaseOrderDto orderInfo);
 }
