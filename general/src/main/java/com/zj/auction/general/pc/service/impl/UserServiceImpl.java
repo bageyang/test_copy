@@ -26,11 +26,11 @@ import com.zj.auction.general.pc.service.UserService;
 import com.zj.auction.common.vo.GeneralResult;
 import com.zj.auction.common.vo.LoginResp;
 import com.zj.auction.common.vo.PageAction;
+import com.zj.auction.general.shiro.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -234,7 +234,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Transactional
     public Boolean createManager(User userCfg) {
         PubFun.check(userCfg.getUserName(), userCfg.getTel(), userCfg.getPassWord());
-        User user = (User) SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         //	查询该用户名是否使用
         Integer count = userMapper.countByName(userCfg.getUserName());
         if (count > 0) {
@@ -284,7 +284,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Boolean updateManager(UserDTO userCfg) {
-        User user = (User)SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         PubFun.check(userCfg, userCfg.getTel(), userCfg.getUserName(), userCfg.getRealName());
         if (super.baseCheck(userCfg.getUserId(), Objects::isNull)) {
             throw new RuntimeException("未获取到管理员ID");
@@ -340,7 +340,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     @Transactional
     public Boolean deleteUser(User userCfg) {
-        User user = (User)SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         if (super.baseCheck(userCfg.getUserId(), Objects::isNull)) {
             throw new RuntimeException("未获取到管理员ID");
         }
@@ -361,7 +361,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     @Transactional
     public Boolean updateManagerStatus(User userCfg) {
-        User user = (User)SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         Function<User, Boolean> deal = param -> {
             Optional<User> userOpt = Optional.ofNullable(userMapper.selectById(param.getUserId()));
             User oldUser = userOpt.orElseThrow(() -> throwException("未查询到管理员信息"));
@@ -400,7 +400,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             sTime = DateTimeUtils.parse(pageAction.getStartTime());
             eTime = DateTimeUtils.parse(pageAction.getEndTime());
         }
-        User user = (User)SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
         wrapper.eq(User::getDeleteFlag, 0)
                 .ge(User::getUserType, 0)
@@ -427,7 +427,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         PubFun.check(pid);
         LocalDateTime sTime = DateTimeUtils.parse(pageAction.getStartTime());
         LocalDateTime eTime = DateTimeUtils.parse(pageAction.getEndTime());
-        User user = (User)SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         PageHelper.startPage(pageAction.getCurrentPage(), pageAction.getPageSize());
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>(User.class);
         wrapper.eq(User::getDeleteFlag, 0)
@@ -458,7 +458,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     @Transactional
     public Boolean updateUserStatus(Long userId, Integer status, String frozenExplain) {
-        User user = (User)SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         User oldUser = Optional.ofNullable(userMapper.selectById(userId)).orElseThrow(() -> throwException("未查询到用户信息"));
         oldUser.setStatus(status);
         if (status == 1) {
@@ -591,7 +591,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     // 添加用户
     @Override
     public Boolean insertUser(User userCfg) {
-        User principal = (User)SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         PubFun.check(userCfg, userCfg.getUserName(), userCfg.getNickName(), userCfg.getUserImg(), userCfg.getPassWord(),
                 userCfg.getUserType());
         //较验手机号
@@ -668,7 +668,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean deleteMember(Long userId) {
-        User user = (User)SecurityUtils.getSubject();
+        User user = SecurityUtils.getPrincipal();
         if (super.baseCheck(userId, Objects::isNull)) {
             throw new RuntimeException("参数为空");
         }
@@ -818,44 +818,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         return userMapper.selectList(wrapper);
     }
 
-//    //导出用户
-//    @Override
-//    public void exportUser(PageAction pageAction, Integer userType, String userIds, HttpServletResponse httpServletResponse) {
-//        List<Long> userList = new ArrayList<>();
-//        if (!StringUtils.isEmpty(userIds)) {
-//            userList = JSON.parseArray(userIds, Long.class);
-//        }
-//        PageInfo<User> userPage = getUserPage(pageAction, userList);
-//
-//        List<List<String>> excelData = new ArrayList<>();
-//        List<String> head = new ArrayList<>();
-//        head.add("用户ID");
-//        head.add("账号");
-//        head.add("昵称");
-//        head.add("电话");
-//        head.add("用户类型");
-////		head.add("金币余额");
-////		head.add("银币余额");
-////		head.add("店铺收入");
-//        head.add("注册时间");
-//        // 添加头部
-//        excelData.add(head);
-//        for (User user : userPage.getList()) {
-//            List<String> data1 = new ArrayList<>();
-//            data1.add(user.getUserId().toString());  //ID
-//            data1.add(user.getUserName());  //账号
-//            data1.add(Objects.toString(user.getNickName(), ""));  //昵称
-//            data1.add(Objects.toString(user.getTel(), ""));  //手机号
-//            data1.add(user.getUserType() == 1 ? "店主" : "用户");   //用户类型
-////			data1.add(Objects.toString(user.getGoldBalance(), "0"));   //金币余额
-////			data1.add(Objects.toString(user.getSilverBalance(), "0"));   //银币余额
-////			data1.add(Objects.toString(user.getBalance(), "0"));   //店铺收入
-//            data1.add(Objects.toString(DateTimeUtils.toString(user.getAddTime(), "yyyy-MM-dd HH:mm:ss"), ""));
-//            excelData.add(data1);
-//        }
-//        ExcelUtil.exportExcel(httpServletResponse,
-//                excelData, "会员信息", "member.xls", 20);
-//    }
 
 
     /**

@@ -138,7 +138,7 @@ public class AppUserController {
             @ApiImplicitParam(name = "commonName", value = "常用联系姓名")
     })
     @PostMapping(value = "/updateCommonTel")
-    public GeneralResult updateCommonTel(String commonTel,String commonName) {
+    public GeneralResult updateCommonTel(@RequestParam(name = "commonTel") String commonTel,@RequestParam(name = "commonName") String commonName) {
         return GeneralResult.success(appUserService.updateCommonTel(commonTel,commonName));
     }
 
@@ -268,8 +268,8 @@ public class AppUserController {
             @ApiImplicitParam(name = "password", value = "新密码", dataType = "String")
     })
     @PostMapping(value = "/addPassword")
-        public GeneralResult addPassword(@RequestParam(name = "tel") String tel,@RequestParam(name = "code") String code,@RequestParam(name = "password") String password) {
-        return GeneralResult.success(appUserService.addPassword(tel, code,password));
+        public GeneralResult addPassword(@RequestParam(name = "code") String code,@RequestParam(name = "password") String password) {
+        return GeneralResult.success(appUserService.addPassword(code,password));
     }
 
     /**
@@ -294,8 +294,8 @@ public class AppUserController {
      */
     @ApiOperation(value = "判断用户是否已经设置支付密码")
     @PostMapping("/hasPayPassword")
-    public GeneralResult hasPayPassword(@RequestParam(name = "userName") String userName){
-        return GeneralResult.success(appUserService.hasPayPassword(userName));
+    public GeneralResult hasPayPassword(){
+        return GeneralResult.success(appUserService.hasPayPassword());
     }
 
 
@@ -306,9 +306,9 @@ public class AppUserController {
      */
     @ApiOperation(value = "验证交易密码")
     @PostMapping("checkPayPassword")
-    public GeneralResult payPassword(@RequestParam(name = "payPassword") String payPassword,@RequestParam(name = "userName")String userName) {
+    public GeneralResult payPassword(@RequestParam(name = "payPassword") String payPassword) {
         PubFun.check (  payPassword );
-        return GeneralResult.success(appUserService.isPayPassword( payPassword,userName ));
+        return GeneralResult.success(appUserService.isPayPassword( payPassword ));
     }
 
 
@@ -318,9 +318,9 @@ public class AppUserController {
      */
     @ApiOperation(value = "添加支付密码")
     @PostMapping("addPayPassword")
-    public GeneralResult addPayPassword(@RequestParam(name = "payPassword")String payPassword ,@RequestParam(name = "userName")String userName) {
+    public GeneralResult addPayPassword(@RequestParam(name = "payPassword")String payPassword) {
         PubFun.check (  payPassword );
-        return GeneralResult.success(appUserService.addPayPassword( payPassword,userName ));
+        return GeneralResult.success(appUserService.addPayPassword( payPassword));
     }
 
 

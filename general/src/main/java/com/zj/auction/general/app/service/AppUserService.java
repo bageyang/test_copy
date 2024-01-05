@@ -238,7 +238,7 @@ public interface AppUserService {
      * @param password
      * @return	java.lang.Boolean
      */
-    Boolean addPassword(String tel,String code, String password);
+    Boolean addPassword(String code, String password);
 
     /**
      * @Description 是否有支付密码
@@ -248,7 +248,7 @@ public interface AppUserService {
      * @param
      * @return	boolean
      */
-    boolean hasPayPassword(String userName);
+    boolean hasPayPassword();
 
 
     /**
@@ -259,7 +259,7 @@ public interface AppUserService {
      * @param payPassword
      * @return	boolean
      */
-    boolean isPayPassword(String payPassword,String userName);
+    boolean isPayPassword(String payPassword);
 
     /**
      * @Description 设置支付密码
@@ -269,7 +269,7 @@ public interface AppUserService {
      * @param payPassword
      * @return	boolean
      */
-    boolean addPayPassword(String payPassword,String userName);
+    boolean addPayPassword(String payPassword);
 
 
     /**
