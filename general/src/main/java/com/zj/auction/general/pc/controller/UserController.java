@@ -7,7 +7,6 @@ import com.zj.auction.common.dto.UserDTO;
 import com.zj.auction.common.model.Permis;
 import com.zj.auction.common.model.User;
 import com.zj.auction.general.shiro.SecurityUtils;
-import com.zj.auction.common.util.RedisUtil;
 import com.zj.auction.general.pc.service.UserService;
 import com.zj.auction.common.vo.GeneralResult;
 import com.zj.auction.common.vo.PageAction;
@@ -16,7 +15,6 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.List;
 

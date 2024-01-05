@@ -25,6 +25,8 @@ import com.zj.auction.common.vo.PageAction;
 import com.zj.auction.general.app.service.AppUserService;
 import com.zj.auction.common.vo.GeneralResult;
 import com.zj.auction.common.vo.UserVO;
+import com.zj.auction.general.auth.AppTokenUtils;
+import com.zj.auction.general.auth.AuthToken;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -251,7 +253,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         //获取分享二维码并保存
         userCfgEntity.setShareImg(getAppQrCode(userCfgEntity.getUserId()));
         userMapper.updateByPrimaryKeySelective(userCfgEntity);
-        RedisUtil.del(AppTokenUtils.CODE_FILE + userCfgEntity.getTel());//删除验证码
+        redisTemplate.delete(AppTokenUtils.CODE_FILE + userCfgEntity.getTel());//删除验证码
         return true;
     }
 
@@ -441,7 +443,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         data.setUserInfo(BeanUtils.copy(userInfo));
         //敏感信息不返回给前端，加入缓存2天方便解密时使用
         AuthToken appToken = new AuthToken(userId, token);
-        RedisUtil.set(String.format(RedisConstant.KEY_USER_TOKEN, userId), JSON.toJSONString(appToken), 60 * 60 * 24 * 30L);
+        redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, userId), JSON.toJSONString(appToken), 60 * 60 * 24 * 30L);
         return data;
     }
 
@@ -493,7 +495,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         user.setUpdateUserId(appToken.getUserId());
         userMapper.updateByPrimaryKeySelective(user);
         appToken.setUser(user);
-        RedisUtil.set(String.format(RedisConstant.KEY_USER_TOKEN, user.getUserId()), JSON.toJSONString(appToken));
+        redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, user.getUserId()), JSON.toJSONString(appToken));
         return BeanUtils.copy(user);
     }
 
@@ -512,7 +514,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         user.setUpdateUserId(appToken.getUserId());
         userMapper.updateByPrimaryKeySelective(user);
         appToken.setUser(user);
-        RedisUtil.set(String.format(RedisConstant.KEY_USER_TOKEN, user.getUserId()), JSON.toJSONString(appToken));
+        redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, user.getUserId()), JSON.toJSONString(appToken));
         return BeanUtils.copy(user);
     }
     public User selectUserGiveCurrService(Long userId){
@@ -755,9 +757,9 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
             currentUser.setTel(userName);
             userMapper.updateByPrimaryKeySelective(currentUser);
         }
-        RedisUtil.del(AppTokenUtils.CODE_FILE + userName);//删除验证码
+        redisTemplate.delete(AppTokenUtils.CODE_FILE + userName);//删除验证码
         authToken.setUser(currentUser);
-        RedisUtil.set(String.format(RedisConstant.KEY_USER_TOKEN, authToken.getUserId()), JSON.toJSONString(authToken));
+        redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, authToken.getUserId()), JSON.toJSONString(authToken));
         return BeanUtils.copy(currentUser);
     }
 
@@ -780,7 +782,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         userMapper.updateByPrimaryKeySelective(user);
         if (Objects.nonNull(authToken))
             authToken.setUser(user);
-        RedisUtil.set(String.format(RedisConstant.KEY_USER_TOKEN, user.getUserId()), JSON.toJSONString(authToken));
+        redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, user.getUserId()), JSON.toJSONString(authToken));
         return true;
     }
 
@@ -854,7 +856,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         AuthToken authToken = AppTokenUtils.getAuthToken();
         if (!Objects.isNull(authToken.getUserId())) {
             AppTokenUtils.remove();
-            RedisUtil.del(String.format(RedisConstant.KEY_USER_TOKEN, authToken.getUserId()));
+            redisTemplate.delete(String.format(RedisConstant.KEY_USER_TOKEN, authToken.getUserId()));
         }
         return true;
     }
@@ -877,7 +879,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         user.setUserImg(userImg);
         userMapper.updateByPrimaryKeySelective(user);
         authToken.setUser(user);
-        RedisUtil.set(String.format(RedisConstant.KEY_USER_TOKEN, authToken.getUserId()), JSON.toJSONString(authToken));
+        redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, authToken.getUserId()), JSON.toJSONString(authToken));
         return BeanUtils.copy(user);
     }
 
@@ -958,7 +960,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         user.setUpdateTime(LocalDateTime.now());
         userMapper.updateByPrimaryKeySelective(user);
         authToken.setUser(user);
-        RedisUtil.set(String.format(RedisConstant.KEY_USER_TOKEN, authToken.getUserId()), JSON.toJSONString(authToken));
+        redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, authToken.getUserId()), JSON.toJSONString(authToken));
         return BeanUtils.copy(user);
     }
 
@@ -1113,7 +1115,7 @@ public class AppUserServiceImpl extends BaseServiceImpl implements AppUserServic
         }
         userMapper.updateByPrimaryKeySelective(user);
         authToken.setUser(user);
-        RedisUtil.set(String.format(RedisConstant.KEY_USER_TOKEN, authToken.getUserId()), JSON.toJSONString(authToken));
+        redisTemplate.opsForValue().set(String.format(RedisConstant.KEY_USER_TOKEN, authToken.getUserId()), JSON.toJSONString(authToken));
         return BeanUtils.copy(user);
     }
 

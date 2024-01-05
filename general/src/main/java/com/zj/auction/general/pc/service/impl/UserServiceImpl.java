@@ -16,6 +16,8 @@ import com.zj.auction.common.exception.ServiceException;
 import com.zj.auction.common.mapper.*;
 import com.zj.auction.common.model.*;
 import com.zj.auction.common.util.*;
+import com.zj.auction.general.auth.AppTokenUtils;
+import com.zj.auction.general.auth.AuthToken;
 import com.zj.auction.general.pc.service.UserService;
 import com.zj.auction.general.shiro.SecurityUtils;
 import com.zj.auction.common.vo.GeneralResult;
@@ -26,10 +28,11 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -60,6 +63,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     private final AreaMapper areaMapper;
     private final WalletMapper walletMapper;
     private final GoodsMapper goodsMapper;
+    @Resource
+    private RedisTemplate<String,Object> redisTemplate;
 
 
 
@@ -109,7 +114,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         //敏感信息不返回给前端，加入缓存2天方便解密时使用
         AuthToken authToken = new AuthToken(userId, token);
         authToken.setUser(userInfo);
-        RedisUtil.set(String.format(RedisConstant.PC_USER_TOKEN, userId), JSON.toJSONString(authToken), 60 * 60 * 24 * 30L);
+        redisTemplate.opsForValue().set(String.format(RedisConstant.PC_USER_TOKEN, userId), JSON.toJSONString(authToken), 60 * 60 * 24 * 30L);
         return data;
     }
 

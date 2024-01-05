@@ -2,14 +2,10 @@ package com.zj.auction.general.sms;
 
 
 import com.zj.auction.common.oss.SendMessage;
-import com.zj.auction.common.util.AppTokenUtils;
-import com.zj.auction.common.util.IPUtils;
-import com.zj.auction.common.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**

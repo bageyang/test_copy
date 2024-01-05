@@ -1,4 +1,4 @@
-package com.zj.auction.common.util;
+package com.zj.auction.general.auth;
 import com.zj.auction.common.model.User;
 import lombok.Data;
 import org.apache.shiro.authc.AuthenticationToken;
